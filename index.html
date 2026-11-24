@@ -401,19 +401,107 @@ button {
   color: var(--text-muted);
 }
 
-/* Gallery Grid — 3 chế độ kích thước (Nhỏ: 6 cột, Vừa: 3 cột, To: 1 cột) & khít hàng không khoảng trống */
+/* Gallery Grid — Justified Row (Giữ nguyên 100% tỷ lệ gốc, xếp khít hàng ngang 1 -> 2 -> 3) */
 .masonry-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
-/* Mức Vừa: 3 ảnh 1 hàng, khung tỷ lệ 4:3 đồng đều để ảnh ngang & dọc xếp khít không khoảng trống */
-.masonry-grid.grid-medium {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+.masonry-grid::after {
+  content: "";
+  flex-grow: 999999999;
 }
+
+/* Mức Vừa (mặc định): ~3-4 ảnh/hàng, giữ nguyên tỷ lệ gốc */
+.masonry-grid.grid-medium {
+  --row-height: 240px;
+  gap: 12px;
+}
+
+/* Mức Nhỏ: ~6 ảnh/hàng, giữ nguyên tỷ lệ gốc, không cắt khung hình */
+.masonry-grid.grid-small {
+  --row-height: 145px;
+  gap: 8px;
+}
+
+.masonry-grid.grid-small .card-download-btn {
+  width: 28px;
+  height: 28px;
+  top: 6px;
+  right: 6px;
+}
+
+.masonry-grid.grid-small .photo-caption-badge {
+  display: none;
+}
+
+/* Chế độ Justified áp dụng chung cho Nhỏ và Vừa */
+.masonry-grid.grid-small .photo-card,
 .masonry-grid.grid-medium .photo-card {
+  height: var(--row-height);
+  flex-grow: calc(var(--ratio, 1.333));
+  flex-basis: calc(var(--row-height) * var(--ratio, 1.333));
+  max-width: 100%;
+}
+
+.masonry-grid.grid-small .photo-card img,
+.masonry-grid.grid-medium .photo-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: var(--surface-muted);
+}
+
+/* Mức To: Xem từng ảnh 1 hàng — giữ nguyên 100% tỷ lệ gốc */
+.masonry-grid.grid-large {
+  display: grid;
+  grid-template-columns: 1fr;
+  max-width: 920px;
+  margin-inline: auto;
+  gap: 24px;
+}
+
+.masonry-grid.grid-large .photo-card {
+  height: auto;
+  min-height: 240px;
+}
+
+.masonry-grid.grid-large .photo-card img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 960px) {
+  .masonry-grid.grid-medium {
+    --row-height: 185px;
+    gap: 8px;
+  }
+  .masonry-grid.grid-small {
+    --row-height: 115px;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 560px) {
+  .masonry-grid.grid-medium {
+    --row-height: 125px;
+    gap: 6px;
+  }
+  .masonry-grid.grid-small {
+    --row-height: 78px;
+    gap: 4px;
+  }
+  .masonry-grid.grid-small .photo-card {
+    border-radius: 4px;
+  }
+  .masonry-grid.grid-small .card-download-btn {
+    display: none;
+  }
+}
+
+.photo-card {
   aspect-ratio: 4 / 3;
 }
 .masonry-grid.grid-medium .photo-card img {
@@ -1642,13 +1730,7 @@ button {
           <input type="password" id="login-password" required placeholder="••••••••" autocomplete="current-password" />
         </label>
 
-        <details class="api-key-details" id="api-key-details">
-          <summary>Cấu hình Firebase Web API Key</summary>
-          <label class="field" style="margin-top: 10px;">
-            <span>Firebase Web API Key (AIzaSy...)</span>
-            <input type="text" id="login-api-key" placeholder="AIzaSy..." />
-          </label>
-        </details>
+
 
         <p class="form-error" id="login-error" hidden></p>
 
@@ -1804,10 +1886,7 @@ button {
             <input type="url" id="setting-gas-url" placeholder="https://script.google.com/macros/s/AKfycb.../exec" />
           </label>
 
-          <label class="field">
-            <span>Firebase Web API Key (chỉ dùng để đăng nhập Admin)</span>
-            <input type="text" id="setting-api-key" placeholder="AIzaSy..." />
-          </label>
+
 
           <div class="modal-footer-actions">
             <button type="submit" class="btn-primary" id="save-settings-btn">Lưu cài đặt lên Firebase</button>
@@ -1890,7 +1969,6 @@ button {
   const loginForm = document.getElementById("login-form");
   const loginEmailInput = document.getElementById("login-email");
   const loginPasswordInput = document.getElementById("login-password");
-  const loginApiKeyInput = document.getElementById("login-api-key");
   const loginErrorEl = document.getElementById("login-error");
   const loginSubmitBtn = document.getElementById("login-submit-btn");
 
@@ -1934,7 +2012,6 @@ button {
   const settingBrandInput = document.getElementById("setting-brand");
   const settingFooterInput = document.getElementById("setting-footer");
   const settingGasUrlInput = document.getElementById("setting-gas-url");
-  const settingApiKeyInput = document.getElementById("setting-api-key");
   const saveSettingsBtn = document.getElementById("save-settings-btn");
 
   const toastEl = document.getElementById("toast");
@@ -2561,8 +2638,14 @@ button {
       img.loading = "lazy";
       img.decoding = "async";
 
+      card.style.setProperty("--ratio", "1.333");
+
       loadImageWithFallback(img, photo.url, thumbWidth, {
         onLoad: () => {
+          if (img.naturalWidth && img.naturalHeight) {
+            const ratio = (img.naturalWidth / img.naturalHeight).toFixed(4);
+            card.style.setProperty("--ratio", ratio);
+          }
           card.classList.remove("is-loading");
           card.classList.add("is-loaded");
         },
@@ -3241,7 +3324,6 @@ button {
     settingBrandInput.value = rawDbData.brandName || "";
     settingFooterInput.value = rawDbData.footerText || "";
     settingGasUrlInput.value = getAppsScriptUrl();
-    settingApiKeyInput.value = getApiKey();
     renderAdminAlbumList();
     switchAdminTab("albums");
     openModal(adminModal);
@@ -3358,7 +3440,6 @@ button {
       openAdminDashboard();
     } else {
       loginErrorEl.hidden = true;
-      loginApiKeyInput.value = getApiKey();
       openModal(loginModal);
     }
   });
@@ -3376,11 +3457,6 @@ button {
     loginErrorEl.hidden = true;
     const email = loginEmailInput.value.trim();
     const password = loginPasswordInput.value;
-    const apiKeyInputVal = loginApiKeyInput.value.trim();
-
-    if (apiKeyInputVal) {
-      localStorage.setItem(STORAGE_API_KEY, apiKeyInputVal);
-    }
     const apiKey = getApiKey();
 
     if (!apiKey) {
@@ -3544,12 +3620,8 @@ button {
     saveSettingsBtn.textContent = "Đang lưu...";
 
     const newGasUrl = settingGasUrlInput.value.trim();
-    const newApiKey = settingApiKeyInput.value.trim();
     if (newGasUrl) {
       localStorage.setItem(STORAGE_GAS_URL, newGasUrl);
-    }
-    if (newApiKey) {
-      localStorage.setItem(STORAGE_API_KEY, newApiKey);
     }
 
     try {
@@ -3560,7 +3632,7 @@ button {
         brandName: settingBrandInput.value.trim() || "STUDIO GALLERY",
         footerText: settingFooterInput.value.trim() || "© 2026 Studio Gallery",
         appsScriptUrl: newGasUrl || rawDbData.appsScriptUrl || "",
-        apiKey: newApiKey || rawDbData.apiKey || "",
+        apiKey: rawDbData.apiKey || "",
         albums: nextAlbumsMap
       });
 
@@ -3720,6 +3792,3 @@ button {
   </script>
 </body>
 </html>
-```[cite: 23]
-
-Bạn sao chép toàn bộ đoạn mã trên, lưu thành tệp `index.html` rồi tải lên Repository GitHub Pages của bạn[cite: 23]. Sau đó mở mục **Quản trị → Cài đặt chung** trên website, dán URL Google Apps Script (`[https://script.google.com/macros/s/.../exec](https://script.google.com/macros/s/.../exec)`) vào ô cấu hình và nhấn **Lưu cài đặt lên Firebase**[cite: 23].
