@@ -401,29 +401,31 @@ button {
   color: var(--text-muted);
 }
 
-/* Masonry Grid */
+/* Horizontal Row Grid (Thứ tự 1 -> 2 -> 3 theo hàng ngang) */
 .masonry-grid {
-  column-count: 3;
-  column-gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
 }
 
 @media (max-width: 960px) {
   .masonry-grid {
-    column-count: 2;
-    column-gap: 14px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
   }
 }
 
 @media (max-width: 560px) {
   .masonry-grid {
-    column-count: 1;
+    grid-template-columns: 1fr;
   }
 }
 
 .photo-card {
   position: relative;
-  break-inside: avoid;
-  margin-bottom: 16px;
+  width: 100%;
+  margin: 0;
   border-radius: var(--radius);
   overflow: hidden;
   background: var(--surface-muted);
@@ -2745,9 +2747,14 @@ button {
   lightboxFullscreenBtn.addEventListener("click", () => toggleFullscreen());
   document.addEventListener("fullscreenchange", updateFullscreenIcon);
 
-  // Double-click để phóng to / thu nhỏ tại vị trí con trỏ
-  lightboxViewport.addEventListener("dblclick", (e) => {
+  // Click chuột trái (không kéo) để phóng to / thu nhỏ ngay tại vị trí con trỏ
+  lightboxViewport.addEventListener("click", (e) => {
+    if (didDragMove) {
+      didDragMove = false;
+      return;
+    }
     e.preventDefault();
+    e.stopPropagation();
     toggleZoom(e.clientX, e.clientY);
   });
 
@@ -2760,9 +2767,9 @@ button {
 
   // Kéo chuột để di chuyển vùng xem khi đang Zoom
   lightboxViewport.addEventListener("mousedown", (e) => {
+    didDragMove = false;
     if (zoomScale <= 1.01 || e.button !== 0) return;
     isPanning = true;
-    didDragMove = false;
     panStartX = e.clientX - panX;
     panStartY = e.clientY - panY;
     lightboxViewport.classList.add("is-dragging");
@@ -2770,9 +2777,13 @@ button {
 
   window.addEventListener("mousemove", (e) => {
     if (!isPanning) return;
-    didDragMove = true;
-    panX = e.clientX - panStartX;
-    panY = e.clientY - panStartY;
+    const nextX = e.clientX - panStartX;
+    const nextY = e.clientY - panStartY;
+    if (Math.hypot(nextX - panX, nextY - panY) > 4) {
+      didDragMove = true;
+    }
+    panX = nextX;
+    panY = nextY;
     applyImageTransform();
   });
 
