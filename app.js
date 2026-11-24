@@ -4,7 +4,7 @@
   // 1. URL Realtime Database của bạn:
   const FIREBASE_DB_URL = "https://xemanhdrive-default-rtdb.asia-southeast1.firebasedatabase.app";
   // 2. Dán Web API Key từ Firebase Console > Project Settings > General vào đây:
-  const DEFAULT_FIREBASE_API_KEY = "BLSWynmrvGTYbz0i5DvU_34wLvHgmJaiYZTuKyoWGGMnJLcETcplc4D93u5YQqRlAD2kwXIYx8bZewGeMIKLuts";
+  const DEFAULT_FIREBASE_API_KEY = "AIzaSyCcd1EfyxaogDKbRrbTU1EWgQ1Fu6klQj4";
   // =========================================================================
 
   const STORAGE_AUTH_KEY = "gallery_admin_session_v1";
