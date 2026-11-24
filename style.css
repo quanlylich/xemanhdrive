@@ -125,7 +125,8 @@ button {
   background: #1c1917;
 }
 
-.btn-primary:disabled {
+.btn-primary:disabled,
+.btn-outline:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -701,7 +702,7 @@ button {
 }
 
 .modal-card-lg {
-  max-width: 860px;
+  max-width: 880px;
 }
 
 .modal-header {
@@ -828,6 +829,23 @@ button {
   background: var(--surface);
 }
 
+.checkbox-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-row input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
 .form-hint {
   margin: 0;
   font-size: 0.84rem;
@@ -841,6 +859,23 @@ button {
   background: #fef2f2;
   color: var(--danger);
   font-size: 0.82rem;
+}
+
+.drive-notice {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  font-size: 0.81rem;
+  line-height: 1.5;
+}
+
+.drive-notice a {
+  color: #78350f;
+  font-weight: 600;
+  text-decoration: underline;
 }
 
 .api-key-details summary {
@@ -976,10 +1011,19 @@ button {
   margin-top: 4px;
 }
 
+.bulk-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .editor-photo-list {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 2px;
 }
 
 .editor-photo-row {
