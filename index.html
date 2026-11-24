@@ -433,7 +433,6 @@ button {
   top: 6px;
   right: 6px;
 }
-
 .masonry-grid.grid-small .photo-caption-badge {
   display: none;
 }
@@ -1537,6 +1536,7 @@ button {
             </button>
           </div>
         </div>
+
       </div>
 
       <div class="masonry-grid" id="gallery-grid"></div>
@@ -2244,7 +2244,6 @@ button {
     a.click();
     a.remove();
   }
-
   function buildShareUrl(albumId, locked = false) {
     const url = new URL(window.location.origin + window.location.pathname);
     if (albumId) {
@@ -2428,10 +2427,23 @@ button {
         selectedCategory = cat;
         renderCategories();
         const filtered = getFilteredAlbums();
-        renderAlbumSwitcher(filtered);
-        if (filtered.length && (!currentAlbum || !filtered.some((a) => a.id === currentAlbum.id))) {
-          selectAlbum(filtered[0]);
+
+        if (cat === "Tất cả") {
+          renderAlbumSwitcher(filtered);
+          if (filtered.length && (!currentAlbum || !filtered.some((a) => a.id === currentAlbum.id))) {
+            selectAlbum(filtered[0]);
+          }
+          return;
         }
+
+        currentAlbum = null;
+        unsortedAlbumPhotos = [];
+        activeDisplayPhotos = [];
+        const url = new URL(window.location.href);
+        url.searchParams.delete("album");
+        window.history.replaceState({}, "", url.toString());
+        renderAlbumSwitcher(filtered);
+        showAlbumPicker(filtered);
       });
       categoryBar.appendChild(btn);
     });
@@ -2442,6 +2454,22 @@ button {
     return albums.filter((a) => a.category === selectedCategory);
   }
 
+  function showAlbumPicker(list) {
+    const count = list.length;
+    document.title = `${selectedCategory} — ${rawDbData.brandName || "Gallery"}`;
+    heroCover.classList.remove("loaded");
+    heroCover.removeAttribute("src");
+    heroCover.dataset.currentCover = "";
+    heroCategory.textContent = selectedCategory;
+    heroTitle.textContent = count ? "Chọn album để xem ảnh" : "Chưa có album";
+    heroDesc.textContent = count ? "Chọn một album bên dưới để mở bộ sưu tập ảnh." : "Danh mục này chưa có album.";
+    heroDate.textContent = "";
+    heroDot.hidden = true;
+    heroCount.textContent = `${count} album`;
+    galleryToolbar.hidden = true;
+    galleryGrid.innerHTML = "";
+    emptyState.hidden = true;
+  }
   function renderAlbumSwitcher(list) {
     if (isSingleLockedMode) {
       controlsSection.hidden = true;
@@ -2449,7 +2477,7 @@ button {
     }
 
     albumSwitcher.innerHTML = "";
-    if (list.length <= 1) {
+    if (!list.length || (list.length <= 1 && selectedCategory === "Tất cả")) {
       albumSwitcher.hidden = true;
       if (categoryBar.hidden) controlsSection.hidden = true;
       return;
