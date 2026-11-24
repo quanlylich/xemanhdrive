@@ -13,7 +13,1117 @@
     rel="stylesheet"
   />
 
-  <link rel="stylesheet" href="style.css" />
+  <style>
+:root {
+  --bg: #faf9f6;
+  --surface: #ffffff;
+  --surface-muted: #f2f0ec;
+  --text: #1c1917;
+  --text-muted: #78716c;
+  --border: #e7e5e4;
+  --accent: #292524;
+  --danger: #b91c1c;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --transition: 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  --font-sans: "Be Vietnam Pro", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+body.no-scroll {
+  overflow: hidden;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea {
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.container {
+  width: min(1240px, 92%);
+  margin-inline: auto;
+}
+
+/* Header */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(250, 249, 246, 0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand {
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  font-size: 0.92rem;
+  text-transform: uppercase;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-outline,
+.btn-primary,
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 500;
+  transition: all var(--transition);
+}
+
+.btn-outline {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.btn-outline:hover {
+  background: var(--surface-muted);
+  border-color: #d6d3d1;
+}
+
+.btn-primary {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: #1c1917;
+}
+
+.btn-primary:disabled,
+.btn-outline:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.btn-ghost:hover {
+  color: var(--text);
+  background: var(--surface-muted);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+}
+
+/* Share Dropdown */
+.share-dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: 265px;
+  padding: 6px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 32px rgba(28, 25, 23, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 40;
+}
+
+.dropdown-menu[hidden] {
+  display: none;
+}
+
+.dropdown-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 9px 11px;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  transition: background var(--transition);
+}
+
+.dropdown-item:hover {
+  background: var(--surface-muted);
+}
+
+.dropdown-item strong {
+  font-size: 0.84rem;
+  font-weight: 500;
+}
+
+.dropdown-item small {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Hero Cover */
+.hero {
+  position: relative;
+  min-height: clamp(300px, 50vh, 500px);
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  background: #292524;
+  color: #ffffff;
+}
+
+.hero-media {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.03);
+  transition: opacity 500ms ease, transform 700ms ease;
+}
+
+.hero-media img.loaded {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(18, 16, 14, 0.8) 0%,
+    rgba(18, 16, 14, 0.36) 52%,
+    rgba(18, 16, 14, 0.16) 100%
+  );
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 44px 0 38px;
+  max-width: 760px;
+}
+
+.hero-category {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(6px);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.hero-title {
+  margin: 0 0 10px;
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: clamp(1.85rem, 4.2vw, 3.1rem);
+  line-height: 1.18;
+}
+
+.hero-description {
+  margin: 0 0 16px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: clamp(0.94rem, 1.4vw, 1.04rem);
+  font-weight: 300;
+}
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.84rem;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+/* Controls */
+.main-content {
+  padding-top: 30px;
+  padding-bottom: 72px;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.controls[hidden] {
+  display: none;
+}
+
+.category-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-pill {
+  padding: 7px 15px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  font-weight: 500;
+  transition: all var(--transition);
+}
+
+.filter-pill:hover {
+  color: var(--text);
+  border-color: #a8a29e;
+}
+
+.filter-pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+.album-switcher {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+}
+
+.album-chip {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px 8px 8px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  text-align: left;
+  color: var(--text);
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+}
+
+.album-chip:hover {
+  border-color: #a8a29e;
+  transform: translateY(-1px);
+}
+
+.album-chip.active {
+  border-color: var(--accent);
+  box-shadow: 0 4px 16px rgba(28, 25, 23, 0.08);
+}
+
+.album-chip-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--surface-muted);
+}
+
+.album-chip-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.album-chip-title {
+  font-size: 0.88rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.album-chip-sub {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+/* Masonry Grid */
+.masonry-grid {
+  column-count: 3;
+  column-gap: 16px;
+}
+
+@media (max-width: 960px) {
+  .masonry-grid {
+    column-count: 2;
+    column-gap: 14px;
+  }
+}
+
+@media (max-width: 560px) {
+  .masonry-grid {
+    column-count: 1;
+  }
+}
+
+.photo-card {
+  position: relative;
+  break-inside: avoid;
+  margin-bottom: 16px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface-muted);
+  cursor: zoom-in;
+  min-height: 180px;
+}
+
+.photo-card.is-loading::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #eeece8 25%, #f7f5f2 50%, #eeece8 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.photo-card img {
+  width: 100%;
+  height: auto;
+  opacity: 0;
+  transition: opacity 380ms ease, transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.photo-card.is-loaded {
+  min-height: auto;
+}
+
+.photo-card.is-loaded img {
+  opacity: 1;
+}
+
+.photo-card.is-loaded:hover img {
+  transform: scale(1.025);
+}
+
+.photo-caption-badge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 28px 14px 12px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.58), transparent);
+  color: #ffffff;
+  font-size: 0.82rem;
+  opacity: 0;
+  transition: opacity var(--transition);
+  pointer-events: none;
+}
+
+.photo-card:hover .photo-caption-badge {
+  opacity: 1;
+}
+
+.photo-card.is-error {
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 36px 20px;
+  text-align: center;
+  border: 1px dashed #d6d3d1;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 64px 20px;
+  color: var(--text-muted);
+}
+
+/* Footer */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 28px 0;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}
+
+/* Lightbox */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 220ms ease, visibility 220ms ease;
+}
+
+.lightbox.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 10, 9, 0.95);
+  backdrop-filter: blur(8px);
+}
+
+.lightbox-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.lightbox-counter {
+  font-size: 0.88rem;
+  letter-spacing: 0.06em;
+}
+
+.lightbox-btn,
+.lightbox-nav {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition);
+}
+
+.lightbox-btn:hover,
+.lightbox-nav:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.lightbox-nav {
+  position: fixed;
+  top: 46%;
+  transform: translateY(-50%);
+  z-index: 4;
+}
+
+.lightbox-prev { left: 16px; }
+.lightbox-next { right: 16px; }
+
+.lightbox-stage {
+  position: relative;
+  z-index: 3;
+  margin: 0 0 64px;
+  max-width: 90vw;
+  max-height: 76vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.lightbox-stage img {
+  max-width: 90vw;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  transition: opacity 180ms ease;
+}
+
+.lightbox-caption {
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 0.88rem;
+  text-align: center;
+  max-width: 640px;
+}
+
+.lightbox-spinner {
+  position: absolute;
+  top: 45%;
+  width: 34px;
+  height: 34px;
+  border: 2.5px solid rgba(255, 255, 255, 0.22);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.lightbox-thumbs {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  display: flex;
+  gap: 8px;
+  max-width: 92vw;
+  overflow-x: auto;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  scrollbar-width: none;
+}
+
+.lightbox-thumbs::-webkit-scrollbar {
+  display: none;
+}
+
+.lightbox-thumb-btn {
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #292524;
+  opacity: 0.55;
+  transition: opacity 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.lightbox-thumb-btn.active {
+  opacity: 1;
+  border-color: #ffffff;
+  transform: scale(1.06);
+}
+
+.lightbox-thumb-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Modals (Admin Login & Admin Dashboard) */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease, visibility 200ms ease;
+}
+
+.modal.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(18, 16, 14, 0.62);
+  backdrop-filter: blur(4px);
+}
+
+.modal-card {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-height: 90vh;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-card-sm {
+  max-width: 430px;
+}
+
+.modal-card-lg {
+  max-width: 880px;
+}
+
+.modal-header {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.12rem;
+  font-weight: 600;
+}
+
+.modal-subtitle {
+  margin: 2px 0 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.modal-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn:hover {
+  background: var(--surface-muted);
+}
+
+.modal-body {
+  padding: 20px 22px;
+  overflow-y: auto;
+}
+
+.admin-panel[hidden] {
+  display: none;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 22px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.admin-tab {
+  padding: 12px 16px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.86rem;
+  font-weight: 500;
+}
+
+.admin-tab.active {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+
+.form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+@media (max-width: 640px) {
+  .form-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field span {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.88rem;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: var(--surface);
+}
+
+.checkbox-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-row input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+.form-hint {
+  margin: 0;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.form-error {
+  margin: 0;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  background: #fef2f2;
+  color: var(--danger);
+  font-size: 0.82rem;
+}
+
+.drive-notice {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  font-size: 0.81rem;
+  line-height: 1.5;
+}
+
+.drive-notice a {
+  color: #78350f;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.api-key-details summary {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.modal-footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.sticky-save-bar {
+  position: sticky;
+  bottom: -20px;
+  background: var(--surface);
+  padding: 14px 0 4px;
+  border-top: 1px solid var(--border);
+}
+
+/* Admin Album List */
+.panel-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.muted-text {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+}
+
+.admin-album-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-album-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+
+@media (max-width: 640px) {
+  .admin-album-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.admin-album-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.admin-album-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--surface-muted);
+  flex-shrink: 0;
+}
+
+.admin-album-text h3 {
+  margin: 0 0 2px;
+  font-size: 0.94rem;
+  font-weight: 600;
+}
+
+.admin-album-text p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.admin-album-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.btn-danger-outline {
+  border-color: #fecaca;
+  color: var(--danger);
+}
+
+.btn-danger-outline:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+/* Cover & Photo Editor List */
+.cover-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cover-mini-preview {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 4px 0;
+}
+
+.bulk-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.bulk-btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.editor-photo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.editor-photo-row {
+  display: grid;
+  grid-template-columns: 54px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+
+.editor-photo-thumb {
+  width: 54px;
+  height: 54px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: var(--surface-muted);
+}
+
+.editor-photo-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.editor-photo-fields input {
+  padding: 6px 9px;
+  font-size: 0.82rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+}
+
+.editor-photo-btns {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mini-action-btn {
+  padding: 5px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 0.75rem;
+  color: var(--text);
+}
+
+.mini-action-btn:hover {
+  background: var(--surface-muted);
+}
+
+.mini-action-btn.is-cover {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent);
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translate(-50%, 16px);
+  z-index: 120;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #ffffff;
+  font-size: 0.85rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+  </style>
 </head>
 <body>
   <!-- Thanh điều hướng trên cùng -->
@@ -321,6 +1431,1523 @@
   <!-- Thông báo Toast -->
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="app.js"></script>
+  <script>
+(() => {
+  // =========================================================================
+  // CẤU HÌNH FIREBASE
+  // 1. URL Realtime Database của bạn:
+  const FIREBASE_DB_URL = "https://xemanhdrive-default-rtdb.asia-southeast1.firebasedatabase.app";
+  // 2. Dán Web API Key từ Firebase Console > Project Settings > General vào đây:
+  const DEFAULT_FIREBASE_API_KEY = "AIzaSyCcd1EfyxaogDKbRrbTU1EWgQ1Fu6klQj4";
+  // =========================================================================
+
+  const STORAGE_AUTH_KEY = "gallery_admin_session_v1";
+  const STORAGE_API_KEY = "gallery_firebase_api_key_v1";
+
+  // DOM Elements
+  const brandEl = document.getElementById("brand-name");
+  const footerEl = document.getElementById("footer-text");
+  const shareMenuBtn = document.getElementById("share-menu-btn");
+  const shareMenu = document.getElementById("share-menu");
+  const copyLockedLinkBtn = document.getElementById("copy-locked-link-btn");
+  const copyPublicLinkBtn = document.getElementById("copy-public-link-btn");
+  const adminTriggerBtn = document.getElementById("admin-trigger-btn");
+  const adminTriggerLabel = document.getElementById("admin-trigger-label");
+
+  const heroCover = document.getElementById("hero-cover");
+  const heroCategory = document.getElementById("hero-category");
+  const heroTitle = document.getElementById("hero-title");
+  const heroDesc = document.getElementById("hero-description");
+  const heroDate = document.getElementById("hero-date");
+  const heroDot = document.getElementById("hero-dot");
+  const heroCount = document.getElementById("hero-count");
+
+  const controlsSection = document.getElementById("controls-section");
+  const categoryBar = document.getElementById("category-bar");
+  const albumSwitcher = document.getElementById("album-switcher");
+  const galleryGrid = document.getElementById("gallery-grid");
+  const emptyState = document.getElementById("empty-state");
+  const emptyStateText = document.getElementById("empty-state-text");
+
+  // Lightbox
+  const lightbox = document.getElementById("lightbox");
+  const lightboxBackdrop = document.getElementById("lightbox-backdrop");
+  const lightboxImg = document.getElementById("lightbox-img");
+  const lightboxCaption = document.getElementById("lightbox-caption");
+  const lightboxCounter = document.getElementById("lightbox-counter");
+  const lightboxSpinner = document.getElementById("lightbox-spinner");
+  const lightboxClose = document.getElementById("lightbox-close");
+  const lightboxPrev = document.getElementById("lightbox-prev");
+  const lightboxNext = document.getElementById("lightbox-next");
+  const lightboxThumbs = document.getElementById("lightbox-thumbs");
+
+  // Modals & Admin
+  const loginModal = document.getElementById("login-modal");
+  const loginForm = document.getElementById("login-form");
+  const loginEmailInput = document.getElementById("login-email");
+  const loginPasswordInput = document.getElementById("login-password");
+  const loginApiKeyInput = document.getElementById("login-api-key");
+  const loginErrorEl = document.getElementById("login-error");
+  const loginSubmitBtn = document.getElementById("login-submit-btn");
+
+  const adminModal = document.getElementById("admin-modal");
+  const adminUserEmailEl = document.getElementById("admin-user-email");
+  const adminLogoutBtn = document.getElementById("admin-logout-btn");
+  const adminTabs = document.querySelectorAll(".admin-tab");
+  const adminPanels = {
+    albums: document.getElementById("panel-albums"),
+    editor: document.getElementById("panel-editor"),
+    settings: document.getElementById("panel-settings")
+  };
+  const adminAlbumCountEl = document.getElementById("admin-album-count");
+  const adminAlbumListEl = document.getElementById("admin-album-list");
+  const createNewAlbumBtn = document.getElementById("create-new-album-btn");
+
+  // Editor form
+  const albumEditorForm = document.getElementById("album-editor-form");
+  const editOriginalIdInput = document.getElementById("edit-original-id");
+  const editTitleInput = document.getElementById("edit-title");
+  const editIdInput = document.getElementById("edit-id");
+  const editCategoryInput = document.getElementById("edit-category");
+  const editDateInput = document.getElementById("edit-date");
+  const editDescriptionInput = document.getElementById("edit-description");
+  const editCoverInput = document.getElementById("edit-cover");
+  const editCoverPreview = document.getElementById("edit-cover-preview");
+  const bulkLinksInput = document.getElementById("bulk-links-input");
+  const useFilenameCaptionInput = document.getElementById("use-filename-caption");
+  const addBulkLinksBtn = document.getElementById("add-bulk-links-btn");
+  const clearAllPhotosBtn = document.getElementById("clear-all-photos-btn");
+  const driveFetchNoticeEl = document.getElementById("drive-fetch-notice");
+  const editorPhotoCountEl = document.getElementById("editor-photo-count");
+  const editorPhotoListEl = document.getElementById("editor-photo-list");
+  const cancelEditBtn = document.getElementById("cancel-edit-btn");
+  const saveAlbumBtn = document.getElementById("save-album-btn");
+
+  // Settings form
+  const settingsForm = document.getElementById("settings-form");
+  const settingBrandInput = document.getElementById("setting-brand");
+  const settingFooterInput = document.getElementById("setting-footer");
+  const settingApiKeyInput = document.getElementById("setting-api-key");
+  const saveSettingsBtn = document.getElementById("save-settings-btn");
+
+  const toastEl = document.getElementById("toast");
+
+  // App State
+  const urlParams = new URLSearchParams(window.location.search);
+  const lockedAlbumId = urlParams.get("view") || (urlParams.get("lock") === "1" ? urlParams.get("album") : null);
+  const isSingleLockedMode = Boolean(lockedAlbumId);
+  const forceShowAdmin = urlParams.get("admin") === "1";
+
+  let rawDbData = {
+    brandName: "STUDIO GALLERY",
+    footerText: "© 2026 Studio Gallery • Lưu giữ khoảnh khắc",
+    apiKey: "",
+    albums: {}
+  };
+  let albums = [];
+  let selectedCategory = "Tất cả";
+  let currentAlbum = null;
+  let currentPhotoIndex = 0;
+  let editorPhotos = [];
+  let adminSession = null;
+  let toastTimer = null;
+  let touchStartX = 0;
+
+  /* -----------------------------------------------------------------------
+   * Tiện ích chung & Xử lý link Google Drive (Tệp lẻ & Thư mục)
+   * --------------------------------------------------------------------- */
+  function showToast(message) {
+    toastEl.textContent = message;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 3000);
+  }
+
+  function slugify(str) {
+    return String(str || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/đ/g, "d")
+      .replace(/Đ/g, "D")
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || `album-${Date.now()}`;
+  }
+
+  function formatTodayVN() {
+    const d = new Date();
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yyyy = d.getFullYear();
+    return `${dd}/${mm}/${yyyy}`;
+  }
+
+  function toArray(data) {
+    if (!data) return [];
+    if (Array.isArray(data)) return data.filter(Boolean);
+    return Object.entries(data).map(([key, val]) => ({
+      id: val.id || key,
+      ...val
+    }));
+  }
+
+  /**
+   * Phân loại liên kết Google Drive: Thư mục (folder) hay Tệp lẻ (file)
+   */
+  function parseDriveLink(input) {
+    if (!input || typeof input !== "string") return { type: "unknown", id: null, url: input };
+    const trimmed = input.trim();
+
+    // Link thư mục rõ ràng: /drive/folders/ID hoặc /drive/u/0/folders/ID
+    const folderMatch = trimmed.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+    if (folderMatch && folderMatch[1]) {
+      return { type: "folder", id: folderMatch[1], url: trimmed };
+    }
+
+    // Link tệp rõ ràng: /file/d/ID hoặc /d/ID
+    const fileMatch = trimmed.match(/\/(?:file\/)?d\/([a-zA-Z0-9_-]+)/);
+    if (fileMatch && fileMatch[1]) {
+      return { type: "file", id: fileMatch[1], url: trimmed };
+    }
+
+    // Link dạng ?id=ID (có thể là folder hoặc file)
+    const idParamMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (idParamMatch && idParamMatch[1]) {
+      return { type: "ambiguous", id: idParamMatch[1], url: trimmed };
+    }
+
+    // Chỉ dán ID trần
+    if (/^[a-zA-Z0-9_-]{25,}$/.test(trimmed)) {
+      return { type: "ambiguous", id: trimmed, url: trimmed };
+    }
+
+    return { type: "direct", id: null, url: trimmed };
+  }
+
+  function extractDriveFileId(input) {
+    const parsed = parseDriveLink(input);
+    if (parsed.type === "file" || parsed.type === "ambiguous") return parsed.id;
+    return null;
+  }
+
+  function resolveImageSources(rawUrl, size = 1200) {
+    const fileId = extractDriveFileId(rawUrl);
+    if (!fileId) return [rawUrl];
+    return [
+      `https://lh3.googleusercontent.com/d/${fileId}=w${size}`,
+      `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`
+    ];
+  }
+
+  function loadImageWithFallback(imgEl, rawUrl, size, callbacks = {}) {
+    if (!rawUrl) {
+      if (callbacks.onError) callbacks.onError();
+      return;
+    }
+    const sources = resolveImageSources(rawUrl, size);
+    let attempt = 0;
+
+    const tryNext = () => {
+      if (attempt >= sources.length) {
+        if (callbacks.onError) callbacks.onError();
+        return;
+      }
+      imgEl.src = sources[attempt++];
+    };
+
+    imgEl.onload = () => { if (callbacks.onLoad) callbacks.onLoad(); };
+    imgEl.onerror = () => { tryNext(); };
+    tryNext();
+  }
+
+  /**
+   * Lấy toàn bộ ảnh bên trong một thư mục Google Drive công khai qua Google Drive API v3
+   */
+  /**
+   * Phương án dự phòng: Đọc danh sách ảnh từ trang nhúng công khai của Google Drive
+   * (Hoạt động ngay cả khi Google Drive API v3 chưa được bật trên Google Cloud)
+   */
+  async function fetchFolderViaPublicEmbedFallback(folderId) {
+    const targetUrl = `https://drive.google.com/embeddedfolderview?id=${encodeURIComponent(folderId)}#list`;
+    const proxies = [
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+      `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
+    ];
+
+    let html = "";
+    for (const proxyUrl of proxies) {
+      try {
+        const res = await fetch(proxyUrl);
+        if (res.ok) {
+          const text = await res.text();
+          if (text && text.includes("entry-")) {
+            html = text;
+            break;
+          }
+        }
+      } catch (_) {
+        // Thử proxy tiếp theo
+      }
+    }
+
+    if (!html) return null;
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, "text/html");
+    const folderTitle = (doc.querySelector("title")?.textContent || "").replace(/\s*-\s*Google Drive$/i, "").trim();
+    const entries = doc.querySelectorAll("[id^='entry-']");
+    const files = [];
+
+    entries.forEach((el) => {
+      const id = el.id.replace(/^entry-/, "").trim();
+      const nameEl = el.querySelector(".flip-entry-title");
+      const name = (nameEl?.textContent || "").trim();
+      const iconImg = el.querySelector("img");
+      const iconSrc = iconImg?.getAttribute("src") || "";
+      // Lọc đúng tệp ảnh (bỏ qua thư mục con hoặc file pdf/doc)
+      const isImageByName = /\.(jpe?g|png|webp|gif|heic|bmp|tiff?)$/i.test(name);
+      const isImageByIcon = iconSrc.includes("image") || iconSrc.includes("photos");
+      if (id && id.length >= 20 && (isImageByName || isImageByIcon || !name.includes("."))) {
+        files.push({ id, name: name || id, mimeType: "image/jpeg" });
+      }
+    });
+
+    if (!files.length) return null;
+
+    files.sort((a, b) =>
+      String(a.name || "").localeCompare(String(b.name || ""), undefined, {
+        numeric: true,
+        sensitivity: "base"
+      })
+    );
+
+    return { folderName: folderTitle, files };
+  }
+
+  async function fetchAllImagesFromDriveFolder(folderId, apiKey) {
+    let apiError = null;
+
+    // Cách 1: Dùng Google Drive API v3 chính thức (nhanh, hỗ trợ > 1000 ảnh)
+    if (apiKey) {
+      try {
+        const metaUrl = `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(folderId)}?fields=id,name,mimeType&supportsAllDrives=true&key=${encodeURIComponent(apiKey)}`;
+        const metaRes = await fetch(metaUrl);
+        const metaData = await metaRes.json();
+
+        if (!metaRes.ok) {
+          const reason = metaData?.error?.errors?.[0]?.reason || "";
+          const msg = metaData?.error?.message || "";
+          if (
+            reason === "accessNotConfigured" ||
+            reason === "API_KEY_SERVICE_BLOCKED" ||
+            msg.includes("Google Drive API has not been used") ||
+            msg.includes("are blocked")
+          ) {
+            throw new Error("DRIVE_API_DISABLED");
+          }
+          if (metaRes.status === 404) {
+            throw new Error("FOLDER_NOT_FOUND_OR_PRIVATE");
+          }
+          throw new Error(msg || `HTTP ${metaRes.status}`);
+        }
+
+        if (metaData.mimeType && metaData.mimeType !== "application/vnd.google-apps.folder") {
+          return {
+            folderName: "",
+            files: [metaData]
+          };
+        }
+
+        let allFiles = [];
+        let pageToken = "";
+
+        do {
+          const q = `'${folderId}' in parents and mimeType contains 'image/' and trashed = false`;
+          const params = new URLSearchParams({
+            q,
+            fields: "nextPageToken,files(id,name,mimeType)",
+            pageSize: "1000",
+            supportsAllDrives: "true",
+            includeItemsFromAllDrives: "true",
+            key: apiKey
+          });
+          if (pageToken) params.set("pageToken", pageToken);
+
+          const listRes = await fetch(`https://www.googleapis.com/drive/v3/files?${params.toString()}`);
+          const listData = await listRes.json();
+
+          if (!listRes.ok) {
+            throw new Error(listData?.error?.message || `HTTP ${listRes.status}`);
+          }
+
+          if (Array.isArray(listData.files)) {
+            allFiles = allFiles.concat(listData.files);
+          }
+          pageToken = listData.nextPageToken || "";
+        } while (pageToken);
+
+        allFiles.sort((a, b) =>
+          String(a.name || "").localeCompare(String(b.name || ""), undefined, {
+            numeric: true,
+            sensitivity: "base"
+          })
+        );
+
+        return {
+          folderName: metaData.name || "",
+          files: allFiles
+        };
+      } catch (err) {
+        apiError = err;
+      }
+    } else {
+      apiError = new Error("MISSING_API_KEY");
+    }
+
+    // Cách 2: Tự động chuyển sang đọc trực tiếp thư mục công khai nếu Drive API v3 bị chặn/chưa bật
+    const fallbackResult = await fetchFolderViaPublicEmbedFallback(folderId);
+    if (fallbackResult && fallbackResult.files.length > 0) {
+      return fallbackResult;
+    }
+
+    throw apiError || new Error("FOLDER_NOT_FOUND_OR_PRIVATE");
+  }
+
+  function stripExtension(filename) {
+    return String(filename || "").replace(/\.[a-zA-Z0-9]{2,5}$/, "");
+  }
+
+  function buildShareUrl(albumId, locked = false) {
+    const url = new URL(window.location.origin + window.location.pathname);
+    if (albumId) {
+      url.searchParams.set("album", albumId);
+      if (locked) {
+        url.searchParams.set("lock", "1");
+      }
+    }
+    return url.toString();
+  }
+
+  async function copyToClipboard(text, successMsg) {
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast(successMsg);
+    } catch {
+      window.prompt("Sao chép liên kết bên dưới:", text);
+    }
+  }
+
+  /* -----------------------------------------------------------------------
+   * Xác thực Firebase Authentication REST API & Lưu dữ liệu lên Firebase
+   * --------------------------------------------------------------------- */
+  function getApiKey() {
+    const hardcoded = (DEFAULT_FIREBASE_API_KEY || "").trim();
+    const stored = (localStorage.getItem(STORAGE_API_KEY) || "").trim();
+    const dbKey = (rawDbData.apiKey || "").trim();
+    return hardcoded || dbKey || stored || "";
+  }
+
+  function loadStoredSession() {
+    try {
+      const raw = localStorage.getItem(STORAGE_AUTH_KEY);
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  }
+
+  function saveSession(session) {
+    adminSession = session;
+    if (session) {
+      localStorage.setItem(STORAGE_AUTH_KEY, JSON.stringify(session));
+    } else {
+      localStorage.removeItem(STORAGE_AUTH_KEY);
+    }
+    updateAdminTriggerUI();
+  }
+
+  function updateAdminTriggerUI() {
+    if (isSingleLockedMode && !forceShowAdmin && !adminSession) {
+      adminTriggerBtn.hidden = true;
+      copyPublicLinkBtn.hidden = true;
+      return;
+    }
+    adminTriggerBtn.hidden = false;
+    copyPublicLinkBtn.hidden = isSingleLockedMode && !adminSession;
+    adminTriggerLabel.textContent = adminSession ? "Quản lý" : "Quản trị";
+  }
+
+  async function signInFirebase(email, password, apiKey) {
+    const res = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${encodeURIComponent(apiKey)}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          password,
+          returnSecureToken: true
+        })
+      }
+    );
+    const data = await res.json();
+    if (!res.ok) {
+      const code = data?.error?.message || "LOGIN_FAILED";
+      if (code.includes("INVALID_LOGIN_CREDENTIALS") || code.includes("INVALID_PASSWORD") || code.includes("EMAIL_NOT_FOUND")) {
+        throw new Error("Email hoặc mật khẩu không chính xác.");
+      }
+      if (code.includes("API_KEY_INVALID")) {
+        throw new Error("Firebase Web API Key không hợp lệ.");
+      }
+      throw new Error(`Đăng nhập thất bại (${code}).`);
+    }
+    return {
+      email: data.email,
+      idToken: data.idToken,
+      refreshToken: data.refreshToken,
+      expiresAt: Date.now() + Number(data.expiresIn || 3600) * 1000
+    };
+  }
+
+  async function ensureValidIdToken() {
+    if (!adminSession) return null;
+    const apiKey = getApiKey();
+    if (!apiKey || !adminSession.refreshToken) return adminSession.idToken || null;
+
+    if (Date.now() < (adminSession.expiresAt || 0) - 60000) {
+      return adminSession.idToken;
+    }
+
+    const res = await fetch(`https://securetoken.googleapis.com/v1/token?key=${encodeURIComponent(apiKey)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `grant_type=refresh_token&refresh_token=${encodeURIComponent(adminSession.refreshToken)}`
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      saveSession(null);
+      throw new Error("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.");
+    }
+    const refreshed = {
+      ...adminSession,
+      idToken: data.id_token,
+      refreshToken: data.refresh_token,
+      expiresAt: Date.now() + Number(data.expires_in || 3600) * 1000
+    };
+    saveSession(refreshed);
+    return refreshed.idToken;
+  }
+
+  async function persistDatabaseToFirebase(nextDbData) {
+    const token = await ensureValidIdToken();
+    const endpoint = token
+      ? `${FIREBASE_DB_URL}/.json?auth=${encodeURIComponent(token)}`
+      : `${FIREBASE_DB_URL}/.json`;
+
+    const res = await fetch(endpoint, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(nextDbData)
+    });
+
+    if (!res.ok) {
+      if (res.status === 401 || res.status === 403) {
+        throw new Error("Không có quyền ghi dữ liệu. Hãy kiểm tra đăng nhập hoặc Rules trên Firebase.");
+      }
+      throw new Error(`Lỗi lưu Firebase (HTTP ${res.status}).`);
+    }
+
+    rawDbData = nextDbData;
+    hydrateStateFromDb(rawDbData, currentAlbum ? currentAlbum.id : null);
+  }
+
+  /* -----------------------------------------------------------------------
+   * Hiển thị Gallery công khai & Chế độ khóa 1 album
+   * --------------------------------------------------------------------- */
+  function updateUrlParam(albumId) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("album", albumId);
+    if (isSingleLockedMode) {
+      url.searchParams.set("lock", "1");
+    }
+    window.history.replaceState({}, "", url.toString());
+  }
+
+  function renderCategories() {
+    if (isSingleLockedMode) {
+      controlsSection.hidden = true;
+      return;
+    }
+
+    const categories = ["Tất cả", ...new Set(albums.map((a) => a.category).filter(Boolean))];
+    categoryBar.innerHTML = "";
+
+    if (categories.length <= 2) {
+      categoryBar.hidden = true;
+      return;
+    }
+
+    categoryBar.hidden = false;
+    categories.forEach((cat) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `filter-pill${cat === selectedCategory ? " active" : ""}`;
+      btn.textContent = cat;
+      btn.setAttribute("role", "tab");
+      btn.setAttribute("aria-selected", String(cat === selectedCategory));
+      btn.addEventListener("click", () => {
+        selectedCategory = cat;
+        renderCategories();
+        const filtered = getFilteredAlbums();
+        renderAlbumSwitcher(filtered);
+        if (filtered.length && (!currentAlbum || !filtered.some((a) => a.id === currentAlbum.id))) {
+          selectAlbum(filtered[0]);
+        }
+      });
+      categoryBar.appendChild(btn);
+    });
+  }
+
+  function getFilteredAlbums() {
+    if (selectedCategory === "Tất cả") return albums;
+    return albums.filter((a) => a.category === selectedCategory);
+  }
+
+  function renderAlbumSwitcher(list) {
+    if (isSingleLockedMode) {
+      controlsSection.hidden = true;
+      return;
+    }
+
+    albumSwitcher.innerHTML = "";
+    if (list.length <= 1) {
+      albumSwitcher.hidden = true;
+      if (categoryBar.hidden) controlsSection.hidden = true;
+      return;
+    }
+
+    controlsSection.hidden = false;
+    albumSwitcher.hidden = false;
+    list.forEach((album) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `album-chip${currentAlbum && currentAlbum.id === album.id ? " active" : ""}`;
+
+      const thumb = document.createElement("img");
+      thumb.className = "album-chip-thumb";
+      thumb.alt = album.title;
+      thumb.loading = "lazy";
+      loadImageWithFallback(thumb, album.cover || (album.photos[0] && album.photos[0].url) || "", 240);
+
+      const info = document.createElement("span");
+      info.className = "album-chip-info";
+      info.innerHTML = `
+        <span class="album-chip-title">${escapeHtml(album.title)}</span>
+        <span class="album-chip-sub">${album.photos.length} ảnh${album.updatedAt ? ` • ${escapeHtml(album.updatedAt)}` : ""}</span>
+      `;
+
+      btn.append(thumb, info);
+      btn.addEventListener("click", () => selectAlbum(album));
+      albumSwitcher.appendChild(btn);
+    });
+  }
+
+  function renderHero(album) {
+    document.title = `${album.title} — ${rawDbData.brandName || "Gallery"}`;
+    heroCategory.textContent = album.category || "Album";
+    heroTitle.textContent = album.title;
+    heroDesc.textContent = album.description || "";
+    heroDate.textContent = album.updatedAt ? `Cập nhật: ${album.updatedAt}` : "";
+    heroDot.hidden = !album.updatedAt;
+    heroCount.textContent = `${album.photos.length} ảnh`;
+
+    heroCover.classList.remove("loaded");
+    const coverSource = album.cover || (album.photos[0] && album.photos[0].url) || "";
+    if (coverSource) {
+      heroCover.alt = album.title;
+      loadImageWithFallback(heroCover, coverSource, 1800, {
+        onLoad: () => heroCover.classList.add("loaded")
+      });
+    }
+  }
+
+  function renderGallery(album) {
+    galleryGrid.innerHTML = "";
+    const photos = album.photos || [];
+
+    if (!photos.length) {
+      emptyState.hidden = false;
+      emptyStateText.textContent = "Chưa có ảnh nào trong album này.";
+      return;
+    }
+    emptyState.hidden = true;
+
+    photos.forEach((photo, index) => {
+      const card = document.createElement("article");
+      card.className = "photo-card is-loading";
+      card.tabIndex = 0;
+      card.setAttribute("role", "button");
+      card.setAttribute("aria-label", photo.caption || `Xem ảnh ${index + 1}`);
+
+      const img = document.createElement("img");
+      img.alt = photo.caption || `${album.title} - Ảnh ${index + 1}`;
+      img.loading = "lazy";
+      img.decoding = "async";
+
+      loadImageWithFallback(img, photo.url, 1000, {
+        onLoad: () => {
+          card.classList.remove("is-loading");
+          card.classList.add("is-loaded");
+        },
+        onError: () => {
+          card.classList.remove("is-loading");
+          card.classList.add("is-error");
+          card.removeAttribute("tabindex");
+          card.innerHTML = `
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+              <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+            <span>Không tải được ảnh.<br/>Kiểm tra quyền chia sẻ Google Drive.</span>
+          `;
+        }
+      });
+
+      card.appendChild(img);
+
+      if (photo.caption) {
+        const badge = document.createElement("div");
+        badge.className = "photo-caption-badge";
+        badge.textContent = photo.caption;
+        card.appendChild(badge);
+      }
+
+      const openHandler = () => {
+        if (card.classList.contains("is-error")) return;
+        openLightbox(index);
+      };
+
+      card.addEventListener("click", openHandler);
+      card.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          openHandler();
+        }
+      });
+
+      galleryGrid.appendChild(card);
+    });
+  }
+
+  function selectAlbum(album) {
+    currentAlbum = album;
+    updateUrlParam(album.id);
+    renderHero(album);
+    renderAlbumSwitcher(getFilteredAlbums());
+    renderGallery(album);
+  }
+
+  /* -----------------------------------------------------------------------
+   * Lightbox toàn màn hình + Dải ảnh thu nhỏ
+   * --------------------------------------------------------------------- */
+  function renderLightboxThumbs() {
+    lightboxThumbs.innerHTML = "";
+    if (!currentAlbum || currentAlbum.photos.length <= 1) {
+      lightboxThumbs.hidden = true;
+      return;
+    }
+    lightboxThumbs.hidden = false;
+
+    currentAlbum.photos.forEach((photo, idx) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `lightbox-thumb-btn${idx === currentPhotoIndex ? " active" : ""}`;
+      btn.setAttribute("aria-label", `Ảnh ${idx + 1}`);
+
+      const img = document.createElement("img");
+      img.alt = "";
+      img.loading = "lazy";
+      loadImageWithFallback(img, photo.url, 160);
+
+      btn.appendChild(img);
+      btn.addEventListener("click", () => {
+        currentPhotoIndex = idx;
+        showLightboxPhoto();
+      });
+      lightboxThumbs.appendChild(btn);
+    });
+  }
+
+  function openLightbox(index) {
+    currentPhotoIndex = index;
+    lightbox.classList.add("open");
+    lightbox.setAttribute("aria-hidden", "false");
+    document.body.classList.add("no-scroll");
+    renderLightboxThumbs();
+    showLightboxPhoto();
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove("open");
+    lightbox.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("no-scroll");
+  }
+
+  function showLightboxPhoto() {
+    if (!currentAlbum || !currentAlbum.photos.length) return;
+    const total = currentAlbum.photos.length;
+    const photo = currentAlbum.photos[currentPhotoIndex];
+
+    lightboxCounter.textContent = `${currentPhotoIndex + 1} / ${total}`;
+    lightboxCaption.textContent = photo.caption || "";
+    lightboxImg.style.opacity = "0";
+    lightboxSpinner.hidden = false;
+
+    const thumbButtons = lightboxThumbs.querySelectorAll(".lightbox-thumb-btn");
+    thumbButtons.forEach((btn, idx) => {
+      const active = idx === currentPhotoIndex;
+      btn.classList.toggle("active", active);
+      if (active) {
+        btn.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      }
+    });
+
+    loadImageWithFallback(lightboxImg, photo.url, 2200, {
+      onLoad: () => {
+        lightboxSpinner.hidden = true;
+        lightboxImg.style.opacity = "1";
+      },
+      onError: () => {
+        lightboxSpinner.hidden = true;
+        lightboxCaption.textContent = "Không thể tải ảnh độ phân giải cao.";
+      }
+    });
+  }
+
+  function stepLightbox(delta) {
+    if (!currentAlbum || !currentAlbum.photos.length) return;
+    const total = currentAlbum.photos.length;
+    currentPhotoIndex = (currentPhotoIndex + delta + total) % total;
+    showLightboxPhoto();
+  }
+
+  /* -----------------------------------------------------------------------
+   * Giao diện Quản trị Admin (Hỗ trợ link Thư mục Google Drive & Link lẻ)
+   * --------------------------------------------------------------------- */
+  function openModal(modalEl) {
+    modalEl.classList.add("open");
+    modalEl.setAttribute("aria-hidden", "false");
+    document.body.classList.add("no-scroll");
+  }
+
+  function closeModal(modalEl) {
+    modalEl.classList.remove("open");
+    modalEl.setAttribute("aria-hidden", "true");
+    if (!lightbox.classList.contains("open")) {
+      document.body.classList.remove("no-scroll");
+    }
+  }
+
+  function switchAdminTab(tabName) {
+    adminTabs.forEach((t) => t.classList.toggle("active", t.dataset.adminTab === tabName));
+    Object.entries(adminPanels).forEach(([key, panel]) => {
+      panel.hidden = key !== tabName;
+    });
+  }
+
+  function renderAdminAlbumList() {
+    adminAlbumCountEl.textContent = `${albums.length} album trên Firebase`;
+    adminAlbumListEl.innerHTML = "";
+
+    if (!albums.length) {
+      adminAlbumListEl.innerHTML = `<p class="muted-text">Chưa có album nào. Nhấn "+ Tạo album mới" để bắt đầu.</p>`;
+      return;
+    }
+
+    albums.forEach((album) => {
+      const item = document.createElement("div");
+      item.className = "admin-album-item";
+
+      const meta = document.createElement("div");
+      meta.className = "admin-album-meta";
+
+      const thumb = document.createElement("img");
+      thumb.className = "admin-album-thumb";
+      thumb.alt = album.title;
+      loadImageWithFallback(thumb, album.cover || (album.photos[0] && album.photos[0].url) || "", 200);
+
+      const text = document.createElement("div");
+      text.className = "admin-album-text";
+      text.innerHTML = `
+        <h3>${escapeHtml(album.title)}</h3>
+        <p>${escapeHtml(album.category || "Chưa phân loại")} • ${album.photos.length} ảnh • ${escapeHtml(album.updatedAt || "")}</p>
+      `;
+      meta.append(thumb, text);
+
+      const actions = document.createElement("div");
+      actions.className = "admin-album-actions";
+
+      const shareLockedBtn = document.createElement("button");
+      shareLockedBtn.type = "button";
+      shareLockedBtn.className = "btn-outline btn-sm";
+      shareLockedBtn.textContent = "Link chỉ xem";
+      shareLockedBtn.title = "Sao chép link chỉ cho phép xem duy nhất album này";
+      shareLockedBtn.addEventListener("click", () => {
+        copyToClipboard(buildShareUrl(album.id, true), `Đã sao chép link chỉ xem album "${album.title}"!`);
+      });
+
+      const editBtn = document.createElement("button");
+      editBtn.type = "button";
+      editBtn.className = "btn-outline btn-sm";
+      editBtn.textContent = "Sửa";
+      editBtn.addEventListener("click", () => openAlbumEditor(album));
+
+      const delBtn = document.createElement("button");
+      delBtn.type = "button";
+      delBtn.className = "btn-outline btn-sm btn-danger-outline";
+      delBtn.textContent = "Xóa";
+      delBtn.addEventListener("click", () => handleDeleteAlbum(album));
+
+      actions.append(shareLockedBtn, editBtn, delBtn);
+      item.append(meta, actions);
+      adminAlbumListEl.appendChild(item);
+    });
+  }
+
+  function updateCoverPreview(rawUrl) {
+    const clean = (rawUrl || "").trim();
+    if (!clean) {
+      editCoverPreview.hidden = true;
+      return;
+    }
+    editCoverPreview.hidden = false;
+    loadImageWithFallback(editCoverPreview, clean, 200, {
+      onError: () => { editCoverPreview.hidden = true; }
+    });
+  }
+
+  function renderEditorPhotos() {
+    editorPhotoCountEl.textContent = `${editorPhotos.length} ảnh trong album`;
+    clearAllPhotosBtn.hidden = editorPhotos.length === 0;
+    editorPhotoListEl.innerHTML = "";
+    const currentCover = editCoverInput.value.trim();
+
+    editorPhotos.forEach((photo, idx) => {
+      const row = document.createElement("div");
+      row.className = "editor-photo-row";
+
+      const thumb = document.createElement("img");
+      thumb.className = "editor-photo-thumb";
+      thumb.alt = `Ảnh ${idx + 1}`;
+      thumb.loading = "lazy";
+      loadImageWithFallback(thumb, photo.url, 180);
+
+      const fields = document.createElement("div");
+      fields.className = "editor-photo-fields";
+
+      const urlInput = document.createElement("input");
+      urlInput.type = "text";
+      urlInput.value = photo.url;
+      urlInput.placeholder = "Link Google Drive";
+      urlInput.addEventListener("change", () => {
+        editorPhotos[idx].url = urlInput.value.trim();
+        loadImageWithFallback(thumb, editorPhotos[idx].url, 180);
+      });
+
+      const capInput = document.createElement("input");
+      capInput.type = "text";
+      capInput.value = photo.caption || "";
+      capInput.placeholder = "Chú thích ảnh (không bắt buộc)";
+      capInput.addEventListener("input", () => {
+        editorPhotos[idx].caption = capInput.value;
+      });
+
+      fields.append(urlInput, capInput);
+
+      const btns = document.createElement("div");
+      btns.className = "editor-photo-btns";
+
+      const coverBtn = document.createElement("button");
+      coverBtn.type = "button";
+      const isCover = currentCover && currentCover === photo.url;
+      coverBtn.className = `mini-action-btn${isCover ? " is-cover" : ""}`;
+      coverBtn.textContent = isCover ? "Bìa ✓" : "Làm bìa";
+      coverBtn.addEventListener("click", () => {
+        editCoverInput.value = photo.url;
+        updateCoverPreview(photo.url);
+        renderEditorPhotos();
+      });
+
+      const upBtn = document.createElement("button");
+      upBtn.type = "button";
+      upBtn.className = "mini-action-btn";
+      upBtn.textContent = "↑";
+      upBtn.disabled = idx === 0;
+      upBtn.addEventListener("click", () => {
+        if (idx === 0) return;
+        [editorPhotos[idx - 1], editorPhotos[idx]] = [editorPhotos[idx], editorPhotos[idx - 1]];
+        renderEditorPhotos();
+      });
+
+      const downBtn = document.createElement("button");
+      downBtn.type = "button";
+      downBtn.className = "mini-action-btn";
+      downBtn.textContent = "↓";
+      downBtn.disabled = idx === editorPhotos.length - 1;
+      downBtn.addEventListener("click", () => {
+        if (idx >= editorPhotos.length - 1) return;
+        [editorPhotos[idx + 1], editorPhotos[idx]] = [editorPhotos[idx], editorPhotos[idx + 1]];
+        renderEditorPhotos();
+      });
+
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "mini-action-btn btn-danger-outline";
+      removeBtn.textContent = "✕";
+      removeBtn.addEventListener("click", () => {
+        editorPhotos.splice(idx, 1);
+        renderEditorPhotos();
+      });
+
+      btns.append(coverBtn, upBtn, downBtn, removeBtn);
+      row.append(thumb, fields, btns);
+      editorPhotoListEl.appendChild(row);
+    });
+  }
+
+  function openAlbumEditor(album = null) {
+    switchAdminTab("editor");
+    bulkLinksInput.value = "";
+    driveFetchNoticeEl.hidden = true;
+
+    if (album) {
+      editOriginalIdInput.value = album.id;
+      editTitleInput.value = album.title || "";
+      editIdInput.value = album.id || "";
+      editCategoryInput.value = album.category || "";
+      editDateInput.value = album.updatedAt || formatTodayVN();
+      editDescriptionInput.value = album.description || "";
+      editCoverInput.value = album.cover || "";
+      editorPhotos = (album.photos || []).map((p) => ({ url: p.url, caption: p.caption || "" }));
+    } else {
+      editOriginalIdInput.value = "";
+      editTitleInput.value = "";
+      editIdInput.value = "";
+      editCategoryInput.value = "Phóng sự cưới";
+      editDateInput.value = formatTodayVN();
+      editDescriptionInput.value = "";
+      editCoverInput.value = "";
+      editorPhotos = [];
+    }
+
+    updateCoverPreview(editCoverInput.value);
+    renderEditorPhotos();
+  }
+
+  async function handleDeleteAlbum(album) {
+    const ok = window.confirm(`Bạn có chắc muốn xóa album "${album.title}" khỏi Firebase không?`);
+    if (!ok) return;
+
+    try {
+      const nextAlbumsObj = { ...(rawDbData.albums || {}) };
+      if (Array.isArray(rawDbData.albums)) {
+        const filtered = rawDbData.albums.filter((a) => a && a.id !== album.id);
+        const obj = {};
+        filtered.forEach((a) => { obj[a.id] = a; });
+        await persistDatabaseToFirebase({ ...rawDbData, albums: obj });
+      } else {
+        delete nextAlbumsObj[album.id];
+        await persistDatabaseToFirebase({ ...rawDbData, albums: nextAlbumsObj });
+      }
+      renderAdminAlbumList();
+      showToast(`Đã xóa album "${album.title}".`);
+    } catch (err) {
+      showToast(err.message);
+    }
+  }
+
+  function openAdminDashboard() {
+    adminUserEmailEl.textContent = adminSession?.email
+      ? `Đăng nhập: ${adminSession.email}`
+      : "Chế độ quản trị Firebase";
+    settingBrandInput.value = rawDbData.brandName || "";
+    settingFooterInput.value = rawDbData.footerText || "";
+    settingApiKeyInput.value = getApiKey();
+    renderAdminAlbumList();
+    switchAdminTab("albums");
+    openModal(adminModal);
+  }
+
+  function escapeHtml(str) {
+    return String(str || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  /* -----------------------------------------------------------------------
+   * Khởi tạo & Event Listeners
+   * --------------------------------------------------------------------- */
+  function hydrateStateFromDb(data, preferredAlbumId = null) {
+    rawDbData = {
+      brandName: data.brandName || "STUDIO GALLERY",
+      footerText: data.footerText || "© 2026 Studio Gallery",
+      apiKey: data.apiKey || "",
+      albums: data.albums || {}
+    };
+
+    if (rawDbData.apiKey && !localStorage.getItem(STORAGE_API_KEY)) {
+      localStorage.setItem(STORAGE_API_KEY, rawDbData.apiKey);
+    }
+
+    albums = toArray(rawDbData.albums).map((album) => ({
+      ...album,
+      photos: toArray(album.photos)
+    }));
+
+    brandEl.textContent = rawDbData.brandName;
+    footerEl.textContent = rawDbData.footerText;
+
+    if (!albums.length) {
+      heroTitle.textContent = "Chưa có album nào";
+      heroDesc.textContent = "";
+      heroCategory.textContent = "Gallery";
+      heroDate.textContent = "";
+      heroDot.hidden = true;
+      heroCount.textContent = "0 ảnh";
+      galleryGrid.innerHTML = "";
+      emptyState.hidden = false;
+      emptyStateText.textContent = "Chưa có dữ liệu album trên Firebase.";
+      return;
+    }
+
+    if (isSingleLockedMode) {
+      const target = albums.find((a) => a.id === lockedAlbumId);
+      if (!target) {
+        controlsSection.hidden = true;
+        heroTitle.textContent = "Không tìm thấy album";
+        heroDesc.textContent = "Liên kết album không tồn tại hoặc đã bị gỡ bỏ.";
+        heroCategory.textContent = "Thông báo";
+        heroDate.textContent = "";
+        heroDot.hidden = true;
+        heroCount.textContent = "";
+        galleryGrid.innerHTML = "";
+        emptyState.hidden = false;
+        emptyStateText.textContent = "Vui lòng liên hệ người gửi để nhận liên kết chính xác.";
+        return;
+      }
+      selectAlbum(target);
+      return;
+    }
+
+    const targetId = preferredAlbumId || urlParams.get("album");
+    const initialAlbum = albums.find((a) => a.id === targetId) || albums[0];
+    renderCategories();
+    selectAlbum(initialAlbum);
+  }
+
+  // Share dropdown toggle
+  shareMenuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isHidden = shareMenu.hidden;
+    shareMenu.hidden = !isHidden;
+    shareMenuBtn.setAttribute("aria-expanded", String(isHidden));
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!shareMenu.hidden && !e.target.closest("#share-dropdown")) {
+      shareMenu.hidden = true;
+      shareMenuBtn.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  copyLockedLinkBtn.addEventListener("click", () => {
+    shareMenu.hidden = true;
+    const id = currentAlbum ? currentAlbum.id : "";
+    copyToClipboard(buildShareUrl(id, true), "Đã sao chép link chỉ xem album này!");
+  });
+
+  copyPublicLinkBtn.addEventListener("click", () => {
+    shareMenu.hidden = true;
+    const id = currentAlbum ? currentAlbum.id : "";
+    copyToClipboard(buildShareUrl(id, false), "Đã sao chép link thư viện công khai!");
+  });
+
+  // Brand click behavior
+  brandEl.addEventListener("click", (e) => {
+    if (isSingleLockedMode) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  });
+
+  // Admin trigger
+  adminTriggerBtn.addEventListener("click", () => {
+    if (adminSession) {
+      openAdminDashboard();
+    } else {
+      loginErrorEl.hidden = true;
+      loginApiKeyInput.value = getApiKey();
+      openModal(loginModal);
+    }
+  });
+
+  // Modal close buttons
+  document.querySelectorAll("[data-close-modal]").forEach((el) => {
+    el.addEventListener("click", () => {
+      const targetId = el.getAttribute("data-close-modal");
+      const modal = document.getElementById(targetId);
+      if (modal) closeModal(modal);
+    });
+  });
+
+  // Login form submit
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    loginErrorEl.hidden = true;
+    const email = loginEmailInput.value.trim();
+    const password = loginPasswordInput.value;
+    const apiKeyInputVal = loginApiKeyInput.value.trim();
+
+    if (apiKeyInputVal) {
+      localStorage.setItem(STORAGE_API_KEY, apiKeyInputVal);
+    }
+    const apiKey = getApiKey();
+
+    if (!apiKey) {
+      loginErrorEl.textContent = "Vui lòng nhập Firebase Web API Key (mở mục Cấu hình Firebase Web API Key bên trên).";
+      loginErrorEl.hidden = false;
+      return;
+    }
+
+    loginSubmitBtn.disabled = true;
+    loginSubmitBtn.textContent = "Đang xác thực...";
+
+    try {
+      const session = await signInFirebase(email, password, apiKey);
+      saveSession(session);
+      closeModal(loginModal);
+      loginPasswordInput.value = "";
+      openAdminDashboard();
+      showToast("Đăng nhập quản trị thành công!");
+    } catch (err) {
+      loginErrorEl.textContent = err.message;
+      loginErrorEl.hidden = false;
+    } finally {
+      loginSubmitBtn.disabled = false;
+      loginSubmitBtn.textContent = "Đăng nhập";
+    }
+  });
+
+  // Logout
+  adminLogoutBtn.addEventListener("click", () => {
+    saveSession(null);
+    closeModal(adminModal);
+    showToast("Đã đăng xuất quản trị.");
+  });
+
+  // Admin tabs
+  adminTabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const target = tab.dataset.adminTab;
+      if (target === "editor" && !editOriginalIdInput.value && !editTitleInput.value) {
+        openAlbumEditor(null);
+      } else {
+        switchAdminTab(target);
+      }
+    });
+  });
+
+  createNewAlbumBtn.addEventListener("click", () => openAlbumEditor(null));
+  cancelEditBtn.addEventListener("click", () => switchAdminTab("albums"));
+
+  // Auto-slug when creating new album
+  editTitleInput.addEventListener("input", () => {
+    if (!editOriginalIdInput.value) {
+      editIdInput.value = slugify(editTitleInput.value);
+    }
+  });
+
+  editCoverInput.addEventListener("input", () => {
+    updateCoverPreview(editCoverInput.value);
+    renderEditorPhotos();
+  });
+
+  clearAllPhotosBtn.addEventListener("click", () => {
+    if (!editorPhotos.length) return;
+    if (window.confirm("Xóa toàn bộ danh sách ảnh đang hiển thị trong album này?")) {
+      editorPhotos = [];
+      renderEditorPhotos();
+    }
+  });
+
+  // Thêm link thư mục Google Drive (quét toàn bộ ảnh) hoặc link ảnh lẻ
+  addBulkLinksBtn.addEventListener("click", async () => {
+    const raw = bulkLinksInput.value.trim();
+    driveFetchNoticeEl.hidden = true;
+
+    if (!raw) {
+      showToast("Vui lòng dán link thư mục hoặc link ảnh Google Drive.");
+      return;
+    }
+
+    const lines = raw
+      .split(/[\n,\s]+/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 10);
+
+    if (!lines.length) {
+      showToast("Không tìm thấy liên kết hợp lệ.");
+      return;
+    }
+
+    const useFilename = useFilenameCaptionInput.checked;
+    const existingIds = new Set(
+      editorPhotos.map((p) => extractDriveFileId(p.url) || p.url)
+    );
+
+    addBulkLinksBtn.disabled = true;
+    addBulkLinksBtn.textContent = "Đang lấy danh sách ảnh...";
+
+    let addedCount = 0;
+    let detectedFolderName = "";
+
+    try {
+      const apiKey = getApiKey();
+
+      for (const link of lines) {
+        const parsed = parseDriveLink(link);
+
+        if (parsed.type === "folder" || parsed.type === "ambiguous") {
+          const result = await fetchAllImagesFromDriveFolder(parsed.id, apiKey);
+          if (result.folderName && !detectedFolderName) {
+            detectedFolderName = result.folderName;
+          }
+
+          if (!result.files.length) {
+            driveFetchNoticeEl.innerHTML =
+              "Thư mục không có ảnh nào hoặc chưa bật quyền chia sẻ công khai. Hãy kiểm tra thư mục trên Google Drive đã bật <strong>Bất kỳ ai có đường liên kết → Người xem</strong> chưa.";
+            driveFetchNoticeEl.hidden = false;
+          }
+
+          for (const file of result.files) {
+            if (!existingIds.has(file.id)) {
+              existingIds.add(file.id);
+              editorPhotos.push({
+                url: `https://drive.google.com/file/d/${file.id}/view`,
+                caption: useFilename ? stripExtension(file.name) : ""
+              });
+              addedCount++;
+            }
+          }
+        } else {
+          // Link file ảnh lẻ hoặc URL ảnh trực tiếp
+          const key = parsed.id || link;
+          if (!existingIds.has(key)) {
+            existingIds.add(key);
+            editorPhotos.push({ url: link, caption: "" });
+            addedCount++;
+          }
+        }
+      }
+
+      // Tự động điền tên album theo tên thư mục Drive nếu đang tạo mới & chưa nhập tên
+      if (detectedFolderName && !editTitleInput.value.trim()) {
+        editTitleInput.value = detectedFolderName;
+        if (!editOriginalIdInput.value) {
+          editIdInput.value = slugify(detectedFolderName);
+        }
+      }
+
+      // Tự động chọn ảnh đầu tiên làm ảnh bìa nếu chưa có bìa
+      if (!editCoverInput.value.trim() && editorPhotos.length > 0) {
+        editCoverInput.value = editorPhotos[0].url;
+        updateCoverPreview(editCoverInput.value);
+      }
+
+      if (addedCount > 0) {
+        bulkLinksInput.value = "";
+        renderEditorPhotos();
+        showToast(`Đã thêm ${addedCount} ảnh vào album!`);
+      } else if (driveFetchNoticeEl.hidden) {
+        showToast("Các ảnh trong liên kết này đã có sẵn trong album.");
+      }
+    } catch (err) {
+      if (err.message === "DRIVE_API_DISABLED") {
+        driveFetchNoticeEl.innerHTML = `
+          Để đọc toàn bộ ảnh trong thư mục Google Drive, bạn cần bật <strong>Google Drive API</strong> (miễn phí, mất 10 giây):<br/>
+          1. Mở <a href="https://console.cloud.google.com/apis/library/drive.googleapis.com" target="_blank" rel="noopener">Google Cloud Console — Google Drive API</a>.<br/>
+          2. Chọn đúng dự án <strong>xemanhdrive</strong> ở góc trên bên trái → nhấn nút <strong>Enable (Bật)</strong> → quay lại đây nhấn lấy ảnh lại.
+        `;
+        driveFetchNoticeEl.hidden = false;
+      } else if (err.message === "FOLDER_NOT_FOUND_OR_PRIVATE") {
+        driveFetchNoticeEl.innerHTML =
+          "Không thể mở thư mục Google Drive này. Vui lòng kiểm tra thư mục đã bật quyền <strong>Bất kỳ ai có đường liên kết → Người xem</strong> chưa.";
+        driveFetchNoticeEl.hidden = false;
+      } else if (err.message === "MISSING_API_KEY") {
+        driveFetchNoticeEl.innerHTML =
+          "Thiếu <strong>Web API Key</strong>. Vui lòng nhập API Key trong tab <strong>Cài đặt chung</strong>.";
+        driveFetchNoticeEl.hidden = false;
+      } else {
+        driveFetchNoticeEl.innerHTML = `Không đọc được thư mục Drive (<strong>${escapeHtml(err.message)}</strong>).<br/>Kiểm tra: (1) Thư mục Drive đã bật <strong>Bất kỳ ai có đường liên kết → Người xem</strong>; (2) Đã bật <strong>Google Drive API</strong> trên Google Cloud Console.`;
+        driveFetchNoticeEl.hidden = false;
+      }
+    } finally {
+      addBulkLinksBtn.disabled = false;
+      addBulkLinksBtn.textContent = "+ Lấy ảnh từ link Drive";
+    }
+  });
+
+  // Save album to Firebase
+  albumEditorForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const title = editTitleInput.value.trim();
+    const id = slugify(editIdInput.value || title);
+    const originalId = editOriginalIdInput.value.trim();
+
+    if (!title || !id) {
+      showToast("Vui lòng nhập tên album.");
+      return;
+    }
+
+    const cleanPhotos = editorPhotos
+      .map((p) => ({ url: (p.url || "").trim(), caption: (p.caption || "").trim() }))
+      .filter((p) => p.url);
+
+    const cover = editCoverInput.value.trim() || (cleanPhotos[0] ? cleanPhotos[0].url : "");
+
+    const albumPayload = {
+      id,
+      title,
+      category: editCategoryInput.value.trim() || "Album",
+      description: editDescriptionInput.value.trim(),
+      updatedAt: editDateInput.value.trim() || formatTodayVN(),
+      cover,
+      photos: cleanPhotos
+    };
+
+    saveAlbumBtn.disabled = true;
+    saveAlbumBtn.textContent = "Đang lưu lên Firebase...";
+
+    try {
+      const nextAlbumsMap = {};
+      albums.forEach((a) => {
+        if (a.id !== originalId && a.id !== id) {
+          nextAlbumsMap[a.id] = a;
+        }
+      });
+      nextAlbumsMap[id] = albumPayload;
+
+      await persistDatabaseToFirebase({
+        ...rawDbData,
+        albums: nextAlbumsMap
+      });
+
+      renderAdminAlbumList();
+      switchAdminTab("albums");
+      showToast(`Đã lưu album "${title}" (${cleanPhotos.length} ảnh) lên Firebase!`);
+    } catch (err) {
+      showToast(err.message);
+    } finally {
+      saveAlbumBtn.disabled = false;
+      saveAlbumBtn.textContent = "Lưu album lên Firebase";
+    }
+  });
+
+  // Save general settings
+  settingsForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    saveSettingsBtn.disabled = true;
+    saveSettingsBtn.textContent = "Đang lưu...";
+
+    const newApiKey = settingApiKeyInput.value.trim();
+    if (newApiKey) {
+      localStorage.setItem(STORAGE_API_KEY, newApiKey);
+    }
+
+    try {
+      const nextAlbumsMap = {};
+      albums.forEach((a) => { nextAlbumsMap[a.id] = a; });
+
+      await persistDatabaseToFirebase({
+        brandName: settingBrandInput.value.trim() || "STUDIO GALLERY",
+        footerText: settingFooterInput.value.trim() || "© 2026 Studio Gallery",
+        apiKey: newApiKey || rawDbData.apiKey || "",
+        albums: nextAlbumsMap
+      });
+
+      showToast("Đã cập nhật cài đặt chung!");
+    } catch (err) {
+      showToast(err.message);
+    } finally {
+      saveSettingsBtn.disabled = false;
+      saveSettingsBtn.textContent = "Lưu cài đặt lên Firebase";
+    }
+  });
+
+  // Lightbox events
+  lightboxClose.addEventListener("click", closeLightbox);
+  lightboxBackdrop.addEventListener("click", closeLightbox);
+  lightboxPrev.addEventListener("click", () => stepLightbox(-1));
+  lightboxNext.addEventListener("click", () => stepLightbox(1));
+
+  document.addEventListener("keydown", (e) => {
+    if (lightbox.classList.contains("open")) {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") stepLightbox(-1);
+      if (e.key === "ArrowRight") stepLightbox(1);
+      return;
+    }
+    if (e.key === "Escape") {
+      if (adminModal.classList.contains("open")) closeModal(adminModal);
+      if (loginModal.classList.contains("open")) closeModal(loginModal);
+    }
+  });
+
+  lightbox.addEventListener("touchstart", (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+
+  lightbox.addEventListener("touchend", (e) => {
+    const diff = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(diff) > 45) stepLightbox(diff > 0 ? -1 : 1);
+  }, { passive: true });
+
+  // Bootstrap app
+  async function init() {
+    adminSession = loadStoredSession();
+    updateAdminTriggerUI();
+
+    try {
+      const res = await fetch(`${FIREBASE_DB_URL}/.json`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      if (!data) {
+        hydrateStateFromDb({
+          brandName: "STUDIO GALLERY",
+          footerText: "© 2026 Studio Gallery",
+          albums: {}
+        });
+        return;
+      }
+
+      hydrateStateFromDb(data);
+    } catch (err) {
+      console.error("Firebase load error:", err);
+      heroTitle.textContent = "Không thể kết nối Firebase";
+      heroDesc.textContent = "Vui lòng kiểm tra kết nối mạng hoặc cấu hình Rules (.read: true) trên Firebase.";
+      emptyState.hidden = false;
+      emptyStateText.textContent = "Tải dữ liệu thất bại.";
+    }
+  }
+
+  init();
+})();
+  </script>
 </body>
 </html>
