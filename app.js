@@ -80,7 +80,10 @@
   const editCoverInput = document.getElementById("edit-cover");
   const editCoverPreview = document.getElementById("edit-cover-preview");
   const bulkLinksInput = document.getElementById("bulk-links-input");
+  const useFilenameCaptionInput = document.getElementById("use-filename-caption");
   const addBulkLinksBtn = document.getElementById("add-bulk-links-btn");
+  const clearAllPhotosBtn = document.getElementById("clear-all-photos-btn");
+  const driveFetchNoticeEl = document.getElementById("drive-fetch-notice");
   const editorPhotoCountEl = document.getElementById("editor-photo-count");
   const editorPhotoListEl = document.getElementById("editor-photo-list");
   const cancelEditBtn = document.getElementById("cancel-edit-btn");
@@ -90,6 +93,7 @@
   const settingsForm = document.getElementById("settings-form");
   const settingBrandInput = document.getElementById("setting-brand");
   const settingFooterInput = document.getElementById("setting-footer");
+  const settingApiKeyInput = document.getElementById("setting-api-key");
   const saveSettingsBtn = document.getElementById("save-settings-btn");
 
   const toastEl = document.getElementById("toast");
@@ -103,6 +107,7 @@
   let rawDbData = {
     brandName: "STUDIO GALLERY",
     footerText: "© 2026 Studio Gallery • Lưu giữ khoảnh khắc",
+    apiKey: "",
     albums: {}
   };
   let albums = [];
@@ -115,13 +120,13 @@
   let touchStartX = 0;
 
   /* -----------------------------------------------------------------------
-   * Tiện ích chung & Xử lý link Google Drive
+   * Tiện ích chung & Xử lý link Google Drive (Tệp lẻ & Thư mục)
    * --------------------------------------------------------------------- */
   function showToast(message) {
     toastEl.textContent = message;
     toastEl.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2800);
+    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 3000);
   }
 
   function slugify(str) {
@@ -153,20 +158,42 @@
     }));
   }
 
-  function extractDriveFileId(input) {
-    if (!input || typeof input !== "string") return null;
+  /**
+   * Phân loại liên kết Google Drive: Thư mục (folder) hay Tệp lẻ (file)
+   */
+  function parseDriveLink(input) {
+    if (!input || typeof input !== "string") return { type: "unknown", id: null, url: input };
     const trimmed = input.trim();
-    if (/^[a-zA-Z0-9_-]{25,}$/.test(trimmed)) return trimmed;
 
-    const patterns = [
-      /\/file\/d\/([a-zA-Z0-9_-]+)/,
-      /\/d\/([a-zA-Z0-9_-]+)/,
-      /[?&]id=([a-zA-Z0-9_-]+)/
-    ];
-    for (const pattern of patterns) {
-      const match = trimmed.match(pattern);
-      if (match && match[1]) return match[1];
+    // Link thư mục rõ ràng: /drive/folders/ID hoặc /drive/u/0/folders/ID
+    const folderMatch = trimmed.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+    if (folderMatch && folderMatch[1]) {
+      return { type: "folder", id: folderMatch[1], url: trimmed };
     }
+
+    // Link tệp rõ ràng: /file/d/ID hoặc /d/ID
+    const fileMatch = trimmed.match(/\/(?:file\/)?d\/([a-zA-Z0-9_-]+)/);
+    if (fileMatch && fileMatch[1]) {
+      return { type: "file", id: fileMatch[1], url: trimmed };
+    }
+
+    // Link dạng ?id=ID (có thể là folder hoặc file)
+    const idParamMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (idParamMatch && idParamMatch[1]) {
+      return { type: "ambiguous", id: idParamMatch[1], url: trimmed };
+    }
+
+    // Chỉ dán ID trần
+    if (/^[a-zA-Z0-9_-]{25,}$/.test(trimmed)) {
+      return { type: "ambiguous", id: trimmed, url: trimmed };
+    }
+
+    return { type: "direct", id: null, url: trimmed };
+  }
+
+  function extractDriveFileId(input) {
+    const parsed = parseDriveLink(input);
+    if (parsed.type === "file" || parsed.type === "ambiguous") return parsed.id;
     return null;
   }
 
@@ -200,6 +227,86 @@
     tryNext();
   }
 
+  /**
+   * Lấy toàn bộ ảnh bên trong một thư mục Google Drive công khai qua Google Drive API v3
+   */
+  async function fetchAllImagesFromDriveFolder(folderId, apiKey) {
+    if (!apiKey) {
+      throw new Error("MISSING_API_KEY");
+    }
+
+    // 1. Lấy thông tin thư mục (tên thư mục & kiểm tra quyền truy cập)
+    const metaUrl = `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(folderId)}?fields=id,name,mimeType&supportsAllDrives=true&key=${encodeURIComponent(apiKey)}`;
+    const metaRes = await fetch(metaUrl);
+    const metaData = await metaRes.json();
+
+    if (!metaRes.ok) {
+      const reason = metaData?.error?.errors?.[0]?.reason || "";
+      const msg = metaData?.error?.message || "";
+      if (reason === "accessNotConfigured" || msg.includes("Google Drive API has not been used")) {
+        throw new Error("DRIVE_API_DISABLED");
+      }
+      if (metaRes.status === 404) {
+        throw new Error("FOLDER_NOT_FOUND_OR_PRIVATE");
+      }
+      throw new Error(msg || `HTTP ${metaRes.status}`);
+    }
+
+    // Nếu link dạng ?id=... nhưng thực chất là 1 file ảnh lẻ chứ không phải folder
+    if (metaData.mimeType && metaData.mimeType !== "application/vnd.google-apps.folder") {
+      return {
+        folderName: "",
+        files: [metaData]
+      };
+    }
+
+    // 2. Lấy toàn bộ ảnh trong thư mục (hỗ trợ phân trang nếu > 1000 ảnh)
+    let allFiles = [];
+    let pageToken = "";
+
+    do {
+      const q = `'${folderId}' in parents and mimeType contains 'image/' and trashed = false`;
+      const params = new URLSearchParams({
+        q,
+        fields: "nextPageToken,files(id,name,mimeType)",
+        pageSize: "1000",
+        supportsAllDrives: "true",
+        includeItemsFromAllDrives: "true",
+        key: apiKey
+      });
+      if (pageToken) params.set("pageToken", pageToken);
+
+      const listRes = await fetch(`https://www.googleapis.com/drive/v3/files?${params.toString()}`);
+      const listData = await listRes.json();
+
+      if (!listRes.ok) {
+        throw new Error(listData?.error?.message || `HTTP ${listRes.status}`);
+      }
+
+      if (Array.isArray(listData.files)) {
+        allFiles = allFiles.concat(listData.files);
+      }
+      pageToken = listData.nextPageToken || "";
+    } while (pageToken);
+
+    // Sắp xếp tên tệp theo thứ tự tự nhiên (IMG_1, IMG_2, ..., IMG_10)
+    allFiles.sort((a, b) =>
+      String(a.name || "").localeCompare(String(b.name || ""), undefined, {
+        numeric: true,
+        sensitivity: "base"
+      })
+    );
+
+    return {
+      folderName: metaData.name || "",
+      files: allFiles
+    };
+  }
+
+  function stripExtension(filename) {
+    return String(filename || "").replace(/\.[a-zA-Z0-9]{2,5}$/, "");
+  }
+
   function buildShareUrl(albumId, locked = false) {
     const url = new URL(window.location.origin + window.location.pathname);
     if (albumId) {
@@ -224,7 +331,12 @@
    * Xác thực Firebase Authentication REST API & Lưu dữ liệu lên Firebase
    * --------------------------------------------------------------------- */
   function getApiKey() {
-    return (localStorage.getItem(STORAGE_API_KEY) || DEFAULT_FIREBASE_API_KEY || "").trim();
+    return (
+      localStorage.getItem(STORAGE_API_KEY) ||
+      rawDbData.apiKey ||
+      DEFAULT_FIREBASE_API_KEY ||
+      ""
+    ).trim();
   }
 
   function loadStoredSession() {
@@ -614,7 +726,7 @@
   }
 
   /* -----------------------------------------------------------------------
-   * Giao diện Quản trị Admin (Thêm, Sửa, Xóa, Dán hàng loạt link Google Drive)
+   * Giao diện Quản trị Admin (Hỗ trợ link Thư mục Google Drive & Link lẻ)
    * --------------------------------------------------------------------- */
   function openModal(modalEl) {
     modalEl.classList.add("open");
@@ -710,6 +822,7 @@
 
   function renderEditorPhotos() {
     editorPhotoCountEl.textContent = `${editorPhotos.length} ảnh trong album`;
+    clearAllPhotosBtn.hidden = editorPhotos.length === 0;
     editorPhotoListEl.innerHTML = "";
     const currentCover = editCoverInput.value.trim();
 
@@ -720,6 +833,7 @@
       const thumb = document.createElement("img");
       thumb.className = "editor-photo-thumb";
       thumb.alt = `Ảnh ${idx + 1}`;
+      thumb.loading = "lazy";
       loadImageWithFallback(thumb, photo.url, 180);
 
       const fields = document.createElement("div");
@@ -798,6 +912,7 @@
   function openAlbumEditor(album = null) {
     switchAdminTab("editor");
     bulkLinksInput.value = "";
+    driveFetchNoticeEl.hidden = true;
 
     if (album) {
       editOriginalIdInput.value = album.id;
@@ -851,6 +966,7 @@
       : "Chế độ quản trị Firebase";
     settingBrandInput.value = rawDbData.brandName || "";
     settingFooterInput.value = rawDbData.footerText || "";
+    settingApiKeyInput.value = getApiKey();
     renderAdminAlbumList();
     switchAdminTab("albums");
     openModal(adminModal);
@@ -871,8 +987,13 @@
     rawDbData = {
       brandName: data.brandName || "STUDIO GALLERY",
       footerText: data.footerText || "© 2026 Studio Gallery",
+      apiKey: data.apiKey || "",
       albums: data.albums || {}
     };
+
+    if (rawDbData.apiKey && !localStorage.getItem(STORAGE_API_KEY)) {
+      localStorage.setItem(STORAGE_API_KEY, rawDbData.apiKey);
+    }
 
     albums = toArray(rawDbData.albums).map((album) => ({
       ...album,
@@ -1047,11 +1168,21 @@
     renderEditorPhotos();
   });
 
-  // Bulk add Google Drive links
-  addBulkLinksBtn.addEventListener("click", () => {
+  clearAllPhotosBtn.addEventListener("click", () => {
+    if (!editorPhotos.length) return;
+    if (window.confirm("Xóa toàn bộ danh sách ảnh đang hiển thị trong album này?")) {
+      editorPhotos = [];
+      renderEditorPhotos();
+    }
+  });
+
+  // Thêm link thư mục Google Drive (quét toàn bộ ảnh) hoặc link ảnh lẻ
+  addBulkLinksBtn.addEventListener("click", async () => {
     const raw = bulkLinksInput.value.trim();
+    driveFetchNoticeEl.hidden = true;
+
     if (!raw) {
-      showToast("Vui lòng dán ít nhất 1 liên kết Google Drive.");
+      showToast("Vui lòng dán link thư mục hoặc link ảnh Google Drive.");
       return;
     }
 
@@ -1065,18 +1196,101 @@
       return;
     }
 
-    lines.forEach((link) => {
-      editorPhotos.push({ url: link, caption: "" });
-    });
+    const useFilename = useFilenameCaptionInput.checked;
+    const existingIds = new Set(
+      editorPhotos.map((p) => extractDriveFileId(p.url) || p.url)
+    );
 
-    if (!editCoverInput.value.trim() && editorPhotos.length > 0) {
-      editCoverInput.value = editorPhotos[0].url;
-      updateCoverPreview(editCoverInput.value);
+    addBulkLinksBtn.disabled = true;
+    addBulkLinksBtn.textContent = "Đang lấy danh sách ảnh...";
+
+    let addedCount = 0;
+    let detectedFolderName = "";
+
+    try {
+      const apiKey = getApiKey();
+
+      for (const link of lines) {
+        const parsed = parseDriveLink(link);
+
+        if (parsed.type === "folder" || parsed.type === "ambiguous") {
+          const result = await fetchAllImagesFromDriveFolder(parsed.id, apiKey);
+          if (result.folderName && !detectedFolderName) {
+            detectedFolderName = result.folderName;
+          }
+
+          if (!result.files.length) {
+            driveFetchNoticeEl.innerHTML =
+              "Thư mục không có ảnh nào hoặc chưa bật quyền chia sẻ công khai. Hãy kiểm tra thư mục trên Google Drive đã bật <strong>Bất kỳ ai có đường liên kết → Người xem</strong> chưa.";
+            driveFetchNoticeEl.hidden = false;
+          }
+
+          for (const file of result.files) {
+            if (!existingIds.has(file.id)) {
+              existingIds.add(file.id);
+              editorPhotos.push({
+                url: `https://drive.google.com/file/d/${file.id}/view`,
+                caption: useFilename ? stripExtension(file.name) : ""
+              });
+              addedCount++;
+            }
+          }
+        } else {
+          // Link file ảnh lẻ hoặc URL ảnh trực tiếp
+          const key = parsed.id || link;
+          if (!existingIds.has(key)) {
+            existingIds.add(key);
+            editorPhotos.push({ url: link, caption: "" });
+            addedCount++;
+          }
+        }
+      }
+
+      // Tự động điền tên album theo tên thư mục Drive nếu đang tạo mới & chưa nhập tên
+      if (detectedFolderName && !editTitleInput.value.trim()) {
+        editTitleInput.value = detectedFolderName;
+        if (!editOriginalIdInput.value) {
+          editIdInput.value = slugify(detectedFolderName);
+        }
+      }
+
+      // Tự động chọn ảnh đầu tiên làm ảnh bìa nếu chưa có bìa
+      if (!editCoverInput.value.trim() && editorPhotos.length > 0) {
+        editCoverInput.value = editorPhotos[0].url;
+        updateCoverPreview(editCoverInput.value);
+      }
+
+      if (addedCount > 0) {
+        bulkLinksInput.value = "";
+        renderEditorPhotos();
+        showToast(`Đã thêm ${addedCount} ảnh vào album!`);
+      } else if (driveFetchNoticeEl.hidden) {
+        showToast("Các ảnh trong liên kết này đã có sẵn trong album.");
+      }
+    } catch (err) {
+      if (err.message === "DRIVE_API_DISABLED") {
+        driveFetchNoticeEl.innerHTML = `
+          Để đọc toàn bộ ảnh trong thư mục Google Drive, bạn cần bật <strong>Google Drive API</strong> (miễn phí, mất 10 giây):<br/>
+          1. Mở <a href="https://console.cloud.google.com/apis/library/drive.googleapis.com" target="_blank" rel="noopener">Google Cloud Console — Google Drive API</a>.<br/>
+          2. Chọn đúng dự án <strong>xemanhdrive</strong> ở góc trên bên trái → nhấn nút <strong>Enable (Bật)</strong> → quay lại đây nhấn lấy ảnh lại.
+        `;
+        driveFetchNoticeEl.hidden = false;
+      } else if (err.message === "FOLDER_NOT_FOUND_OR_PRIVATE") {
+        driveFetchNoticeEl.innerHTML =
+          "Không thể mở thư mục Google Drive này. Vui lòng kiểm tra thư mục đã bật quyền <strong>Bất kỳ ai có đường liên kết → Người xem</strong> chưa.";
+        driveFetchNoticeEl.hidden = false;
+      } else if (err.message === "MISSING_API_KEY") {
+        driveFetchNoticeEl.innerHTML =
+          "Thiếu <strong>Web API Key</strong>. Vui lòng nhập API Key trong tab <strong>Cài đặt chung</strong>.";
+        driveFetchNoticeEl.hidden = false;
+      } else {
+        driveFetchNoticeEl.textContent = `Lỗi đọc thư mục Drive: ${err.message}`;
+        driveFetchNoticeEl.hidden = false;
+      }
+    } finally {
+      addBulkLinksBtn.disabled = false;
+      addBulkLinksBtn.textContent = "+ Lấy ảnh từ link Drive";
     }
-
-    bulkLinksInput.value = "";
-    renderEditorPhotos();
-    showToast(`Đã thêm ${lines.length} ảnh vào danh sách!`);
   });
 
   // Save album to Firebase
@@ -1126,7 +1340,7 @@
 
       renderAdminAlbumList();
       switchAdminTab("albums");
-      showToast(`Đã lưu album "${title}" lên Firebase!`);
+      showToast(`Đã lưu album "${title}" (${cleanPhotos.length} ảnh) lên Firebase!`);
     } catch (err) {
       showToast(err.message);
     } finally {
@@ -1141,6 +1355,11 @@
     saveSettingsBtn.disabled = true;
     saveSettingsBtn.textContent = "Đang lưu...";
 
+    const newApiKey = settingApiKeyInput.value.trim();
+    if (newApiKey) {
+      localStorage.setItem(STORAGE_API_KEY, newApiKey);
+    }
+
     try {
       const nextAlbumsMap = {};
       albums.forEach((a) => { nextAlbumsMap[a.id] = a; });
@@ -1148,6 +1367,7 @@
       await persistDatabaseToFirebase({
         brandName: settingBrandInput.value.trim() || "STUDIO GALLERY",
         footerText: settingFooterInput.value.trim() || "© 2026 Studio Gallery",
+        apiKey: newApiKey || rawDbData.apiKey || "",
         albums: nextAlbumsMap
       });
 
