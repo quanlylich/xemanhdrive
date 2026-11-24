@@ -157,10 +157,10 @@
           <input type="password" id="login-password" required placeholder="••••••••" autocomplete="current-password" />
         </label>
 
-        <details class="api-key-details">
-          <summary>Cấu hình Firebase Web API Key (nếu chưa điền sẵn)</summary>
+        <details class="api-key-details" id="api-key-details">
+          <summary>Cấu hình Firebase Web API Key</summary>
           <label class="field" style="margin-top: 10px;">
-            <span>Firebase Web API Key</span>
+            <span>Firebase Web API Key (AIzaSy...)</span>
             <input type="text" id="login-api-key" placeholder="AIzaSy..." />
           </label>
         </details>
@@ -248,7 +248,7 @@
           </label>
 
           <div class="field">
-            <span>Link ảnh bìa (Google Drive hoặc URL ảnh)</span>
+            <span>Link ảnh bìa (tự động lấy ảnh đầu tiên nếu để trống)</span>
             <div class="cover-input-row">
               <input type="text" id="edit-cover" placeholder="https://drive.google.com/file/d/..." />
               <img id="edit-cover-preview" class="cover-mini-preview" alt="Xem trước bìa" hidden />
@@ -257,18 +257,29 @@
 
           <hr class="divider" />
 
-          <!-- Dán hàng loạt link Google Drive -->
+          <!-- Dán link thư mục Google Drive hoặc link từng ảnh -->
           <div class="field">
-            <span>Dán liên kết ảnh Google Drive (có thể dán nhiều link cùng lúc, mỗi link 1 dòng)</span>
+            <span>Dán link Thư mục Google Drive (tự động lấy toàn bộ ảnh) hoặc link từng ảnh</span>
             <textarea
               id="bulk-links-input"
-              rows="4"
-              placeholder="https://drive.google.com/file/d/1AbCdEfGh.../view?usp=sharing&#10;https://drive.google.com/file/d/2XyZ12345.../view?usp=sharing"
+              rows="3"
+              placeholder="Dán link thư mục: https://drive.google.com/drive/folders/1AbCdEfGh...?usp=sharing&#10;Hoặc dán nhiều link ảnh lẻ (mỗi link 1 dòng)"
             ></textarea>
+
+            <label class="checkbox-row">
+              <input type="checkbox" id="use-filename-caption" />
+              <span>Tự động dùng tên tệp ảnh làm chú thích</span>
+            </label>
+
             <div class="bulk-actions">
-              <button type="button" class="btn-outline" id="add-bulk-links-btn">+ Thêm các link vào danh sách ảnh</button>
+              <div class="bulk-btn-group">
+                <button type="button" class="btn-primary btn-sm" id="add-bulk-links-btn">+ Lấy ảnh từ link Drive</button>
+                <button type="button" class="btn-outline btn-sm" id="clear-all-photos-btn" hidden>Xóa toàn bộ ảnh</button>
+              </div>
               <span class="muted-text" id="editor-photo-count">0 ảnh trong album</span>
             </div>
+
+            <div class="drive-notice" id="drive-fetch-notice" hidden></div>
           </div>
 
           <!-- Danh sách ảnh trong album đang sửa -->
@@ -292,6 +303,11 @@
           <label class="field">
             <span>Nội dung chân trang (Footer)</span>
             <input type="text" id="setting-footer" placeholder="© 2026 Studio Gallery • Lưu giữ khoảnh khắc" />
+          </label>
+
+          <label class="field">
+            <span>Firebase / Google Cloud API Key (dùng để đăng nhập & đọc thư mục Google Drive)</span>
+            <input type="text" id="setting-api-key" placeholder="AIzaSy..." />
           </label>
 
           <div class="modal-footer-actions">
