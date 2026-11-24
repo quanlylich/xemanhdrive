@@ -401,24 +401,95 @@ button {
   color: var(--text-muted);
 }
 
-/* Horizontal Row Grid (Thứ tự 1 -> 2 -> 3 theo hàng ngang) */
+/* Gallery Grid — 3 chế độ kích thước (Nhỏ: 6 cột, Vừa: 3 cột, To: 1 cột) & khít hàng không khoảng trống */
 .masonry-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  align-items: start;
+  gap: 14px;
+}
+
+/* Mức Vừa: 3 ảnh 1 hàng, khung tỷ lệ 4:3 đồng đều để ảnh ngang & dọc xếp khít không khoảng trống */
+.masonry-grid.grid-medium {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.masonry-grid.grid-medium .photo-card {
+  aspect-ratio: 4 / 3;
+}
+.masonry-grid.grid-medium .photo-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 22%;
+}
+
+/* Mức Nhỏ: 6 ảnh 1 hàng, khung vuông 1:1 gọn gàng như thư viện ảnh chuyên nghiệp */
+.masonry-grid.grid-small {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+}
+.masonry-grid.grid-small .photo-card {
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-sm);
+}
+.masonry-grid.grid-small .photo-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 22%;
+}
+.masonry-grid.grid-small .card-download-btn {
+  width: 28px;
+  height: 28px;
+  top: 6px;
+  right: 6px;
+}
+.masonry-grid.grid-small .photo-caption-badge {
+  display: none;
+}
+
+/* Mức To: Xem từng ảnh 1 hàng — giữ nguyên 100% tỷ lệ gốc (ngang/dọc) */
+.masonry-grid.grid-large {
+  grid-template-columns: 1fr;
+  max-width: 920px;
+  margin-inline: auto;
+  gap: 24px;
+}
+.masonry-grid.grid-large .photo-card {
+  aspect-ratio: auto;
+  min-height: 240px;
+}
+.masonry-grid.grid-large .photo-card img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
 @media (max-width: 960px) {
-  .masonry-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
+  .masonry-grid.grid-medium {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .masonry-grid.grid-small {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
   }
 }
 
 @media (max-width: 560px) {
-  .masonry-grid {
-    grid-template-columns: 1fr;
+  .masonry-grid.grid-medium {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .masonry-grid.grid-small {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 4px;
+  }
+  .masonry-grid.grid-small .photo-card {
+    border-radius: 4px;
+  }
+  .masonry-grid.grid-small .card-download-btn {
+    display: none;
   }
 }
 
@@ -430,7 +501,6 @@ button {
   overflow: hidden;
   background: var(--surface-muted);
   cursor: zoom-in;
-  min-height: 180px;
 }
 
 .photo-card.is-loading::before {
@@ -449,9 +519,8 @@ button {
 
 .photo-card img {
   width: 100%;
-  height: auto;
   opacity: 0;
-  transition: opacity 380ms ease, transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 320ms ease, transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .photo-card.is-loaded {
@@ -463,7 +532,7 @@ button {
 }
 
 .photo-card.is-loaded:hover img {
-  transform: scale(1.025);
+  transform: scale(1.03);
 }
 
 .photo-caption-badge {
@@ -1217,10 +1286,18 @@ button {
   color: var(--text-muted);
 }
 
-.sort-control {
+.toolbar-controls-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+.sort-control,
+.view-size-control {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .sort-label {
@@ -1251,8 +1328,24 @@ button {
   color: #ffffff;
 }
 
-/* Lightbox Zoom & Fullscreen */
+/* Lightbox Zoom & Fullscreen (Desktop + Mobile) */
+.lightbox {
+  touch-action: none;
+}
+
+.lightbox-stage {
+  width: 100vw;
+  height: 100dvh;
+  max-width: 100vw;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 64px 12px 76px;
+  justify-content: center;
+}
+
 .lightbox-img-viewport {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1270,10 +1363,31 @@ button {
 }
 
 .lightbox-stage img {
+  max-width: 94vw;
+  max-height: calc(100dvh - 150px);
   transform-origin: center center;
-  transition: opacity 180ms ease, transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 180ms ease, transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
   user-select: none;
   -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  will-change: transform;
+}
+
+.lightbox-caption {
+  position: fixed;
+  bottom: 68px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+.lightbox-img-viewport.is-dragging img,
+.lightbox-img-viewport.is-pinching img {
+  transition: opacity 180ms ease;
 }
 
 .lightbox-img-viewport.is-dragging img {
@@ -1398,14 +1512,23 @@ button {
     <section class="gallery-section" aria-label="Danh sách ảnh">
       <div class="gallery-toolbar" id="gallery-toolbar" hidden>
         <span class="gallery-toolbar-info" id="gallery-sort-summary">Hiển thị theo thứ tự tên file</span>
-        <div class="sort-control" role="group" aria-label="Sắp xếp ảnh">
-          <span class="sort-label">Sắp xếp:</span>
-          <button type="button" class="sort-btn active" data-sort="name-asc" id="sort-name-btn" title="Đảo chiều sắp xếp theo tên file">
-            Tên file ↑
-          </button>
-          <button type="button" class="sort-btn" data-sort="time-desc" id="sort-time-btn" title="Đảo chiều sắp xếp theo thời gian">
-            Thời gian
-          </button>
+        <div class="toolbar-controls-group">
+          <div class="view-size-control" role="group" aria-label="Kích thước hiển thị">
+            <span class="sort-label">Hiển thị:</span>
+            <button type="button" class="sort-btn" data-grid-size="small" title="Lưới nhỏ (6 ảnh / hàng)">Nhỏ</button>
+            <button type="button" class="sort-btn active" data-grid-size="medium" title="Lưới vừa (3 ảnh / hàng)">Vừa</button>
+            <button type="button" class="sort-btn" data-grid-size="large" title="Xem từng ảnh lớn (1 ảnh / hàng)">To</button>
+          </div>
+
+          <div class="sort-control" role="group" aria-label="Sắp xếp ảnh">
+            <span class="sort-label">Sắp xếp:</span>
+            <button type="button" class="sort-btn active" data-sort="name-asc" id="sort-name-btn" title="Đảo chiều sắp xếp theo tên file">
+              Tên file ↑
+            </button>
+            <button type="button" class="sort-btn" data-sort="time-desc" id="sort-time-btn" title="Đảo chiều sắp xếp theo thời gian">
+              Thời gian
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1457,14 +1580,7 @@ button {
             <line x1="3" y1="21" x2="10" y2="14"></line>
           </svg>
         </button>
-        <button type="button" class="lightbox-pill-btn" id="lightbox-download-hd" title="Tải ảnh chất lượng cao (dung lượng vừa phải, giữ nguyên độ nét)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
-          </svg>
-          <span>Tải ảnh HD</span>
-        </button>
+
         <button type="button" class="lightbox-pill-btn lightbox-pill-primary" id="lightbox-download-orig" title="Tải tệp gốc từ Google Drive">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -1745,6 +1861,7 @@ button {
   const gallerySortSummary = document.getElementById("gallery-sort-summary");
   const sortNameBtn = document.getElementById("sort-name-btn");
   const sortTimeBtn = document.getElementById("sort-time-btn");
+  const gridSizeBtns = document.querySelectorAll("[data-grid-size]");
   const galleryGrid = document.getElementById("gallery-grid");
   const emptyState = document.getElementById("empty-state");
   const emptyStateText = document.getElementById("empty-state-text");
@@ -1810,7 +1927,6 @@ button {
   const cancelEditBtn = document.getElementById("cancel-edit-btn");
   const saveAlbumBtn = document.getElementById("save-album-btn");
 
-  const lightboxDownloadHdBtn = document.getElementById("lightbox-download-hd");
   const lightboxDownloadOrigBtn = document.getElementById("lightbox-download-orig");
 
   // Settings form
@@ -1841,7 +1957,8 @@ button {
   let currentAlbum = null;
   let unsortedAlbumPhotos = [];
   let activeDisplayPhotos = [];
-  let currentSortMode = "name-asc"; // Mặc định sắp xếp theo thứ tự tên file A -> Z
+  let currentSortMode = "name-asc";
+  let currentGridSize = "medium"; // small (6 cột) | medium (3 cột) | large (1 cột)
   let currentPhotoIndex = 0;
   let editorPhotos = [];
   let adminSession = null;
@@ -1938,9 +2055,15 @@ button {
     return null;
   }
 
-  function resolveImageSources(rawUrl, size = 1200) {
+  function resolveImageSources(rawUrl, size = 560) {
     const fileId = extractDriveFileId(rawUrl);
     if (!fileId) return [rawUrl];
+    if (size === "orig" || size === 0) {
+      return [
+        `https://lh3.googleusercontent.com/d/${fileId}=s0`,
+        `https://drive.google.com/thumbnail?id=${fileId}&sz=w4000`
+      ];
+    }
     return [
       `https://lh3.googleusercontent.com/d/${fileId}=w${size}`,
       `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`
@@ -2112,45 +2235,16 @@ button {
       showToast("Đang tải tệp gốc từ Google Drive...");
       return;
     }
-    downloadOptimizedPhoto(photo, index, true);
-  }
 
-  async function downloadOptimizedPhoto(photo, index = 0, fullRes = false) {
-    const fileId = extractDriveFileId(photo.url);
     const baseName = sanitizeFilename(photo.fileName || photo.caption || `${currentAlbum?.id || "photo"}-${index + 1}`);
-    const filename = /\.(jpe?g|png|webp)$/i.test(baseName) ? baseName : `${baseName}.jpg`;
-
-    const targetUrl = fileId
-      ? `https://lh3.googleusercontent.com/d/${fileId}=${fullRes ? "s0" : "w2560"}`
-      : photo.url;
-
-    showToast("Đang chuẩn bị tải ảnh HD...");
-
-    try {
-      const response = await fetch(targetUrl);
-      if (!response.ok) throw new Error("Fetch failed");
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-
-      const a = document.createElement("a");
-      a.href = blobUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
-      showToast(`Đã tải xuống: ${filename}`);
-    } catch {
-      const a = document.createElement("a");
-      a.href = targetUrl;
-      a.download = filename;
-      a.target = "_blank";
-      a.rel = "noopener";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    }
+    const a = document.createElement("a");
+    a.href = photo.url;
+    a.download = baseName;
+    a.target = "_blank";
+    a.rel = "noopener";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
   }
 
   function buildShareUrl(albumId, locked = false) {
@@ -2416,8 +2510,34 @@ button {
     }
   }
 
+  function getGridThumbWidth() {
+    if (currentGridSize === "small") return 320;
+    if (currentGridSize === "large") return 1400;
+    return 560; // medium (3 cột): icon nhỏ tải siêu nhanh
+  }
+
+  function setGridSize(size) {
+    currentGridSize = size;
+    galleryGrid.classList.remove("grid-small", "grid-medium", "grid-large");
+    galleryGrid.classList.add(`grid-${size}`);
+    gridSizeBtns.forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.gridSize === size);
+    });
+    if (currentAlbum && unsortedAlbumPhotos.length) {
+      applySortAndRender(currentAlbum);
+    }
+  }
+
+  gridSizeBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      setGridSize(btn.dataset.gridSize || "medium");
+    });
+  });
+
   function renderGalleryPhotos(album, photos) {
     activeDisplayPhotos = photos;
+    galleryGrid.classList.remove("grid-small", "grid-medium", "grid-large");
+    galleryGrid.classList.add(`grid-${currentGridSize}`);
     galleryGrid.innerHTML = "";
 
     if (!photos.length) {
@@ -2426,6 +2546,8 @@ button {
       return;
     }
     emptyState.hidden = true;
+
+    const thumbWidth = getGridThumbWidth();
 
     photos.forEach((photo, index) => {
       const card = document.createElement("article");
@@ -2439,7 +2561,7 @@ button {
       img.loading = "lazy";
       img.decoding = "async";
 
-      loadImageWithFallback(img, photo.url, 1000, {
+      loadImageWithFallback(img, photo.url, thumbWidth, {
         onLoad: () => {
           card.classList.remove("is-loading");
           card.classList.add("is-loaded");
@@ -2710,6 +2832,9 @@ button {
       panY = -offsetY * (clamped - 1) * 0.65;
     }
     zoomScale = clamped;
+    if (zoomScale > 1.05 && activeDisplayPhotos[currentPhotoIndex]) {
+      upgradeToOriginalQuality(activeDisplayPhotos[currentPhotoIndex], lightboxLoadToken);
+    }
     applyImageTransform();
   }
 
@@ -2813,15 +2938,34 @@ button {
     document.body.classList.remove("no-scroll");
   }
 
+  let lightboxLoadToken = 0;
+
+  function upgradeToOriginalQuality(photo, token) {
+    const fileId = extractDriveFileId(photo.url);
+    if (!fileId) return;
+    const origUrl = `https://lh3.googleusercontent.com/d/${fileId}=s0`;
+    if (lightboxImg.dataset.loadedOrig === origUrl) return;
+
+    const preloader = new Image();
+    preloader.onload = () => {
+      if (token !== lightboxLoadToken) return;
+      lightboxImg.src = origUrl;
+      lightboxImg.dataset.loadedOrig = origUrl;
+    };
+    preloader.src = origUrl;
+  }
+
   function showLightboxPhoto() {
     if (!activeDisplayPhotos || !activeDisplayPhotos.length) return;
     resetZoom();
+    const token = ++lightboxLoadToken;
     const total = activeDisplayPhotos.length;
     const photo = activeDisplayPhotos[currentPhotoIndex];
 
     lightboxCounter.textContent = `${currentPhotoIndex + 1} / ${total}`;
     lightboxCaption.textContent = photo.caption || photo.fileName || "";
     lightboxImg.style.opacity = "0";
+    lightboxImg.dataset.loadedOrig = "";
     lightboxSpinner.hidden = false;
 
     const thumbButtons = lightboxThumbs.querySelectorAll(".lightbox-thumb-btn");
@@ -2833,14 +2977,27 @@ button {
       }
     });
 
-    loadImageWithFallback(lightboxImg, photo.url, 2200, {
+    // Hiển thị nhanh khung hình đầu tiên (w1400) rồi tự động nạp ảnh gốc đầy đủ (=s0)
+    loadImageWithFallback(lightboxImg, photo.url, 1400, {
       onLoad: () => {
+        if (token !== lightboxLoadToken) return;
         lightboxSpinner.hidden = true;
         lightboxImg.style.opacity = "1";
+        upgradeToOriginalQuality(photo, token);
       },
       onError: () => {
-        lightboxSpinner.hidden = true;
-        lightboxCaption.textContent = "Không thể tải ảnh độ phân giải cao.";
+        if (token !== lightboxLoadToken) return;
+        // Thử nạp trực tiếp ảnh gốc nếu w1400 lỗi
+        loadImageWithFallback(lightboxImg, photo.url, "orig", {
+          onLoad: () => {
+            lightboxSpinner.hidden = true;
+            lightboxImg.style.opacity = "1";
+          },
+          onError: () => {
+            lightboxSpinner.hidden = true;
+            lightboxCaption.textContent = "Không thể tải ảnh gốc từ Google Drive.";
+          }
+        });
       }
     });
   }
@@ -2851,11 +3008,6 @@ button {
     currentPhotoIndex = (currentPhotoIndex + delta + total) % total;
     showLightboxPhoto();
   }
-
-  lightboxDownloadHdBtn.addEventListener("click", () => {
-    const photo = activeDisplayPhotos[currentPhotoIndex];
-    if (photo) downloadOptimizedPhoto(photo, currentPhotoIndex, false);
-  });
 
   lightboxDownloadOrigBtn.addEventListener("click", () => {
     const photo = activeDisplayPhotos[currentPhotoIndex];
@@ -3449,26 +3601,43 @@ button {
     return Math.hypot(dx, dy);
   }
 
-  lightboxViewport.addEventListener("touchstart", (e) => {
+  let lastTapTime = 0;
+  let isPinching = false;
+
+  // Chặn cử chỉ zoom mặc định của Safari iOS bên trong Lightbox để zoom ảnh mượt và không vỡ khung
+  lightbox.addEventListener("gesturestart", (e) => e.preventDefault(), { passive: false });
+  lightbox.addEventListener("gesturechange", (e) => e.preventDefault(), { passive: false });
+  lightbox.addEventListener("gestureend", (e) => e.preventDefault(), { passive: false });
+
+  lightbox.addEventListener("touchstart", (e) => {
+    if (e.target.closest(".lightbox-topbar, .lightbox-nav, .lightbox-thumbs")) return;
+
     if (e.touches.length === 2) {
+      isPinching = true;
+      isPanning = false;
       initialPinchDist = getTouchDistance(e.touches);
       initialPinchScale = zoomScale;
-      isPanning = false;
+      lightboxViewport.classList.add("is-pinching");
     } else if (e.touches.length === 1) {
-      touchStartX = e.touches[0].screenX;
+      touchStartX = e.touches[0].clientX;
       if (zoomScale > 1.01) {
         isPanning = true;
         panStartX = e.touches[0].clientX - panX;
         panStartY = e.touches[0].clientY - panY;
+        lightboxViewport.classList.add("is-dragging");
       }
     }
   }, { passive: true });
 
-  lightboxViewport.addEventListener("touchmove", (e) => {
+  lightbox.addEventListener("touchmove", (e) => {
+    if (e.target.closest(".lightbox-topbar, .lightbox-nav, .lightbox-thumbs")) return;
+
     if (e.touches.length === 2 && initialPinchDist > 0) {
       e.preventDefault();
       const dist = getTouchDistance(e.touches);
-      setZoom(initialPinchScale * (dist / initialPinchDist));
+      const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+      const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+      setZoom(initialPinchScale * (dist / initialPinchDist), midX, midY);
     } else if (e.touches.length === 1 && isPanning && zoomScale > 1.01) {
       e.preventDefault();
       panX = e.touches[0].clientX - panStartX;
@@ -3477,18 +3646,46 @@ button {
     }
   }, { passive: false });
 
-  lightboxViewport.addEventListener("touchend", (e) => {
+  lightbox.addEventListener("touchend", (e) => {
+    if (e.target.closest(".lightbox-topbar, .lightbox-nav, .lightbox-thumbs")) return;
+
     if (e.touches.length < 2) {
       initialPinchDist = 0;
+      lightboxViewport.classList.remove("is-pinching");
     }
+
     if (e.touches.length === 0) {
+      lightboxViewport.classList.remove("is-dragging");
+
+      if (isPinching) {
+        isPinching = false;
+        isPanning = false;
+        return;
+      }
+
       isPanning = false;
-      if (zoomScale <= 1.01 && e.changedTouches.length === 1) {
-        const diff = e.changedTouches[0].screenX - touchStartX;
-        if (Math.abs(diff) > 45) stepLightbox(diff > 0 ? -1 : 1);
+
+      if (e.changedTouches.length === 1) {
+        const touch = e.changedTouches[0];
+        const diffX = touch.clientX - touchStartX;
+
+        // Hỗ trợ chạm đúp (double-tap) trên điện thoại để phóng to / thu nhỏ
+        const now = Date.now();
+        if (Math.abs(diffX) < 12 && now - lastTapTime < 280) {
+          e.preventDefault();
+          toggleZoom(touch.clientX, touch.clientY);
+          lastTapTime = 0;
+          return;
+        }
+        lastTapTime = now;
+
+        // Vuốt chuyển ảnh trước/sau khi ở mức 1x
+        if (zoomScale <= 1.01 && Math.abs(diffX) > 45) {
+          stepLightbox(diffX > 0 ? -1 : 1);
+        }
       }
     }
-  }, { passive: true });
+  }, { passive: false });
 
   async function init() {
     adminSession = loadStoredSession();
