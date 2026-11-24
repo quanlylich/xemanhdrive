@@ -1536,7 +1536,12 @@ button {
           </label>
 
           <label class="field">
-            <span>Firebase / Google Cloud API Key (dùng để đăng nhập & đọc thư mục Google Drive)</span>
+            <span>URL Google Apps Script đọc thư mục Drive (https://script.google.com/macros/s/.../exec)</span>
+            <input type="url" id="setting-gas-url" placeholder="https://script.google.com/macros/s/AKfycb.../exec" />
+          </label>
+
+          <label class="field">
+            <span>Firebase Web API Key (chỉ dùng để đăng nhập Admin)</span>
             <input type="text" id="setting-api-key" placeholder="AIzaSy..." />
           </label>
 
@@ -1554,15 +1559,18 @@ button {
   <script>
 (() => {
   // =========================================================================
-  // CẤU HÌNH FIREBASE
+  // CẤU HÌNH FIREBASE & GOOGLE APPS SCRIPT
   // 1. URL Realtime Database của bạn:
   const FIREBASE_DB_URL = "https://xemanhdrive-default-rtdb.asia-southeast1.firebasedatabase.app";
-  // 2. Dán Web API Key từ Firebase Console > Project Settings > General vào đây:
+  // 2. Dán URL Web App của Google Apps Script (kết thúc bằng /exec) vào đây:
+  const DEFAULT_APPS_SCRIPT_URL = "";
+  // 3. Firebase Web API Key (chỉ dùng cho đăng nhập Admin):
   const DEFAULT_FIREBASE_API_KEY = "AIzaSyCcd1EfyxaogDKbRrbTU1EWgQ1Fu6klQj4";
   // =========================================================================
 
   const STORAGE_AUTH_KEY = "gallery_admin_session_v1";
   const STORAGE_API_KEY = "gallery_firebase_api_key_v1";
+  const STORAGE_GAS_URL = "gallery_apps_script_url_v1";
 
   // DOM Elements
   const brandEl = document.getElementById("brand-name");
@@ -1650,6 +1658,7 @@ button {
   const settingsForm = document.getElementById("settings-form");
   const settingBrandInput = document.getElementById("setting-brand");
   const settingFooterInput = document.getElementById("setting-footer");
+  const settingGasUrlInput = document.getElementById("setting-gas-url");
   const settingApiKeyInput = document.getElementById("setting-api-key");
   const saveSettingsBtn = document.getElementById("save-settings-btn");
 
@@ -1664,6 +1673,7 @@ button {
   let rawDbData = {
     brandName: "STUDIO GALLERY",
     footerText: "© 2026 Studio Gallery • Lưu giữ khoảnh khắc",
+    appsScriptUrl: "",
     apiKey: "",
     albums: {}
   };
@@ -1849,79 +1859,58 @@ button {
     return { folderName: folderTitle, files };
   }
 
-  async function fetchAllImagesFromDriveFolder(folderId, apiKey) {
+  function getAppsScriptUrl() {
+    const hardcoded = (DEFAULT_APPS_SCRIPT_URL || "").trim();
+    const dbUrl = (rawDbData.appsScriptUrl || "").trim();
+    const stored = (localStorage.getItem(STORAGE_GAS_URL) || "").trim();
+    return hardcoded || dbUrl || stored || "";
+  }
+
+  async function fetchAllImagesFromDriveFolder(folderId) {
     if (driveFolderCache.has(folderId)) {
       return driveFolderCache.get(folderId);
     }
 
-    let apiError = null;
+    const scriptUrl = getAppsScriptUrl();
+    let scriptError = null;
 
-    if (apiKey) {
+    // Cách 1: Đọc qua Google Apps Script Web App (không cần API Key)
+    if (scriptUrl) {
       try {
-        const metaUrl = `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(folderId)}?fields=id,name,mimeType&supportsAllDrives=true&key=${encodeURIComponent(apiKey)}`;
-        const metaRes = await fetch(metaUrl);
-        const metaData = await metaRes.json();
+        const endpoint = new URL(scriptUrl);
+        endpoint.searchParams.set("folderId", folderId);
 
-        if (!metaRes.ok) {
-          throw new Error(metaData?.error?.message || `HTTP ${metaRes.status}`);
+        const res = await fetch(endpoint.toString(), { redirect: "follow" });
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+        const data = await res.json();
+        if (!data || data.ok === false) {
+          throw new Error(data?.error || "Apps Script trả về dữ liệu không hợp lệ.");
         }
 
-        if (metaData.mimeType && metaData.mimeType !== "application/vnd.google-apps.folder") {
-          const singleRes = { folderName: "", files: [metaData] };
-          driveFolderCache.set(folderId, singleRes);
-          return singleRes;
-        }
-
-        let allFiles = [];
-        let pageToken = "";
-
-        do {
-          const q = `'${folderId}' in parents and mimeType contains 'image/' and trashed = false`;
-          const params = new URLSearchParams({
-            q,
-            fields: "nextPageToken,files(id,name,mimeType)",
-            pageSize: "1000",
-            supportsAllDrives: "true",
-            includeItemsFromAllDrives: "true",
-            key: apiKey
-          });
-          if (pageToken) params.set("pageToken", pageToken);
-
-          const listRes = await fetch(`https://www.googleapis.com/drive/v3/files?${params.toString()}`);
-          const listData = await listRes.json();
-
-          if (!listRes.ok) {
-            throw new Error(listData?.error?.message || `HTTP ${listRes.status}`);
-          }
-
-          if (Array.isArray(listData.files)) {
-            allFiles = allFiles.concat(listData.files);
-          }
-          pageToken = listData.nextPageToken || "";
-        } while (pageToken);
-
-        allFiles.sort((a, b) =>
-          String(a.name || "").localeCompare(String(b.name || ""), undefined, {
-            numeric: true,
-            sensitivity: "base"
-          })
-        );
-
-        const result = { folderName: metaData.name || "", files: allFiles };
+        const files = Array.isArray(data.files) ? data.files : [];
+        const result = {
+          folderName: data.folderName || "",
+          files
+        };
         driveFolderCache.set(folderId, result);
         return result;
       } catch (err) {
-        apiError = err;
+        scriptError = err;
       }
+    } else {
+      scriptError = new Error("Chưa cấu hình URL Google Apps Script trong mục Quản trị > Cài đặt chung.");
     }
 
+    // Cách 2: Dự phòng đọc qua trang nhúng công khai nếu chưa dán URL Apps Script
     const fallbackResult = await fetchFolderViaPublicEmbedFallback(folderId);
     if (fallbackResult && fallbackResult.files.length > 0) {
       driveFolderCache.set(folderId, fallbackResult);
       return fallbackResult;
     }
 
-    throw apiError || new Error("Không đọc được thư mục Google Drive. Hãy bật quyền chia sẻ công khai.");
+    throw scriptError;
   }
 
   /* -----------------------------------------------------------------------
@@ -2354,8 +2343,7 @@ button {
     emptyState.hidden = true;
 
     try {
-      const apiKey = getApiKey();
-      const result = await fetchAllImagesFromDriveFolder(folderId, apiKey);
+      const result = await fetchAllImagesFromDriveFolder(folderId);
 
       if (!currentAlbum || currentAlbum.id !== album.id) return;
 
@@ -2711,6 +2699,7 @@ button {
       : "Chế độ quản trị Firebase";
     settingBrandInput.value = rawDbData.brandName || "";
     settingFooterInput.value = rawDbData.footerText || "";
+    settingGasUrlInput.value = getAppsScriptUrl();
     settingApiKeyInput.value = getApiKey();
     renderAdminAlbumList();
     switchAdminTab("albums");
@@ -2732,10 +2721,14 @@ button {
     rawDbData = {
       brandName: data.brandName || "STUDIO GALLERY",
       footerText: data.footerText || "© 2026 Studio Gallery",
+      appsScriptUrl: data.appsScriptUrl || "",
       apiKey: data.apiKey || "",
       albums: data.albums || {}
     };
 
+    if (rawDbData.appsScriptUrl) {
+      localStorage.setItem(STORAGE_GAS_URL, rawDbData.appsScriptUrl);
+    }
     if (rawDbData.apiKey && !localStorage.getItem(STORAGE_API_KEY)) {
       localStorage.setItem(STORAGE_API_KEY, rawDbData.apiKey);
     }
@@ -3009,7 +3002,11 @@ button {
     saveSettingsBtn.disabled = true;
     saveSettingsBtn.textContent = "Đang lưu...";
 
+    const newGasUrl = settingGasUrlInput.value.trim();
     const newApiKey = settingApiKeyInput.value.trim();
+    if (newGasUrl) {
+      localStorage.setItem(STORAGE_GAS_URL, newGasUrl);
+    }
     if (newApiKey) {
       localStorage.setItem(STORAGE_API_KEY, newApiKey);
     }
@@ -3021,6 +3018,7 @@ button {
       await persistDatabaseToFirebase({
         brandName: settingBrandInput.value.trim() || "STUDIO GALLERY",
         footerText: settingFooterInput.value.trim() || "© 2026 Studio Gallery",
+        appsScriptUrl: newGasUrl || rawDbData.appsScriptUrl || "",
         apiKey: newApiKey || rawDbData.apiKey || "",
         albums: nextAlbumsMap
       });
@@ -3094,3 +3092,6 @@ button {
   </script>
 </body>
 </html>
+```[cite: 23]
+
+Bạn sao chép toàn bộ đoạn mã trên, lưu thành tệp `index.html` rồi tải lên Repository GitHub Pages của bạn[cite: 23]. Sau đó mở mục **Quản trị → Cài đặt chung** trên website, dán URL Google Apps Script (`[https://script.google.com/macros/s/.../exec](https://script.google.com/macros/s/.../exec)`) vào ô cấu hình và nhấn **Lưu cài đặt lên Firebase**[cite: 23].
