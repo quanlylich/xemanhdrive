@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Photo Gallery — Bộ Sưu Tập Ảnh</title>
   <meta name="description" content="Album ảnh trực tuyến tối giản, hiện đại." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23292524'/%3E%3Crect x='12' y='19' width='40' height='31' rx='5' fill='none' stroke='%23faf9f6' stroke-width='3'/%3E%3Cpath d='M21 19l3-6h16l3 6' fill='none' stroke='%23faf9f6' stroke-width='3' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='34' r='9' fill='none' stroke='%23faf9f6' stroke-width='3'/%3E%3Ccircle cx='46' cy='25' r='2' fill='%23d6a77a'/%3E%3C/svg%3E" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -232,6 +233,34 @@ button {
   inset: 0;
 }
 
+.hero-art {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 700ms ease;
+  background: #92c8d2;
+}
+
+.hero-art svg { display: block; width: 100%; height: 100%; }
+.hero-art .art-clouds { transform-box: fill-box; transform-origin: center; animation: gallery-cloud-drift 34s ease-in-out infinite alternate; }
+.hero-art .art-clouds-slow { animation-duration: 48s; animation-direction: alternate-reverse; }
+.hero-art .art-sun { transform-box: fill-box; transform-origin: center; animation: gallery-sun-glow 7s ease-in-out infinite; }
+.hero.picker-mode .hero-art { opacity: 1; }
+.hero.picker-mode .hero-overlay {
+  background: linear-gradient(90deg, rgba(18, 29, 42, 0.38), rgba(18, 29, 42, 0.03) 82%),
+    linear-gradient(to top, rgba(18, 29, 42, 0.36), transparent 74%);
+}
+
+@keyframes gallery-cloud-drift { from { transform: translateX(-2.5%); } to { transform: translateX(2.5%); } }
+@keyframes gallery-sun-glow {
+  0%, 100% { opacity: 0.84; transform: scale(0.98); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-art .art-clouds, .hero-art .art-sun { animation: none; }
+}
+
 .hero-media img {
   width: 100%;
   height: 100%;
@@ -278,8 +307,8 @@ button {
 
 .hero-title {
   margin: 0 0 10px;
-  font-family: var(--font-serif);
-  font-weight: 500;
+  font-family: var(--font-sans);
+  font-weight: 600;
   font-size: clamp(1.85rem, 4.2vw, 3.1rem);
   line-height: 1.18;
 }
@@ -345,6 +374,73 @@ button {
   color: #ffffff;
 }
 
+.album-picker-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 10px 0 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.album-picker-toolbar[hidden] {
+  display: none;
+}
+
+.album-switcher.album-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  overflow: visible;
+  padding-bottom: 0;
+}
+
+.album-switcher.album-grid .album-chip {
+  width: 100%;
+  min-width: 0;
+  flex: initial;
+}
+
+.album-month-heading {
+  grid-column: 1 / -1;
+  margin: 8px 0 -4px;
+  padding: 0 2px 7px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.album-switcher.album-grid .album-chip-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.album-switcher.album-grid .album-chip-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.album-switcher.album-grid-large .album-chip-thumb {
+  width: 64px;
+  height: 64px;
+}
+.album-switcher.album-grid-small { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.album-switcher.album-grid-medium { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.album-switcher.album-grid-large { grid-template-columns: minmax(0, 920px); justify-content: center; }
+
+@media (max-width: 960px) {
+  .album-switcher.album-grid-small { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .album-switcher.album-grid-medium { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .album-switcher.album-grid-small { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .album-switcher.album-grid-medium { grid-template-columns: minmax(0, 1fr); }
+  .album-switcher.album-grid-large { grid-template-columns: minmax(0, 1fr); }
+}
 .album-switcher {
   display: flex;
   gap: 12px;
@@ -1306,6 +1402,33 @@ button {
   gap: 5px;
 }
 
+.gallery-search-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.gallery-search-input {
+  width: 220px;
+  max-width: 28vw;
+  padding: 6px 11px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.8rem;
+}
+
+.gallery-search-input:focus {
+  outline: 2px solid rgba(41, 37, 36, 0.18);
+  border-color: #a8a29e;
+}
+
+@media (max-width: 640px) {
+  .gallery-search-control { flex: 1 1 100%; }
+  .gallery-search-input { width: 100%; max-width: none; }
+}
 .sort-label {
   font-size: 0.8rem;
   color: var(--text-muted);
@@ -1491,6 +1614,35 @@ button {
   <!-- Ảnh bìa nổi bật của album đang chọn -->
   <section class="hero" id="hero-section">
     <div class="hero-media">
+      <div class="hero-art" aria-hidden="true">
+        <svg viewBox="0 0 1600 700" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <linearGradient id="gallery-sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#82b9ce"/><stop offset=".56" stop-color="#d5c7c0"/><stop offset="1" stop-color="#f1c99e"/></linearGradient>
+            <radialGradient id="gallery-sun-glow"><stop stop-color="#fff4cd" stop-opacity=".95"/><stop offset="1" stop-color="#ffe8b2" stop-opacity="0"/></radialGradient>
+            <linearGradient id="gallery-mountain-back" x1="0" y1="0" x2=".9" y2="1"><stop stop-color="#819c9b"/><stop offset="1" stop-color="#627d7e"/></linearGradient>
+            <linearGradient id="gallery-mountain-front" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#597d73"/><stop offset="1" stop-color="#365e5b"/></linearGradient>
+            <linearGradient id="gallery-field" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#8fa77d"/><stop offset="1" stop-color="#526f66"/></linearGradient>
+          </defs>
+          <rect width="1600" height="700" fill="url(#gallery-sky)"/>
+          <circle class="art-sun" cx="1190" cy="180" r="155" fill="url(#gallery-sun-glow)"/>
+          <circle cx="1190" cy="180" r="57" fill="#ffe9bb" opacity=".78"/>
+          <g class="art-clouds" fill="#fff7ed" opacity=".54">
+            <path d="M120 185c8-27 42-35 62-15 14-42 78-43 95 3 37-7 58 37 34 61H145c-32-4-43-29-25-49z"/>
+            <path d="M700 115c10-23 39-29 56-11 12-36 66-38 81 2 32-6 49 32 28 52H722c-27-3-36-25-22-43z"/>
+          </g>
+          <g class="art-clouds art-clouds-slow" fill="#f8eee9" opacity=".36">
+            <path d="M1300 285c9-22 38-29 55-11 12-35 66-37 81 2 32-6 49 32 28 52h-143c-27-3-36-25-21-43z"/>
+            <path d="M370 300c8-19 32-25 47-9 11-30 56-32 69 2 27-5 42 27 24 45H389c-23-3-31-22-19-38z"/>
+          </g>
+          <path d="M0 490 210 345l112 83 190-213 157 187 152-137 184 220 167-188 157 155 143-101 128 139v210H0z" fill="url(#gallery-mountain-back)" opacity=".83"/>
+          <path d="m395 215 49 57-48-12-43 26zM821 265l48 57-45-13-42 24zM1172 297l43 50-42-11-36 21z" fill="#e8dfd2" opacity=".62"/>
+          <path d="M0 540 185 410l148 117 190-183 172 189 193-158 171 153 174-122 174 119 193-135v310H0z" fill="url(#gallery-mountain-front)"/>
+          <path d="M0 570c206-67 353-31 540-4 219 32 381-28 565-12 183 16 344 79 495 30v116H0z" fill="url(#gallery-field)"/>
+          <path d="M0 636c217-47 394-27 577 9 190 37 351 28 521-8 171-36 328-30 502 13v50H0z" fill="#395e57" opacity=".68"/>
+          <g fill="#304f4a" opacity=".88"><path d="m220 514 18-71 18 71h-12v38h-12v-38zM276 544l22-88 22 88h-14v39h-15v-39zM1380 515l19-74 19 74h-12v39h-14v-39zM1450 550l22-87 22 87h-14v40h-15v-40z"/></g>
+          <path d="M0 700h1600" stroke="#f0d6b2" stroke-opacity=".42" stroke-width="3"/>
+        </svg>
+      </div>
       <img id="hero-cover" src="" alt="" />
       <div class="hero-overlay"></div>
     </div>
@@ -1511,6 +1663,26 @@ button {
     <!-- Bộ lọc danh mục & chọn album -->
     <section class="controls" id="controls-section" aria-label="Bộ lọc và danh sách album">
       <div class="category-bar" id="category-bar" role="tablist"></div>
+      <div class="album-picker-toolbar" id="album-picker-toolbar" hidden>
+        <span class="gallery-toolbar-info" id="album-picker-summary">Sắp xếp theo tên album (A → Z)</span>
+        <div class="toolbar-controls-group">
+          <div class="view-size-control" role="group" aria-label="Kích thước danh sách album">
+            <span class="sort-label">Hiển thị:</span>
+            <button type="button" class="sort-btn" data-album-grid-size="small">Nhỏ</button>
+            <button type="button" class="sort-btn active" data-album-grid-size="medium">Vừa</button>
+            <button type="button" class="sort-btn" data-album-grid-size="large">To</button>
+          </div>
+          <div class="sort-control" role="group" aria-label="Sắp xếp album">
+            <span class="sort-label">Sắp xếp:</span>
+            <button type="button" class="sort-btn active" id="album-sort-name-btn">Tên album ↑</button>
+            <button type="button" class="sort-btn" id="album-sort-time-btn">Thời gian</button>
+          </div>
+          <label class="gallery-search-control">
+            <span class="sort-label">Tìm album:</span>
+            <input type="search" class="gallery-search-input" id="album-search-input" placeholder="Tên album" aria-label="Tìm kiếm album theo tên" autocomplete="off" />
+          </label>
+        </div>
+      </div>
       <div class="album-switcher" id="album-switcher"></div>
     </section>
 
@@ -1519,10 +1691,14 @@ button {
       <div class="gallery-toolbar" id="gallery-toolbar" hidden>
         <span class="gallery-toolbar-info" id="gallery-sort-summary">Hiển thị theo thứ tự tên file</span>
         <div class="toolbar-controls-group">
+          <label class="gallery-search-control">
+            <span class="sort-label">Tìm ảnh:</span>
+            <input type="search" class="gallery-search-input" id="photo-search-input" placeholder="Tên file hoặc chú thích" aria-label="Tìm kiếm ảnh trong album" autocomplete="off" />
+          </label>
           <div class="view-size-control" role="group" aria-label="Kích thước hiển thị">
             <span class="sort-label">Hiển thị:</span>
-            <button type="button" class="sort-btn" data-grid-size="small" title="Lưới nhỏ (6 ảnh / hàng)">Nhỏ</button>
-            <button type="button" class="sort-btn active" data-grid-size="medium" title="Lưới vừa (3 ảnh / hàng)">Vừa</button>
+            <button type="button" class="sort-btn" data-grid-size="small" title="Hiển thị ảnh cỡ nhỏ">Nhỏ</button>
+            <button type="button" class="sort-btn active" data-grid-size="medium" title="Hiển thị ảnh cỡ vừa">Vừa</button>
             <button type="button" class="sort-btn" data-grid-size="large" title="Xem từng ảnh lớn (1 ảnh / hàng)">To</button>
           </div>
 
@@ -1844,6 +2020,7 @@ button {
   const adminTriggerBtn = document.getElementById("admin-trigger-btn");
   const adminTriggerLabel = document.getElementById("admin-trigger-label");
 
+  const heroSection = document.getElementById("hero-section");
   const heroCover = document.getElementById("hero-cover");
   const heroCategory = document.getElementById("hero-category");
   const heroTitle = document.getElementById("hero-title");
@@ -1853,10 +2030,19 @@ button {
   const heroCount = document.getElementById("hero-count");
 
   const controlsSection = document.getElementById("controls-section");
+  const mainContentEl = document.querySelector(".main-content");
+  const gallerySectionEl = document.querySelector(".gallery-section");
   const categoryBar = document.getElementById("category-bar");
   const albumSwitcher = document.getElementById("album-switcher");
+  const albumPickerToolbar = document.getElementById("album-picker-toolbar");
+  const albumPickerSummary = document.getElementById("album-picker-summary");
+  const albumSearchInput = document.getElementById("album-search-input");
+  const albumGridSizeBtns = document.querySelectorAll("[data-album-grid-size]");
+  const albumSortNameBtn = document.getElementById("album-sort-name-btn");
+  const albumSortTimeBtn = document.getElementById("album-sort-time-btn");
   const galleryToolbar = document.getElementById("gallery-toolbar");
   const gallerySortSummary = document.getElementById("gallery-sort-summary");
+  const photoSearchInput = document.getElementById("photo-search-input");
   const sortNameBtn = document.getElementById("sort-name-btn");
   const sortTimeBtn = document.getElementById("sort-time-btn");
   const gridSizeBtns = document.querySelectorAll("[data-grid-size]");
@@ -1950,11 +2136,15 @@ button {
   };
   let albums = [];
   let selectedCategory = "Tất cả";
+  let albumSearchQuery = "";
+  let currentAlbumSortMode = "name-asc";
+  let currentAlbumGridSize = "medium";
   let currentAlbum = null;
   let unsortedAlbumPhotos = [];
   let activeDisplayPhotos = [];
+  let photoSearchQuery = "";
   let currentSortMode = "name-asc";
-  let currentGridSize = "medium"; // small (6 cột) | medium (3 cột) | large (1 cột)
+  let currentGridSize = "medium"; // kích thước ảnh trong gallery
   let currentPhotoIndex = 0;
   let editorPhotos = [];
   let adminSession = null;
@@ -2427,15 +2617,6 @@ button {
         selectedCategory = cat;
         renderCategories();
         const filtered = getFilteredAlbums();
-
-        if (cat === "Tất cả") {
-          renderAlbumSwitcher(filtered);
-          if (filtered.length && (!currentAlbum || !filtered.some((a) => a.id === currentAlbum.id))) {
-            selectAlbum(filtered[0]);
-          }
-          return;
-        }
-
         currentAlbum = null;
         unsortedAlbumPhotos = [];
         activeDisplayPhotos = [];
@@ -2449,13 +2630,38 @@ button {
     });
   }
 
+  document.addEventListener("click", (e) => {
+    if (!currentAlbum || lightbox.classList.contains("open")) return;
+    const clickedBlankArea = e.target === mainContentEl
+      || e.target === controlsSection
+      || e.target === albumSwitcher
+      || e.target === gallerySectionEl
+      || e.target === galleryGrid;
+    if (clickedBlankArea) exitCurrentAlbumToPicker();
+  });
   function getFilteredAlbums() {
     if (selectedCategory === "Tất cả") return albums;
     return albums.filter((a) => a.category === selectedCategory);
   }
 
+  function exitCurrentAlbumToPicker() {
+    if (!currentAlbum || isSingleLockedMode) return;
+    currentAlbum = null;
+    unsortedAlbumPhotos = [];
+    activeDisplayPhotos = [];
+    photoSearchQuery = "";
+    photoSearchInput.value = "";
+    const url = new URL(window.location.href);
+    url.searchParams.delete("album");
+    window.history.replaceState({}, "", url.toString());
+    renderAlbumSwitcher(getFilteredAlbums());
+    showAlbumPicker(getFilteredAlbums());
+  }
   function showAlbumPicker(list) {
+    photoSearchQuery = "";
+    photoSearchInput.value = "";
     const count = list.length;
+    heroSection.classList.add("picker-mode");
     document.title = `${selectedCategory} — ${rawDbData.brandName || "Gallery"}`;
     heroCover.classList.remove("loaded");
     heroCover.removeAttribute("src");
@@ -2470,54 +2676,161 @@ button {
     galleryGrid.innerHTML = "";
     emptyState.hidden = true;
   }
+  function getAlbumUpdatedTimestamp(album) {
+    const value = String(album.updatedAt || album.createdTime || "").trim();
+    const vietnamDate = value.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$/);
+    if (vietnamDate) {
+      return Date.UTC(Number(vietnamDate[3]), Number(vietnamDate[2]) - 1, Number(vietnamDate[1]));
+    }
+    const parsed = Date.parse(value);
+    return Number.isNaN(parsed) ? 0 : parsed;
+  }
+
+  function normalizeAlbumSearchText(value) {
+    return String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/đ/g, "d");
+  }
+  function getAlbumPickerList(list) {
+    const query = normalizeAlbumSearchText(albumSearchQuery);
+    const filtered = list.filter((album) => {
+      const searchableText = normalizeAlbumSearchText(`${album.title || ""} ${album.id || ""}`);
+      return !query || searchableText.includes(query);
+    });
+
+    return filtered.sort((a, b) => {
+      const aName = String(a.title || a.id || "");
+      const bName = String(b.title || b.id || "");
+      const nameOrder = aName.localeCompare(bName, "vi", { numeric: true, sensitivity: "base" });
+      if (currentAlbumSortMode === "time-desc") {
+        return getAlbumUpdatedTimestamp(b) - getAlbumUpdatedTimestamp(a) || nameOrder;
+      }
+      if (currentAlbumSortMode === "time-asc") {
+        return getAlbumUpdatedTimestamp(a) - getAlbumUpdatedTimestamp(b) || nameOrder;
+      }
+      return currentAlbumSortMode === "name-desc" ? -nameOrder : nameOrder;
+    });
+  }
+
+  function updateAlbumPickerToolbar(visibleCount, totalCount) {
+    albumPickerToolbar.hidden = isSingleLockedMode || albums.length === 0;
+    const summaries = {
+      "name-asc": "Sắp xếp theo tên album (A → Z)",
+      "name-desc": "Sắp xếp theo tên album (Z → A)",
+      "time-desc": "Sắp xếp theo thời gian (Mới nhất trước)",
+      "time-asc": "Sắp xếp theo thời gian (Cũ nhất trước)"
+    };
+    const resultLabel = albumSearchQuery
+      ? `${visibleCount}/${totalCount} album phù hợp`
+      : `${totalCount} album`;
+    albumPickerSummary.textContent = `${summaries[currentAlbumSortMode]} · ${resultLabel}`;
+
+    albumGridSizeBtns.forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.albumGridSize === currentAlbumGridSize);
+    });
+    const isNameSort = currentAlbumSortMode.startsWith("name-");
+    albumSortNameBtn.classList.toggle("active", isNameSort);
+    albumSortTimeBtn.classList.toggle("active", !isNameSort);
+    albumSortNameBtn.textContent = currentAlbumSortMode === "name-desc" ? "Tên album ↓" : "Tên album ↑";
+    albumSortTimeBtn.textContent = currentAlbumSortMode === "time-asc"
+      ? "Thời gian ↑"
+      : (currentAlbumSortMode === "time-desc" ? "Thời gian ↓" : "Thời gian");
+  }
+
+  function groupAlbumsByMonth(albumList) {
+    const groups = new Map();
+    albumList.forEach((album) => {
+      const timestamp = getAlbumUpdatedTimestamp(album);
+      if (!timestamp) {
+        if (!groups.has("undated")) {
+          groups.set("undated", { key: "undated", label: "Chưa rõ thời gian", timestamp: 0, undated: true, albums: [] });
+        }
+        groups.get("undated").albums.push(album);
+        return;
+      }
+
+      const date = new Date(timestamp);
+      const year = date.getUTCFullYear();
+      const month = date.getUTCMonth() + 1;
+      const key = `${year}-${String(month).padStart(2, "0")}`;
+      if (!groups.has(key)) {
+        groups.set(key, { key, label: `Tháng ${month} năm ${year}`, timestamp: Date.UTC(year, month - 1, 1), undated: false, albums: [] });
+      }
+      groups.get(key).albums.push(album);
+    });
+
+    const order = Array.from(groups.values());
+    const direction = currentAlbumSortMode === "time-asc" ? 1 : -1;
+    return order.sort((a, b) => {
+      if (a.undated !== b.undated) return a.undated ? 1 : -1;
+      return (a.timestamp - b.timestamp) * direction;
+    });
+  }
+
   function renderAlbumSwitcher(list) {
     if (isSingleLockedMode) {
+      albumPickerToolbar.hidden = true;
       controlsSection.hidden = true;
       return;
     }
 
+    controlsSection.hidden = false;
+    albumPickerToolbar.hidden = albums.length === 0;
     albumSwitcher.innerHTML = "";
-    if (!list.length || (list.length <= 1 && selectedCategory === "Tất cả")) {
+    albumSwitcher.classList.remove("album-grid-small", "album-grid-medium", "album-grid-large");
+    albumSwitcher.classList.add("album-grid", `album-grid-${currentAlbumGridSize}`);
+
+    const visibleAlbums = getAlbumPickerList(list);
+    updateAlbumPickerToolbar(visibleAlbums.length, list.length);
+    if (!visibleAlbums.length) {
       albumSwitcher.hidden = true;
-      if (categoryBar.hidden) controlsSection.hidden = true;
       return;
     }
 
-    controlsSection.hidden = false;
     albumSwitcher.hidden = false;
-    list.forEach((album) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = `album-chip${currentAlbum && currentAlbum.id === album.id ? " active" : ""}`;
+    const groups = groupAlbumsByMonth(visibleAlbums);
+    groups.forEach((group) => {
+      const heading = document.createElement("div");
+      heading.className = "album-month-heading";
+      heading.textContent = `${group.label} · ${group.albums.length} album`;
+      albumSwitcher.appendChild(heading);
 
-      const thumb = document.createElement("img");
-      thumb.className = "album-chip-thumb";
-      thumb.alt = album.title;
-      thumb.loading = "lazy";
-      const thumbSrc = album.cover || (album.photos[0] && album.photos[0].url) || "";
-      if (thumbSrc) {
-        loadImageWithFallback(thumb, thumbSrc, 240);
-      }
+      group.albums.forEach((album) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `album-chip${currentAlbum && currentAlbum.id === album.id ? " active" : ""}`;
 
-      const subText = album.driveFolderUrl
-        ? (album.updatedAt || "Google Drive")
-        : `${album.photos.length} ảnh${album.updatedAt ? ` • ${album.updatedAt}` : ""}`;
+        const thumb = document.createElement("img");
+        thumb.className = "album-chip-thumb";
+        thumb.alt = album.title;
+        thumb.loading = "lazy";
+        const thumbSrc = album.cover || (album.photos[0] && album.photos[0].url) || "";
+        if (thumbSrc) {
+          loadImageWithFallback(thumb, thumbSrc, 240);
+        }
 
-      const info = document.createElement("span");
-      info.className = "album-chip-info";
-      info.innerHTML = `
-        <span class="album-chip-title">${escapeHtml(album.title)}</span>
-        <span class="album-chip-sub">${escapeHtml(subText)}</span>
-      `;
+        const subText = album.driveFolderUrl
+          ? (album.updatedAt || "Google Drive")
+          : `${album.photos.length} ảnh${album.updatedAt ? ` • ${album.updatedAt}` : ""}`;
 
-      btn.append(thumb, info);
-      btn.addEventListener("click", () => selectAlbum(album));
-      albumSwitcher.appendChild(btn);
+        const info = document.createElement("span");
+        info.className = "album-chip-info";
+        info.innerHTML = `
+          <span class="album-chip-title">${escapeHtml(album.title)}</span>
+          <span class="album-chip-sub">${escapeHtml(subText)}</span>
+        `;
+
+        btn.append(thumb, info);
+        btn.addEventListener("click", () => selectAlbum(album));
+        albumSwitcher.appendChild(btn);
+      });
     });
   }
-
   function renderHero(album, photoList, isLoadingDrive = false) {
     document.title = `${album.title} — ${rawDbData.brandName || "Gallery"}`;
+    heroSection.classList.remove("picker-mode");
     heroCategory.textContent = album.category || "Album";
     heroTitle.textContent = album.title;
     heroDesc.textContent = album.description || "";
@@ -2539,7 +2852,7 @@ button {
   function getGridThumbWidth() {
     if (currentGridSize === "small") return 320;
     if (currentGridSize === "large") return 1400;
-    return 560; // medium (3 cột): icon nhỏ tải siêu nhanh
+    return 560; // ảnh cỡ vừa
   }
 
   function setGridSize(size) {
@@ -2568,7 +2881,7 @@ button {
 
     if (!photos.length) {
       emptyState.hidden = false;
-      emptyStateText.textContent = "Chưa có ảnh nào trong album này.";
+      emptyStateText.textContent = photoSearchQuery ? "Không tìm thấy ảnh phù hợp." : "Chưa có ảnh nào trong album này.";
       return;
     }
     emptyState.hidden = true;
@@ -2722,7 +3035,11 @@ button {
   }
 
   function applySortAndRender(album) {
-    const sorted = sortPhotosList(unsortedAlbumPhotos, currentSortMode);
+    const sortedAll = sortPhotosList(unsortedAlbumPhotos, currentSortMode);
+    const query = photoSearchQuery.trim().toLocaleLowerCase("vi");
+    const sorted = query
+      ? sortedAll.filter((photo) => `${photo.fileName || ""} ${photo.caption || ""}`.toLocaleLowerCase("vi").includes(query))
+      : sortedAll;
     updateSortToolbarUI();
     renderHero(album, sorted, false);
     renderGalleryPhotos(album, sorted);
@@ -2738,8 +3055,35 @@ button {
     if (currentAlbum) applySortAndRender(currentAlbum);
   });
 
+  albumSearchInput.addEventListener("input", () => {
+    albumSearchQuery = albumSearchInput.value.trim();
+    renderAlbumSwitcher(getFilteredAlbums());
+  });
+
+  albumGridSizeBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      currentAlbumGridSize = btn.dataset.albumGridSize || "medium";
+      renderAlbumSwitcher(getFilteredAlbums());
+    });
+  });
+
+  albumSortNameBtn.addEventListener("click", () => {
+    currentAlbumSortMode = currentAlbumSortMode === "name-asc" ? "name-desc" : "name-asc";
+    renderAlbumSwitcher(getFilteredAlbums());
+  });
+
+  albumSortTimeBtn.addEventListener("click", () => {
+    currentAlbumSortMode = currentAlbumSortMode === "time-desc" ? "time-asc" : "time-desc";
+    renderAlbumSwitcher(getFilteredAlbums());
+  });
+  photoSearchInput.addEventListener("input", () => {
+    photoSearchQuery = photoSearchInput.value.trim().toLocaleLowerCase("vi");
+    if (currentAlbum) applySortAndRender(currentAlbum);
+  });
   async function selectAlbum(album) {
     currentAlbum = album;
+    photoSearchQuery = "";
+    photoSearchInput.value = "";
     currentSortMode = "name-asc"; // Luôn hiển thị theo thứ tự tên file khi mở album
     updateUrlParam(album.id);
     renderAlbumSwitcher(getFilteredAlbums());
@@ -3354,10 +3698,19 @@ button {
       return;
     }
 
-    const targetId = preferredAlbumId || urlParams.get("album");
-    const initialAlbum = albums.find((a) => a.id === targetId) || albums[0];
     renderCategories();
-    await selectAlbum(initialAlbum);
+    const targetId = preferredAlbumId || urlParams.get("album");
+    const initialAlbum = albums.find((a) => a.id === targetId);
+    if (initialAlbum) {
+      await selectAlbum(initialAlbum);
+      return;
+    }
+
+    currentAlbum = null;
+    unsortedAlbumPhotos = [];
+    activeDisplayPhotos = [];
+    renderAlbumSwitcher(getFilteredAlbums());
+    showAlbumPicker(getFilteredAlbums());
   }
 
   shareMenuBtn.addEventListener("click", (e) => {
