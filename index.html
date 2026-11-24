@@ -401,28 +401,33 @@ button {
   color: var(--text-muted);
 }
 
-/* Gallery Grid — Justified Row (Giữ nguyên 100% tỷ lệ gốc, xếp khít hàng ngang 1 -> 2 -> 3) */
+/* Gallery Grid — Ảnh luôn giữ nguyên tỷ lệ, không cắt ở mọi kích thước màn hình */
 .masonry-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
+  align-items: start;
 }
 
-.masonry-grid::after {
-  content: "";
-  flex-grow: 999999999;
-}
-
-/* Mức Vừa (mặc định): ~3-4 ảnh/hàng, giữ nguyên tỷ lệ gốc */
+/* Vừa: lưới thoáng, khung 4:3; ảnh được thu vừa khung */
 .masonry-grid.grid-medium {
-  --row-height: 240px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 12px;
 }
 
-/* Mức Nhỏ: ~6 ảnh/hàng, giữ nguyên tỷ lệ gốc, không cắt khung hình */
+.masonry-grid.grid-medium .photo-card {
+  aspect-ratio: var(--ratio, 1.333);
+}
+
+/* Nhỏ: nhiều ảnh hơn, khung vuông nhưng vẫn hiển thị trọn ảnh */
 .masonry-grid.grid-small {
-  --row-height: 145px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 8px;
+}
+
+.masonry-grid.grid-small .photo-card {
+  aspect-ratio: var(--ratio, 1.333);
+  border-radius: var(--radius-sm);
 }
 
 .masonry-grid.grid-small .card-download-btn {
@@ -436,75 +441,9 @@ button {
   display: none;
 }
 
-/* Chế độ Justified áp dụng chung cho Nhỏ và Vừa */
-.masonry-grid.grid-small .photo-card,
-.masonry-grid.grid-medium .photo-card {
-  height: var(--row-height);
-  flex-grow: calc(var(--ratio, 1.333));
-  flex-basis: calc(var(--row-height) * var(--ratio, 1.333));
-  max-width: 100%;
-}
-
-.masonry-grid.grid-small .photo-card img,
-.masonry-grid.grid-medium .photo-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  background: var(--surface-muted);
-}
-
-/* Mức To: Xem từng ảnh 1 hàng — giữ nguyên 100% tỷ lệ gốc */
-.masonry-grid.grid-large {
-  display: grid;
-  grid-template-columns: 1fr;
-  max-width: 920px;
-  margin-inline: auto;
-  gap: 24px;
-}
-
-.masonry-grid.grid-large .photo-card {
-  height: auto;
-  min-height: 240px;
-}
-
-.masonry-grid.grid-large .photo-card img {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-}
-
-@media (max-width: 960px) {
-  .masonry-grid.grid-medium {
-    --row-height: 185px;
-    gap: 8px;
-  }
-  .masonry-grid.grid-small {
-    --row-height: 115px;
-    gap: 6px;
-  }
-}
-
-@media (max-width: 560px) {
-  .masonry-grid.grid-medium {
-    --row-height: 125px;
-    gap: 6px;
-  }
-  .masonry-grid.grid-small {
-    --row-height: 78px;
-    gap: 4px;
-  }
-  .masonry-grid.grid-small .photo-card {
-    border-radius: 4px;
-  }
-  .masonry-grid.grid-small .card-download-btn {
-    display: none;
-  }
-}
-
-.photo-card {
-  aspect-ratio: 4 / 3;
-}
-.masonry-grid.grid-medium .photo-card img {
+/* Vừa và Nhỏ: object-fit: contain đảm bảo toàn bộ ảnh luôn nhìn thấy */
+.masonry-grid.grid-medium .photo-card img,
+.masonry-grid.grid-small .photo-card img {
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -512,42 +451,18 @@ button {
   background: var(--surface-muted);
 }
 
-/* Mức Nhỏ: 6 ảnh 1 hàng, khung vuông 1:1 gọn gàng như thư viện ảnh chuyên nghiệp */
-.masonry-grid.grid-small {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 8px;
-}
-.masonry-grid.grid-small .photo-card {
-  aspect-ratio: 1 / 1;
-  border-radius: var(--radius-sm);
-}
-.masonry-grid.grid-small .photo-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 22%;
-}
-.masonry-grid.grid-small .card-download-btn {
-  width: 28px;
-  height: 28px;
-  top: 6px;
-  right: 6px;
-}
-.masonry-grid.grid-small .photo-caption-badge {
-  display: none;
-}
-
-/* Mức To: Xem từng ảnh 1 hàng — giữ nguyên 100% tỷ lệ gốc (ngang/dọc) */
+/* To: một ảnh mỗi hàng, chiều cao tự theo đúng tỷ lệ gốc */
 .masonry-grid.grid-large {
-  grid-template-columns: 1fr;
-  max-width: 920px;
-  margin-inline: auto;
+  grid-template-columns: minmax(0, 920px);
+  justify-content: center;
   gap: 24px;
 }
+
 .masonry-grid.grid-large .photo-card {
   aspect-ratio: auto;
-  min-height: 240px;
+  min-height: 0;
 }
+
 .masonry-grid.grid-large .photo-card img {
   width: 100%;
   height: auto;
@@ -567,12 +482,12 @@ button {
 
 @media (max-width: 560px) {
   .masonry-grid.grid-medium {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 6px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
   }
   .masonry-grid.grid-small {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 4px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
   }
   .masonry-grid.grid-small .photo-card {
     border-radius: 4px;
@@ -581,7 +496,6 @@ button {
     display: none;
   }
 }
-
 .photo-card {
   position: relative;
   width: 100%;
