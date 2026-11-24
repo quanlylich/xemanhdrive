@@ -1194,6 +1194,110 @@ button {
   border: 1px solid var(--border);
 }
 
+/* Gallery Sort Toolbar */
+.gallery-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.gallery-toolbar[hidden] {
+  display: none;
+}
+
+.gallery-toolbar-info {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.sort-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sort-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-right: 2px;
+}
+
+.sort-btn {
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all var(--transition);
+}
+
+.sort-btn:hover {
+  color: var(--text);
+  border-color: #a8a29e;
+}
+
+.sort-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+/* Lightbox Zoom & Fullscreen */
+.lightbox-img-viewport {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  touch-action: none;
+  cursor: zoom-in;
+}
+
+.lightbox-img-viewport.is-zoomed {
+  cursor: grab;
+}
+
+.lightbox-img-viewport.is-zoomed.is-dragging {
+  cursor: grabbing;
+}
+
+.lightbox-stage img {
+  transform-origin: center center;
+  transition: opacity 180ms ease, transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.lightbox-img-viewport.is-dragging img {
+  transition: opacity 180ms ease;
+}
+
+.lightbox:fullscreen .lightbox-stage {
+  margin-bottom: 16px;
+  max-width: 98vw;
+  max-height: 92vh;
+}
+
+.lightbox:fullscreen .lightbox-stage img {
+  max-width: 98vw;
+  max-height: 88vh;
+}
+
+.lightbox:fullscreen .lightbox-thumbs {
+  opacity: 0.25;
+  transition: opacity 200ms ease;
+}
+
+.lightbox:fullscreen .lightbox-thumbs:hover {
+  opacity: 1;
+}
+
 /* Toast */
 .toast {
   position: fixed;
@@ -1290,6 +1394,19 @@ button {
 
     <!-- Lưới ảnh Masonry -->
     <section class="gallery-section" aria-label="Danh sách ảnh">
+      <div class="gallery-toolbar" id="gallery-toolbar" hidden>
+        <span class="gallery-toolbar-info" id="gallery-sort-summary">Hiển thị theo thứ tự tên file</span>
+        <div class="sort-control" role="group" aria-label="Sắp xếp ảnh">
+          <span class="sort-label">Sắp xếp:</span>
+          <button type="button" class="sort-btn active" data-sort="name-asc" id="sort-name-btn" title="Đảo chiều sắp xếp theo tên file">
+            Tên file ↑
+          </button>
+          <button type="button" class="sort-btn" data-sort="time-desc" id="sort-time-btn" title="Đảo chiều sắp xếp theo thời gian">
+            Thời gian
+          </button>
+        </div>
+      </div>
+
       <div class="masonry-grid" id="gallery-grid"></div>
       <div class="empty-state" id="empty-state" hidden>
         <p id="empty-state-text">Chưa có ảnh nào trong album này.</p>
@@ -1311,6 +1428,33 @@ button {
     <div class="lightbox-topbar">
       <span class="lightbox-counter" id="lightbox-counter">1 / 1</span>
       <div class="lightbox-actions-group">
+        <button type="button" class="lightbox-btn" id="lightbox-zoom-btn" title="Phóng to / Thu nhỏ ảnh (hoặc nhấp đúp / lăn chuột)">
+          <svg id="icon-zoom-in" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            <line x1="11" y1="8" x2="11" y2="14"></line>
+            <line x1="8" y1="11" x2="14" y2="11"></line>
+          </svg>
+          <svg id="icon-zoom-out" hidden width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            <line x1="8" y1="11" x2="14" y2="11"></line>
+          </svg>
+        </button>
+        <button type="button" class="lightbox-btn" id="lightbox-fullscreen-btn" title="Toàn màn hình (F)">
+          <svg id="icon-fs-enter" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <polyline points="9 21 3 21 3 15"></polyline>
+            <line x1="21" y1="3" x2="14" y2="10"></line>
+            <line x1="3" y1="21" x2="10" y2="14"></line>
+          </svg>
+          <svg id="icon-fs-exit" hidden width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="4 14 10 14 10 20"></polyline>
+            <polyline points="20 10 14 10 14 4"></polyline>
+            <line x1="14" y1="10" x2="21" y2="3"></line>
+            <line x1="3" y1="21" x2="10" y2="14"></line>
+          </svg>
+        </button>
         <button type="button" class="lightbox-pill-btn" id="lightbox-download-hd" title="Tải ảnh chất lượng cao (dung lượng vừa phải, giữ nguyên độ nét)">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -1342,9 +1486,11 @@ button {
       </svg>
     </button>
 
-    <figure class="lightbox-stage">
+    <figure class="lightbox-stage" id="lightbox-stage">
       <div class="lightbox-spinner" id="lightbox-spinner" hidden></div>
-      <img id="lightbox-img" src="" alt="" />
+      <div class="lightbox-img-viewport" id="lightbox-viewport">
+        <img id="lightbox-img" src="" alt="" draggable="false" />
+      </div>
       <figcaption class="lightbox-caption" id="lightbox-caption"></figcaption>
     </figure>
 
@@ -1593,6 +1739,10 @@ button {
   const controlsSection = document.getElementById("controls-section");
   const categoryBar = document.getElementById("category-bar");
   const albumSwitcher = document.getElementById("album-switcher");
+  const galleryToolbar = document.getElementById("gallery-toolbar");
+  const gallerySortSummary = document.getElementById("gallery-sort-summary");
+  const sortNameBtn = document.getElementById("sort-name-btn");
+  const sortTimeBtn = document.getElementById("sort-time-btn");
   const galleryGrid = document.getElementById("gallery-grid");
   const emptyState = document.getElementById("empty-state");
   const emptyStateText = document.getElementById("empty-state-text");
@@ -1600,10 +1750,17 @@ button {
   // Lightbox
   const lightbox = document.getElementById("lightbox");
   const lightboxBackdrop = document.getElementById("lightbox-backdrop");
+  const lightboxViewport = document.getElementById("lightbox-viewport");
   const lightboxImg = document.getElementById("lightbox-img");
   const lightboxCaption = document.getElementById("lightbox-caption");
   const lightboxCounter = document.getElementById("lightbox-counter");
   const lightboxSpinner = document.getElementById("lightbox-spinner");
+  const lightboxZoomBtn = document.getElementById("lightbox-zoom-btn");
+  const iconZoomIn = document.getElementById("icon-zoom-in");
+  const iconZoomOut = document.getElementById("icon-zoom-out");
+  const lightboxFullscreenBtn = document.getElementById("lightbox-fullscreen-btn");
+  const iconFsEnter = document.getElementById("icon-fs-enter");
+  const iconFsExit = document.getElementById("icon-fs-exit");
   const lightboxClose = document.getElementById("lightbox-close");
   const lightboxPrev = document.getElementById("lightbox-prev");
   const lightboxNext = document.getElementById("lightbox-next");
@@ -1680,12 +1837,26 @@ button {
   let albums = [];
   let selectedCategory = "Tất cả";
   let currentAlbum = null;
+  let unsortedAlbumPhotos = [];
   let activeDisplayPhotos = [];
+  let currentSortMode = "name-asc"; // Mặc định sắp xếp theo thứ tự tên file A -> Z
   let currentPhotoIndex = 0;
   let editorPhotos = [];
   let adminSession = null;
   let toastTimer = null;
+
+  // Lightbox Zoom & Pan State
+  let zoomScale = 1;
+  let panX = 0;
+  let panY = 0;
+  let isPanning = false;
+  let panStartX = 0;
+  let panStartY = 0;
+  let didDragMove = false;
   let touchStartX = 0;
+  let initialPinchDist = 0;
+  let initialPinchScale = 1;
+
   const driveFolderCache = new Map();
 
   /* -----------------------------------------------------------------------
@@ -1843,7 +2014,14 @@ button {
       const isImageByName = /\.(jpe?g|png|webp|gif|heic|bmp|tiff?)$/i.test(name);
       const isImageByIcon = iconSrc.includes("image") || iconSrc.includes("photos");
       if (id && id.length >= 20 && (isImageByName || isImageByIcon || !name.includes("."))) {
-        files.push({ id, name: name || id, mimeType: "image/jpeg" });
+        const timeText = (el.querySelector(".flip-entry-last-modified")?.textContent || "").trim();
+        const parsedTime = timeText ? Date.parse(timeText) : 0;
+        files.push({
+          id,
+          name: name || id,
+          mimeType: "image/jpeg",
+          createdTime: Number.isNaN(parsedTime) ? 0 : parsedTime
+        });
       }
     });
 
@@ -2322,20 +2500,106 @@ button {
     });
   }
 
+  function getPhotoSortName(photo, fallbackIdx = 0) {
+    return String(photo.fileName || photo.caption || `${String(fallbackIdx + 1).padStart(5, "0")}`);
+  }
+
+  function getPhotoTimestamp(photo, fallbackIdx = 0) {
+    if (typeof photo.timestamp === "number" && photo.timestamp > 0) return photo.timestamp;
+    if (photo.createdTime) {
+      const t = typeof photo.createdTime === "number" ? photo.createdTime : Date.parse(photo.createdTime);
+      if (!Number.isNaN(t) && t > 0) return t;
+    }
+    if (photo.modifiedTime) {
+      const t = typeof photo.modifiedTime === "number" ? photo.modifiedTime : Date.parse(photo.modifiedTime);
+      if (!Number.isNaN(t) && t > 0) return t;
+    }
+    return fallbackIdx;
+  }
+
+  function sortPhotosList(list, mode) {
+    const indexed = list.map((item, idx) => ({ item, idx }));
+    indexed.sort((a, b) => {
+      if (mode === "name-asc" || mode === "name-desc") {
+        const nameA = getPhotoSortName(a.item, a.idx);
+        const nameB = getPhotoSortName(b.item, b.idx);
+        const cmp = nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: "base" });
+        return mode === "name-asc" ? cmp : -cmp;
+      }
+      const timeA = getPhotoTimestamp(a.item, a.idx);
+      const timeB = getPhotoTimestamp(b.item, b.idx);
+      if (timeA === timeB) {
+        return getPhotoSortName(a.item, a.idx).localeCompare(
+          getPhotoSortName(b.item, b.idx),
+          undefined,
+          { numeric: true, sensitivity: "base" }
+        );
+      }
+      return mode === "time-asc" ? timeA - timeB : timeB - timeA;
+    });
+    return indexed.map((entry) => entry.item);
+  }
+
+  function updateSortToolbarUI() {
+    if (!currentAlbum || !unsortedAlbumPhotos.length) {
+      galleryToolbar.hidden = true;
+      return;
+    }
+    galleryToolbar.hidden = false;
+
+    const isName = currentSortMode.startsWith("name");
+    const isTime = currentSortMode.startsWith("time");
+
+    sortNameBtn.classList.toggle("active", isName);
+    sortTimeBtn.classList.toggle("active", isTime);
+
+    sortNameBtn.textContent = currentSortMode === "name-desc" ? "Tên file ↓" : "Tên file ↑";
+    sortTimeBtn.textContent = currentSortMode === "time-asc" ? "Thời gian ↑" : (currentSortMode === "time-desc" ? "Thời gian ↓" : "Thời gian");
+
+    const labelMap = {
+      "name-asc": "Sắp xếp theo tên file (A → Z)",
+      "name-desc": "Sắp xếp theo tên file (Z → A)",
+      "time-desc": "Sắp xếp theo thời gian (Mới nhất trước)",
+      "time-asc": "Sắp xếp theo thời gian (Cũ nhất trước)"
+    };
+    gallerySortSummary.textContent = labelMap[currentSortMode] || "";
+  }
+
+  function applySortAndRender(album) {
+    const sorted = sortPhotosList(unsortedAlbumPhotos, currentSortMode);
+    updateSortToolbarUI();
+    renderHero(album, sorted, false);
+    renderGalleryPhotos(album, sorted);
+  }
+
+  sortNameBtn.addEventListener("click", () => {
+    currentSortMode = currentSortMode === "name-asc" ? "name-desc" : "name-asc";
+    if (currentAlbum) applySortAndRender(currentAlbum);
+  });
+
+  sortTimeBtn.addEventListener("click", () => {
+    currentSortMode = currentSortMode === "time-desc" ? "time-asc" : "time-desc";
+    if (currentAlbum) applySortAndRender(currentAlbum);
+  });
+
   async function selectAlbum(album) {
     currentAlbum = album;
+    currentSortMode = "name-asc"; // Luôn hiển thị theo thứ tự tên file khi mở album
     updateUrlParam(album.id);
     renderAlbumSwitcher(getFilteredAlbums());
 
-    const staticPhotos = Array.isArray(album.photos) ? album.photos : [];
+    const staticPhotos = Array.isArray(album.photos)
+      ? album.photos.map((p, i) => ({ ...p, timestamp: p.timestamp || (i + 1) }))
+      : [];
     const folderId = extractDriveFolderId(album.driveFolderUrl || "");
 
     if (!folderId) {
-      renderHero(album, staticPhotos, false);
-      renderGalleryPhotos(album, staticPhotos);
+      unsortedAlbumPhotos = staticPhotos;
+      applySortAndRender(album);
       return;
     }
 
+    galleryToolbar.hidden = true;
     renderHero(album, staticPhotos, true);
     galleryGrid.innerHTML = Array.from({ length: 6 })
       .map(() => `<article class="photo-card is-loading" style="height:240px"></article>`)
@@ -2348,30 +2612,33 @@ button {
       if (!currentAlbum || currentAlbum.id !== album.id) return;
 
       const useCaption = Boolean(album.useFolderCaption);
-      const drivePhotos = result.files.map((file) => ({
+      const drivePhotos = result.files.map((file, idx) => ({
         url: `https://drive.google.com/file/d/${file.id}/view`,
         fileName: file.name || "",
+        createdTime: file.createdTime || file.modifiedTime || file.lastUpdated || (idx + 1),
         caption: useCaption ? stripExtension(file.name) : ""
       }));
 
       const seenIds = new Set(drivePhotos.map((p) => extractDriveFileId(p.url)));
       const merged = [...drivePhotos];
-      staticPhotos.forEach((p) => {
+      staticPhotos.forEach((p, idx) => {
         const fid = extractDriveFileId(p.url) || p.url;
         if (!seenIds.has(fid)) {
           seenIds.add(fid);
-          merged.push(p);
+          merged.push({ ...p, timestamp: drivePhotos.length + idx + 1 });
         }
       });
 
-      renderHero(album, merged, false);
-      renderGalleryPhotos(album, merged);
+      unsortedAlbumPhotos = merged;
+      applySortAndRender(album);
     } catch (err) {
       if (!currentAlbum || currentAlbum.id !== album.id) return;
-      renderHero(album, staticPhotos, false);
+      unsortedAlbumPhotos = staticPhotos;
       if (staticPhotos.length > 0) {
-        renderGalleryPhotos(album, staticPhotos);
+        applySortAndRender(album);
       } else {
+        galleryToolbar.hidden = true;
+        renderHero(album, [], false);
         galleryGrid.innerHTML = "";
         emptyState.hidden = false;
         emptyStateText.textContent = `Không tải được ảnh từ Google Drive (${err.message}). Hãy kiểm tra thư mục đã mở quyền chia sẻ công khai chưa.`;
@@ -2410,8 +2677,114 @@ button {
     });
   }
 
+  function applyImageTransform() {
+    lightboxImg.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${zoomScale})`;
+    const zoomed = zoomScale > 1.01;
+    lightboxViewport.classList.toggle("is-zoomed", zoomed);
+    iconZoomIn.hidden = zoomed;
+    iconZoomOut.hidden = !zoomed;
+  }
+
+  function resetZoom() {
+    zoomScale = 1;
+    panX = 0;
+    panY = 0;
+    isPanning = false;
+    lightboxViewport.classList.remove("is-dragging");
+    applyImageTransform();
+  }
+
+  function setZoom(targetScale, originClientX = null, originClientY = null) {
+    const clamped = Math.min(4, Math.max(1, targetScale));
+    if (clamped === 1) {
+      resetZoom();
+      return;
+    }
+    if (originClientX !== null && originClientY !== null && zoomScale === 1) {
+      const rect = lightboxImg.getBoundingClientRect();
+      const offsetX = originClientX - (rect.left + rect.width / 2);
+      const offsetY = originClientY - (rect.top + rect.height / 2);
+      panX = -offsetX * (clamped - 1) * 0.65;
+      panY = -offsetY * (clamped - 1) * 0.65;
+    }
+    zoomScale = clamped;
+    applyImageTransform();
+  }
+
+  function toggleZoom(clientX = null, clientY = null) {
+    if (zoomScale > 1.01) {
+      resetZoom();
+    } else {
+      setZoom(2.2, clientX, clientY);
+    }
+  }
+
+  function updateFullscreenIcon() {
+    const isFs = Boolean(document.fullscreenElement);
+    iconFsEnter.hidden = isFs;
+    iconFsExit.hidden = !isFs;
+  }
+
+  async function toggleFullscreen() {
+    try {
+      if (!document.fullscreenElement) {
+        if (lightbox.requestFullscreen) {
+          await lightbox.requestFullscreen();
+        } else if (lightbox.webkitRequestFullscreen) {
+          lightbox.webkitRequestFullscreen();
+        }
+      } else if (document.exitFullscreen) {
+        await document.exitFullscreen();
+      }
+    } catch {
+      showToast("Trình duyệt không hỗ trợ chế độ toàn màn hình.");
+    }
+  }
+
+  lightboxZoomBtn.addEventListener("click", () => toggleZoom());
+  lightboxFullscreenBtn.addEventListener("click", () => toggleFullscreen());
+  document.addEventListener("fullscreenchange", updateFullscreenIcon);
+
+  // Double-click để phóng to / thu nhỏ tại vị trí con trỏ
+  lightboxViewport.addEventListener("dblclick", (e) => {
+    e.preventDefault();
+    toggleZoom(e.clientX, e.clientY);
+  });
+
+  // Lăn chuột để Zoom mượt mà
+  lightboxViewport.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 0.35 : -0.35;
+    setZoom(zoomScale + delta, e.clientX, e.clientY);
+  }, { passive: false });
+
+  // Kéo chuột để di chuyển vùng xem khi đang Zoom
+  lightboxViewport.addEventListener("mousedown", (e) => {
+    if (zoomScale <= 1.01 || e.button !== 0) return;
+    isPanning = true;
+    didDragMove = false;
+    panStartX = e.clientX - panX;
+    panStartY = e.clientY - panY;
+    lightboxViewport.classList.add("is-dragging");
+  });
+
+  window.addEventListener("mousemove", (e) => {
+    if (!isPanning) return;
+    didDragMove = true;
+    panX = e.clientX - panStartX;
+    panY = e.clientY - panStartY;
+    applyImageTransform();
+  });
+
+  window.addEventListener("mouseup", () => {
+    if (!isPanning) return;
+    isPanning = false;
+    lightboxViewport.classList.remove("is-dragging");
+  });
+
   function openLightbox(index) {
     currentPhotoIndex = index;
+    resetZoom();
     lightbox.classList.add("open");
     lightbox.setAttribute("aria-hidden", "false");
     document.body.classList.add("no-scroll");
@@ -2420,6 +2793,10 @@ button {
   }
 
   function closeLightbox() {
+    if (document.fullscreenElement && document.exitFullscreen) {
+      document.exitFullscreen().catch(() => {});
+    }
+    resetZoom();
     lightbox.classList.remove("open");
     lightbox.setAttribute("aria-hidden", "true");
     document.body.classList.remove("no-scroll");
@@ -2427,6 +2804,7 @@ button {
 
   function showLightboxPhoto() {
     if (!activeDisplayPhotos || !activeDisplayPhotos.length) return;
+    resetZoom();
     const total = activeDisplayPhotos.length;
     const photo = activeDisplayPhotos[currentPhotoIndex];
 
@@ -3042,6 +3420,10 @@ button {
       if (e.key === "Escape") closeLightbox();
       if (e.key === "ArrowLeft") stepLightbox(-1);
       if (e.key === "ArrowRight") stepLightbox(1);
+      if (e.key === "f" || e.key === "F") toggleFullscreen();
+      if (e.key === "+" || e.key === "=") setZoom(zoomScale + 0.5);
+      if (e.key === "-" || e.key === "_") setZoom(zoomScale - 0.5);
+      if (e.key === "0") resetZoom();
       return;
     }
     if (e.key === "Escape") {
@@ -3050,13 +3432,51 @@ button {
     }
   });
 
-  lightbox.addEventListener("touchstart", (e) => {
-    touchStartX = e.changedTouches[0].screenX;
+  function getTouchDistance(touches) {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.hypot(dx, dy);
+  }
+
+  lightboxViewport.addEventListener("touchstart", (e) => {
+    if (e.touches.length === 2) {
+      initialPinchDist = getTouchDistance(e.touches);
+      initialPinchScale = zoomScale;
+      isPanning = false;
+    } else if (e.touches.length === 1) {
+      touchStartX = e.touches[0].screenX;
+      if (zoomScale > 1.01) {
+        isPanning = true;
+        panStartX = e.touches[0].clientX - panX;
+        panStartY = e.touches[0].clientY - panY;
+      }
+    }
   }, { passive: true });
 
-  lightbox.addEventListener("touchend", (e) => {
-    const diff = e.changedTouches[0].screenX - touchStartX;
-    if (Math.abs(diff) > 45) stepLightbox(diff > 0 ? -1 : 1);
+  lightboxViewport.addEventListener("touchmove", (e) => {
+    if (e.touches.length === 2 && initialPinchDist > 0) {
+      e.preventDefault();
+      const dist = getTouchDistance(e.touches);
+      setZoom(initialPinchScale * (dist / initialPinchDist));
+    } else if (e.touches.length === 1 && isPanning && zoomScale > 1.01) {
+      e.preventDefault();
+      panX = e.touches[0].clientX - panStartX;
+      panY = e.touches[0].clientY - panStartY;
+      applyImageTransform();
+    }
+  }, { passive: false });
+
+  lightboxViewport.addEventListener("touchend", (e) => {
+    if (e.touches.length < 2) {
+      initialPinchDist = 0;
+    }
+    if (e.touches.length === 0) {
+      isPanning = false;
+      if (zoomScale <= 1.01 && e.changedTouches.length === 1) {
+        const diff = e.changedTouches[0].screenX - touchStartX;
+        if (Math.abs(diff) > 45) stepLightbox(diff > 0 ? -1 : 1);
+      }
+    }
   }, { passive: true });
 
   async function init() {
