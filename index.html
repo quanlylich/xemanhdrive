@@ -401,32 +401,27 @@ button {
   color: var(--text-muted);
 }
 
-/* Gallery Grid — Ảnh luôn giữ nguyên tỷ lệ, không cắt ở mọi kích thước màn hình */
+/* Gallery Grid — masonry tự chia cột và giữ nguyên toàn bộ ảnh */
 .masonry-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
-  align-items: start;
+  display: block;
+  column-width: 230px;
+  column-gap: 12px;
+  column-fill: balance;
 }
 
-/* Vừa: lưới thoáng, khung 4:3; ảnh được thu vừa khung */
+/* Vừa: tự chọn số cột theo không gian có sẵn */
 .masonry-grid.grid-medium {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  column-width: 230px;
+  column-gap: 12px;
 }
 
-.masonry-grid.grid-medium .photo-card {
-  aspect-ratio: var(--ratio, 1.333);
-}
-
-/* Nhỏ: nhiều ảnh hơn, khung vuông nhưng vẫn hiển thị trọn ảnh */
+/* Nhỏ: cột hẹp hơn để xem được nhiều ảnh hơn */
 .masonry-grid.grid-small {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 8px;
+  column-width: 150px;
+  column-gap: 8px;
 }
 
 .masonry-grid.grid-small .photo-card {
-  aspect-ratio: var(--ratio, 1.333);
   border-radius: var(--radius-sm);
 }
 
@@ -441,26 +436,45 @@ button {
   display: none;
 }
 
-/* Vừa và Nhỏ: object-fit: contain đảm bảo toàn bộ ảnh luôn nhìn thấy */
+/* Ảnh tự quyết định chiều cao theo tỷ lệ gốc, không crop và không chừa ô rỗng */
+.masonry-grid.grid-medium .photo-card,
+.masonry-grid.grid-small .photo-card {
+  display: inline-block;
+  width: 100%;
+  height: auto;
+  margin: 0 0 12px;
+  vertical-align: top;
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+}
+
 .masonry-grid.grid-medium .photo-card img,
 .masonry-grid.grid-small .photo-card img {
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: contain;
   object-position: center;
   background: var(--surface-muted);
 }
 
-/* To: một ảnh mỗi hàng, chiều cao tự theo đúng tỷ lệ gốc */
+/* To: một ảnh mỗi hàng, chiều cao theo đúng tỷ lệ gốc */
 .masonry-grid.grid-large {
+  display: grid;
   grid-template-columns: minmax(0, 920px);
   justify-content: center;
   gap: 24px;
+  column-width: auto;
+  column-gap: normal;
 }
 
 .masonry-grid.grid-large .photo-card {
-  aspect-ratio: auto;
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0;
   min-height: 0;
+  break-inside: auto;
 }
 
 .masonry-grid.grid-large .photo-card img {
@@ -469,33 +483,12 @@ button {
   object-fit: contain;
 }
 
-@media (max-width: 960px) {
-  .masonry-grid.grid-medium {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
-  }
-  .masonry-grid.grid-small {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 6px;
-  }
-}
-
 @media (max-width: 560px) {
-  .masonry-grid.grid-medium {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-  }
-  .masonry-grid.grid-small {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 5px;
-  }
-  .masonry-grid.grid-small .photo-card {
-    border-radius: 4px;
-  }
   .masonry-grid.grid-small .card-download-btn {
     display: none;
   }
 }
+
 .photo-card {
   position: relative;
   width: 100%;
