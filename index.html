@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Photo Gallery — Bộ Sưu Tập Ảnh</title>
+  <meta name="description" content="Album ảnh trực tuyến tối giản, hiện đại." />
+
+  <!-- Google Fonts hỗ trợ tiếng Việt đẹp & dễ đọc -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600&family=Playfair+Display:wght@500;600&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Thanh điều hướng trên cùng -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#" class="brand" id="brand-name">GALLERY</a>
+      <button type="button" class="btn-outline" id="share-album-btn" aria-label="Sao chép liên kết chia sẻ album">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+        <span>Chia sẻ album</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Ảnh bìa nổi bật của album đang chọn -->
+  <section class="hero" id="hero-section">
+    <div class="hero-media">
+      <img id="hero-cover" src="" alt="" />
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="container hero-content">
+      <span class="hero-category" id="hero-category"></span>
+      <h1 class="hero-title" id="hero-title">Đang tải album...</h1>
+      <p class="hero-description" id="hero-description"></p>
+      <div class="hero-meta">
+        <span id="hero-date"></span>
+        <span class="dot" aria-hidden="true">•</span>
+        <span id="hero-count"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Nội dung chính -->
+  <main class="container main-content">
+    <!-- Bộ lọc danh mục & chọn album -->
+    <section class="controls" aria-label="Bộ lọc và danh sách album">
+      <div class="category-bar" id="category-bar" role="tablist"></div>
+      <div class="album-switcher" id="album-switcher"></div>
+    </section>
+
+    <!-- Lưới ảnh Masonry -->
+    <section class="gallery-section" aria-label="Danh sách ảnh">
+      <div class="masonry-grid" id="gallery-grid"></div>
+      <div class="empty-state" id="empty-state" hidden>
+        <p>Chưa có ảnh nào trong album này.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Chân trang -->
+  <footer class="site-footer">
+    <div class="container">
+      <p id="footer-text">© 2026 Photo Gallery</p>
+    </div>
+  </footer>
+
+  <!-- Lightbox xem ảnh toàn màn hình -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="lightbox-backdrop" id="lightbox-backdrop"></div>
+
+    <div class="lightbox-topbar">
+      <span class="lightbox-counter" id="lightbox-counter">1 / 1</span>
+      <button type="button" class="lightbox-btn" id="lightbox-close" aria-label="Đóng (Esc)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <button type="button" class="lightbox-nav lightbox-prev" id="lightbox-prev" aria-label="Ảnh trước">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+
+    <figure class="lightbox-stage">
+      <div class="lightbox-spinner" id="lightbox-spinner" hidden></div>
+      <img id="lightbox-img" src="" alt="" />
+      <figcaption class="lightbox-caption" id="lightbox-caption"></figcaption>
+    </figure>
+
+    <button type="button" class="lightbox-nav lightbox-next" id="lightbox-next" aria-label="Ảnh tiếp theo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Thông báo Toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Nạp tệp dữ liệu trước, sau đó đến logic ứng dụng -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
