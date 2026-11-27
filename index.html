@@ -4074,6 +4074,48 @@
   /* -----------------------------------------------------------------------
    * Quản lý phiên Đăng nhập / Đăng ký & Phân quyền Admin duyệt tài khoản
    * --------------------------------------------------------------------- */
+  const DEFAULT_ADMIN_USERNAME = "LETAN100586";
+  const DEFAULT_ADMIN_EMAIL = "letan100586@gmail.com";
+  const DEFAULT_ADMIN_DISPLAY = "LETAN100586";
+
+  async function ensureDefaultAdminAccountOnFirebase() {
+    try {
+      const existing = await syncCloudRead(`accounts/${encodeURIComponent(DEFAULT_ADMIN_USERNAME)}`);
+      if (existing && typeof existing === "object") {
+        if (existing.role !== "admin" || existing.status !== "approved" || existing.active === false) {
+          await syncCloudWrite(`accounts/${encodeURIComponent(DEFAULT_ADMIN_USERNAME)}`, "PATCH", {
+            username: DEFAULT_ADMIN_USERNAME,
+            displayName: existing.displayName || DEFAULT_ADMIN_DISPLAY,
+            email: DEFAULT_ADMIN_EMAIL,
+            role: "admin",
+            status: "approved",
+            active: true,
+            updatedAt: Date.now()
+          });
+        }
+        return existing;
+      }
+
+      const defaultSeedPass = "Letan@100586";
+      const seedHash = await computePasswordHash(defaultSeedPass);
+      const seedAccount = {
+        username: DEFAULT_ADMIN_USERNAME,
+        displayName: DEFAULT_ADMIN_DISPLAY,
+        email: DEFAULT_ADMIN_EMAIL,
+        passwordHash: seedHash,
+        role: "admin",
+        status: "approved",
+        active: true,
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      };
+      await syncCloudWrite(`accounts/${encodeURIComponent(DEFAULT_ADMIN_USERNAME)}`, "PUT", seedAccount);
+      return seedAccount;
+    } catch (_) {
+      return null;
+    }
+  }
+
   function loadStoredUser() {
     try {
       const raw = localStorage.getItem(STORAGE_USER_SESSION) || sessionStorage.getItem(STORAGE_USER_SESSION);
@@ -4179,6 +4221,12 @@
     loginSubmitBtn.textContent = "Đang xác thực...";
 
     try {
+      const lowerRaw = rawUser.toLowerCase();
+      const normRaw = normalizeUsername(rawUser);
+      const isDefaultAdminInput =
+        lowerRaw === DEFAULT_ADMIN_EMAIL.toLowerCase() ||
+        normRaw === DEFAULT_ADMIN_USERNAME;
+
       if (rawUser.includes("@") && DEFAULT_FIREBASE_API_KEY) {
         const res = await fetch(
           `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${encodeURIComponent(DEFAULT_FIREBASE_API_KEY)}`,
@@ -4190,24 +4238,57 @@
         );
         const data = await res.json();
         if (!res.ok) throw new Error("Email hoặc mật khẩu không chính xác.");
-        const uname = normalizeUsername(rawUser.split("@")[0]);
-        saveUserSession({
-          username: uname,
-          displayName: data.email,
+
+        const adminUsername = lowerRaw === DEFAULT_ADMIN_EMAIL.toLowerCase()
+          ? DEFAULT_ADMIN_USERNAME
+          : normalizeUsername(rawUser.split("@")[0]);
+        const passHash = await computePasswordHash(password);
+        const adminAccountRecord = {
+          username: adminUsername,
+          displayName: adminUsername,
+          email: data.email,
+          passwordHash: passHash,
           role: "admin",
+          status: "approved",
+          active: true,
+          updatedAt: Date.now()
+        };
+        await syncCloudWrite(`accounts/${encodeURIComponent(adminUsername)}`, "PUT", adminAccountRecord).catch(() => {});
+
+        saveUserSession({
+          username: adminUsername,
+          displayName: adminUsername,
+          email: data.email,
+          role: "admin",
+          passwordHash: passHash,
           idToken: data.idToken
         }, remember);
         closeModal(authModal);
         loginPasswordInput.value = "";
-        showToast(`Xin chào ${data.email}!`);
+        showToast(`Xin chào Admin ${adminUsername}!`);
         openAdminDashboard();
         return;
       }
 
-      const username = normalizeUsername(rawUser);
+      const username = isDefaultAdminInput ? DEFAULT_ADMIN_USERNAME : normRaw;
       const passHash = await computePasswordHash(password);
 
-      const accData = await syncCloudRead(`accounts/${encodeURIComponent(username)}`);
+      let accData = await syncCloudRead(`accounts/${encodeURIComponent(username)}`);
+
+      if (!accData && isDefaultAdminInput) {
+        accData = {
+          username: DEFAULT_ADMIN_USERNAME,
+          displayName: DEFAULT_ADMIN_DISPLAY,
+          email: DEFAULT_ADMIN_EMAIL,
+          passwordHash: passHash,
+          role: "admin",
+          status: "approved",
+          active: true,
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        };
+        await syncCloudWrite(`accounts/${encodeURIComponent(DEFAULT_ADMIN_USERNAME)}`, "PUT", accData);
+      }
 
       if (!accData) {
         throw new Error("Tài khoản không tồn tại. Vui lòng kiểm tra lại hoặc chuyển sang tab Đăng ký.");
@@ -4219,18 +4300,33 @@
         throw new Error("Mật khẩu không chính xác!");
       }
 
-      if (accData.status === "pending") {
+      if (accData.status === "pending" && !isDefaultAdminInput) {
         throw new Error("Tài khoản của bạn đang chờ Quản trị viên phê duyệt!");
       }
-      if (accData.active === false || accData.status === "locked") {
+      if ((accData.active === false || accData.status === "locked") && !isDefaultAdminInput) {
         throw new Error("Tài khoản này đang bị tạm khóa!");
+      }
+
+      const resolvedRole = isDefaultAdminInput ? "admin" : (accData.role || "user");
+      if (isDefaultAdminInput && (accData.role !== "admin" || !accData.passwordHash)) {
+        await syncCloudWrite(`accounts/${encodeURIComponent(DEFAULT_ADMIN_USERNAME)}`, "PATCH", {
+          username: DEFAULT_ADMIN_USERNAME,
+          displayName: accData.displayName || DEFAULT_ADMIN_DISPLAY,
+          email: DEFAULT_ADMIN_EMAIL,
+          passwordHash: accData.passwordHash || passHash,
+          role: "admin",
+          status: "approved",
+          active: true,
+          updatedAt: Date.now()
+        }).catch(() => {});
       }
 
       saveUserSession({
         username,
         displayName: accData.displayName || username,
-        role: accData.role || "user",
-        passwordHash: passHash
+        email: accData.email || (isDefaultAdminInput ? DEFAULT_ADMIN_EMAIL : ""),
+        role: resolvedRole,
+        passwordHash: accData.passwordHash || passHash
       }, remember);
 
       closeModal(authModal);
@@ -6260,7 +6356,11 @@
 
   async function init() {
     currentUser = loadStoredUser();
+    if (currentUser && normalizeUsername(currentUser.username) === DEFAULT_ADMIN_USERNAME) {
+      currentUser.role = "admin";
+    }
     updateAuthHeaderUI();
+    await ensureDefaultAdminAccountOnFirebase();
 
     try {
       let primaryData = null;
