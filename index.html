@@ -2516,7 +2516,7 @@
             type="text"
             class="quick-create-input"
             id="quick-create-link-input"
-            placeholder="Dán link Google Drive (thư mục hoặc ảnh) vào đây"
+            placeholder="Link Google Drive"
             required
           />
           <button type="submit" class="quick-create-submit" id="quick-create-submit-btn">
@@ -2529,7 +2529,7 @@
             type="text"
             class="quick-title-input"
             id="quick-create-title-input"
-            placeholder="Tên album (tùy chọn — tự lấy tên thư mục Drive)"
+            placeholder="Tên album"
           />
         </div>
       </form>
@@ -2658,7 +2658,7 @@
         </div>
         <div class="toolbar-controls-group">
           <label class="gallery-search-control">
-            <input type="search" class="gallery-search-input" id="photo-search-input" placeholder="Tìm tên file, chú thích..." aria-label="Tìm kiếm ảnh trong album" autocomplete="off" />
+            <input type="search" class="gallery-search-input" id="photo-search-input" placeholder="Tìm kiếm" aria-label="Tìm kiếm ảnh trong album" autocomplete="off" />
           </label>
           <div class="view-size-control" role="group" aria-label="Kích thước hiển thị">
             <span class="sort-label">Cỡ ảnh:</span>
@@ -2813,7 +2813,7 @@
         <form id="login-form" class="form-stack">
           <label class="field">
             <span>Tên đăng nhập:</span>
-            <input type="text" id="login-username" required placeholder="VD: LETAN100586" autocomplete="username" />
+            <input type="text" id="login-username" required placeholder="Tên đăng nhập" autocomplete="username" />
           </label>
 
           <div class="field">
@@ -2821,7 +2821,7 @@
               <span class="field-label">Mật khẩu:</span>
               <button type="button" class="text-link-btn" id="toggle-login-pass-btn">👁️ Hiện mật khẩu</button>
             </div>
-            <input type="password" id="login-password" required placeholder="Nhập mật khẩu..." autocomplete="current-password" />
+            <input type="password" id="login-password" required placeholder="Mật khẩu" autocomplete="current-password" />
           </div>
 
           <label class="checkbox-row">
@@ -2841,12 +2841,12 @@
         <form id="register-form" class="form-stack" hidden>
           <label class="field">
             <span>Tên đăng nhập *:</span>
-            <input type="text" id="reg-username" required placeholder="VD: STUDIOJUNE (viết liền không dấu)" autocomplete="off" />
+            <input type="text" id="reg-username" required placeholder="Tên đăng nhập" autocomplete="off" />
           </label>
 
           <label class="field">
             <span>Tên hiển thị / Studio:</span>
-            <input type="text" id="reg-display-name" placeholder="VD: Studio June" autocomplete="off" />
+            <input type="text" id="reg-display-name" placeholder="Tên hiển thị" autocomplete="off" />
           </label>
 
           <div class="field">
@@ -2854,12 +2854,12 @@
               <span class="field-label">Mật khẩu *:</span>
               <button type="button" class="text-link-btn" id="toggle-reg-pass-btn">👁️ Hiện mật khẩu</button>
             </div>
-            <input type="password" id="reg-password" required placeholder="Tối thiểu 6 ký tự..." autocomplete="new-password" />
+            <input type="password" id="reg-password" required placeholder="Mật khẩu mới" autocomplete="new-password" />
           </div>
 
           <label class="field">
             <span>Nhập lại mật khẩu *:</span>
-            <input type="password" id="reg-confirm-password" required placeholder="Nhập lại mật khẩu..." autocomplete="new-password" />
+            <input type="password" id="reg-confirm-password" required placeholder="Nhập lại mật khẩu" autocomplete="new-password" />
           </label>
 
           <p class="form-error" id="register-error" hidden></p>
@@ -2902,10 +2902,18 @@
 
       <!-- Tab 1: Danh sách album của tài khoản -->
       <div class="modal-body admin-panel" id="panel-albums" hidden>
-        <div class="panel-toolbar">
+        <div class="panel-toolbar" style="gap: 10px;">
           <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
             <span class="muted-text" id="admin-album-count">0 album</span>
-            <input type="search" class="gallery-search-input" id="admin-search-input" placeholder="Tìm nhanh album của bạn..." style="width:210px;" />
+            <input type="search" class="gallery-search-input" id="admin-search-input" placeholder="Tìm album" style="width:180px;" />
+            <select id="admin-account-filter" class="sort-btn" aria-label="Lọc theo tài khoản" hidden style="padding: 5px 10px;">
+              <option value="__CURRENT__">Tài khoản đang đăng nhập</option>
+              <option value="__ALL__">Tất cả tài khoản</option>
+            </select>
+            <select id="admin-month-filter" class="sort-btn" aria-label="Lọc theo tháng" style="padding: 5px 10px;">
+              <option value="__ALL__">Tất cả các tháng</option>
+            </select>
+            <button type="button" class="btn btn-sm btn-danger-outline" id="delete-month-albums-btn" hidden>Xoá danh sách tháng này</button>
           </div>
           <button type="button" class="btn btn-primary btn-sm" id="create-new-album-btn">+ Thêm album mới</button>
         </div>
@@ -2920,19 +2928,19 @@
           <div class="form-grid-2">
             <label class="field">
               <span>Tên album *</span>
-              <input type="text" id="edit-title" required placeholder="VD: Minh Anh &amp; Quốc Bảo" />
+              <input type="text" id="edit-title" required placeholder="Tên album" />
             </label>
 
             <label class="field">
               <span>Mã đường dẫn (Slug ID) *</span>
-              <input type="text" id="edit-id" required placeholder="minh-anh-quoc-bao" />
+              <input type="text" id="edit-id" required placeholder="Mã đường dẫn" />
             </label>
           </div>
 
           <div class="form-grid-2">
             <label class="field">
               <span>Danh mục</span>
-              <input type="text" id="edit-category" list="category-suggestions" placeholder="Phóng sự cưới" />
+              <input type="text" id="edit-category" list="category-suggestions" placeholder="Danh mục" />
               <datalist id="category-suggestions">
                 <option value="Phóng sự cưới"></option>
                 <option value="Pre-wedding"></option>
@@ -2944,19 +2952,19 @@
 
             <label class="field">
               <span>Ngày cập nhật</span>
-              <input type="text" id="edit-date" placeholder="27/11/2026" />
+              <input type="text" id="edit-date" placeholder="Ngày cập nhật" />
             </label>
           </div>
 
           <label class="field">
             <span>Mô tả ngắn</span>
-            <textarea id="edit-description" rows="2" placeholder="Những khoảnh khắc tự nhiên trong ngày chung đôi..."></textarea>
+            <textarea id="edit-description" rows="2" placeholder="Mô tả"></textarea>
           </label>
 
           <div class="field">
             <span>Link ảnh bìa (tự động lấy ảnh đầu tiên nếu để trống)</span>
             <div class="cover-input-row">
-              <input type="text" id="edit-cover" placeholder="https://drive.google.com/file/d/..." />
+              <input type="text" id="edit-cover" placeholder="Link ảnh bìa" />
               <img id="edit-cover-preview" class="cover-mini-preview" alt="Xem trước bìa" hidden />
             </div>
           </div>
@@ -2967,18 +2975,9 @@
             <input
               type="text"
               id="edit-drive-folder"
-              placeholder="https://drive.google.com/drive/folders/1AbCdEfGh...?usp=sharing"
+              placeholder="Link thư mục Google Drive"
             />
-            <div style="display:flex; flex-wrap:wrap; gap:14px; margin-top:4px;">
-              <label class="checkbox-row">
-                <input type="checkbox" id="edit-folder-caption" />
-                <span>Hiển thị tên tệp làm chú thích</span>
-              </label>
-              <label class="checkbox-row">
-                <input type="checkbox" id="edit-is-public" checked />
-                <span>Hiển thị trên thư viện trang chủ</span>
-              </label>
-            </div>
+
           </div>
 
           <!-- Thêm thủ công từng link ảnh lẻ -->
@@ -2988,7 +2987,7 @@
               <textarea
                 id="bulk-links-input"
                 rows="3"
-                placeholder="Dán các link ảnh lẻ (mỗi link 1 dòng)..."
+                placeholder="Link ảnh lẻ"
               ></textarea>
               <div class="bulk-actions">
                 <div class="bulk-btn-group">
@@ -3020,13 +3019,13 @@
             </label>
             <label class="field">
               <span>Tên hiển thị</span>
-              <input type="text" id="admin-new-user-display" placeholder="VD: Studio June" autocomplete="off" />
+              <input type="text" id="admin-new-user-display" placeholder="Tên hiển thị" autocomplete="off" />
             </label>
           </div>
           <div class="form-grid-2" style="align-items:end;">
             <label class="field">
               <span>Mật khẩu *</span>
-              <input type="text" id="admin-new-user-pass" placeholder="Tối thiểu 6 ký tự..." autocomplete="off" />
+              <input type="text" id="admin-new-user-pass" placeholder="Mật khẩu mới" autocomplete="off" />
             </label>
             <div>
               <button type="button" class="btn btn-primary btn-sm" id="admin-create-user-btn" style="width:100%; height:38px;">+ Tạo &amp; Duyệt ngay</button>
@@ -3059,17 +3058,17 @@
               </label>
               <label class="field">
                 <span>Tên hiển thị / Studio</span>
-                <input type="text" id="account-display-name" placeholder="VD: Studio June" />
+                <input type="text" id="account-display-name" placeholder="Tên hiển thị" />
               </label>
             </div>
             <div class="form-grid-2">
               <label class="field">
                 <span>Mật khẩu mới (để trống nếu không đổi)</span>
-                <input type="password" id="account-new-password" placeholder="Nhập mật khẩu mới..." autocomplete="new-password" />
+                <input type="password" id="account-new-password" placeholder="Mật khẩu mới" autocomplete="new-password" />
               </label>
               <label class="field">
                 <span>Nhập lại mật khẩu mới</span>
-                <input type="password" id="account-confirm-password" placeholder="Nhập lại mật khẩu..." autocomplete="new-password" />
+                <input type="password" id="account-confirm-password" placeholder="Nhập lại mật khẩu" autocomplete="new-password" />
               </label>
             </div>
           </div>
@@ -3080,16 +3079,16 @@
             <div class="form-grid-2">
               <label class="field">
                 <span>Tên thương hiệu trang chủ</span>
-                <input type="text" id="setting-brand" placeholder="STUDIO GALLERY" />
+                <input type="text" id="setting-brand" placeholder="Tên thương hiệu" />
               </label>
               <label class="field">
                 <span>Nội dung chân trang (Footer)</span>
-                <input type="text" id="setting-footer" placeholder="© 2026 Studio Gallery" />
+                <input type="text" id="setting-footer" placeholder="Nội dung chân trang" />
               </label>
             </div>
             <label class="field">
               <span>URL Google Apps Script đọc thư mục Drive</span>
-              <input type="url" id="setting-gas-url" placeholder="https://script.google.com/macros/s/.../exec" />
+              <input type="url" id="setting-gas-url" placeholder="URL Google Apps Script" />
             </label>
           </div>
 
@@ -3116,11 +3115,11 @@
         <div class="form-grid-2">
           <label class="field">
             <span>Tên của bạn (Dâu rể / Khách hàng)</span>
-            <input type="text" id="liked-client-name" placeholder="VD: Minh Anh" />
+            <input type="text" id="liked-client-name" placeholder="Tên khách hàng" />
           </label>
           <label class="field">
             <span>Ghi chú chỉnh sửa (nếu có)</span>
-            <input type="text" id="liked-client-note" placeholder="VD: Làm mịn da nhẹ, in phóng..." />
+            <input type="text" id="liked-client-note" placeholder="Ghi chú" />
           </label>
         </div>
 
@@ -3204,11 +3203,11 @@
         <input type="hidden" id="edit-user-username" />
         <label class="field">
           <span>Tên hiển thị</span>
-          <input type="text" id="edit-user-display" required placeholder="Nhập tên hiển thị..." />
+          <input type="text" id="edit-user-display" required placeholder="Tên hiển thị" />
         </label>
         <label class="field">
           <span>Mật khẩu mới (để trống nếu giữ nguyên)</span>
-          <input type="password" id="edit-user-password" placeholder="Tối thiểu 6 ký tự, không dấu cách..." autocomplete="new-password" />
+          <input type="password" id="edit-user-password" placeholder="Mật khẩu mới" autocomplete="new-password" />
         </label>
         <p class="form-error" id="edit-user-error" hidden></p>
         <div class="modal-footer-actions">
@@ -3378,6 +3377,9 @@
   };
   const adminAlbumCountEl = document.getElementById("admin-album-count");
   const adminSearchInput = document.getElementById("admin-search-input");
+  const adminAccountFilterEl = document.getElementById("admin-account-filter");
+  const adminMonthFilterEl = document.getElementById("admin-month-filter");
+  const deleteMonthAlbumsBtn = document.getElementById("delete-month-albums-btn");
   const adminAlbumListEl = document.getElementById("admin-album-list");
   const createNewAlbumBtn = document.getElementById("create-new-album-btn");
 
@@ -5172,7 +5174,7 @@
       const rawAlbum = {
         id: albumId,
         title: finalTitle,
-        category: isLogged ? "Phóng sự cưới" : "Chia sẻ nhanh",
+        category: "",
         description: "",
         updatedAt: formatTodayVN(),
         cover: coverUrl,
@@ -5902,13 +5904,101 @@
     });
   }
 
-  function getUserOwnedAlbums() {
-    if (!currentUser) return [];
-    const uname = normalizeUsername(currentUser.username);
-    if (currentUser.role === "admin") {
-      return albums;
+  function extractAlbumMonthKey(album) {
+    const rawDate = String(album?.updatedAt || album?.date || "").trim();
+    const dmyMatch = rawDate.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+    if (dmyMatch) {
+      const mm = dmyMatch[2].padStart(2, "0");
+      const yyyy = dmyMatch[3];
+      return `${yyyy}-${mm}`;
     }
-    return albums.filter((a) => normalizeUsername(a.owner || "") === uname);
+    const ymdMatch = rawDate.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
+    if (ymdMatch) {
+      const mm = ymdMatch[2].padStart(2, "0");
+      const yyyy = ymdMatch[1];
+      return `${yyyy}-${mm}`;
+    }
+    return "";
+  }
+
+  function formatMonthKeyLabel(monthKey) {
+    if (!monthKey || !/^\d{4}-\d{2}$/.test(monthKey)) return monthKey || "Không rõ tháng";
+    const [yyyy, mm] = monthKey.split("-");
+    return `Tháng ${Number(mm)}/${yyyy}`;
+  }
+
+  function getAccountScopedAlbums() {
+    if (!currentUser) return [];
+    const curUname = normalizeUsername(currentUser.username);
+    const isAdmin = currentUser.role === "admin";
+
+    if (adminAccountFilterEl) {
+      adminAccountFilterEl.hidden = !isAdmin;
+      if (isAdmin) {
+        const prevVal = adminAccountFilterEl.value || "__CURRENT__";
+        const ownerSet = new Set();
+        albums.forEach((a) => {
+          const ow = normalizeUsername(a.owner || "");
+          if (ow) ownerSet.add(ow);
+        });
+        if (curUname) ownerSet.add(curUname);
+        Object.keys(allAccountsMap || {}).forEach((k) => {
+          const nk = normalizeUsername(k);
+          if (nk) ownerSet.add(nk);
+        });
+
+        const sortedOwners = Array.from(ownerSet).sort();
+        adminAccountFilterEl.innerHTML = `
+          <option value="__CURRENT__">Tài khoản đang đăng nhập (${escapeHtml(curUname)})</option>
+          <option value="__ALL__">Tất cả tài khoản</option>
+          ${sortedOwners.map((ow) => `<option value="${escapeHtml(ow)}">${escapeHtml(ow)}</option>`).join("")}
+        `;
+        if (Array.from(adminAccountFilterEl.options).some((o) => o.value === prevVal)) {
+          adminAccountFilterEl.value = prevVal;
+        } else {
+          adminAccountFilterEl.value = "__CURRENT__";
+        }
+
+        const selectedAcc = adminAccountFilterEl.value;
+        if (selectedAcc === "__ALL__") return albums;
+        if (selectedAcc === "__CURRENT__") {
+          return albums.filter((a) => normalizeUsername(a.owner || "") === curUname);
+        }
+        return albums.filter((a) => normalizeUsername(a.owner || "") === selectedAcc);
+      }
+    }
+
+    return albums.filter((a) => normalizeUsername(a.owner || "") === curUname);
+  }
+
+  function syncMonthFilterOptions(scopedAlbums) {
+    if (!adminMonthFilterEl) return;
+    const prevMonth = adminMonthFilterEl.value || "__ALL__";
+    const monthSet = new Set();
+    scopedAlbums.forEach((a) => {
+      const mk = extractAlbumMonthKey(a);
+      if (mk) monthSet.add(mk);
+    });
+    const sortedMonths = Array.from(monthSet).sort().reverse();
+    adminMonthFilterEl.innerHTML = `
+      <option value="__ALL__">Tất cả các tháng</option>
+      ${sortedMonths.map((mk) => `<option value="${escapeHtml(mk)}">${escapeHtml(formatMonthKeyLabel(mk))}</option>`).join("")}
+    `;
+    if (Array.from(adminMonthFilterEl.options).some((o) => o.value === prevMonth)) {
+      adminMonthFilterEl.value = prevMonth;
+    } else {
+      adminMonthFilterEl.value = "__ALL__";
+    }
+  }
+
+  function getUserOwnedAlbums() {
+    const scoped = getAccountScopedAlbums();
+    syncMonthFilterOptions(scoped);
+    const selectedMonth = adminMonthFilterEl ? adminMonthFilterEl.value : "__ALL__";
+    if (!selectedMonth || selectedMonth === "__ALL__") {
+      return scoped;
+    }
+    return scoped.filter((a) => extractAlbumMonthKey(a) === selectedMonth);
   }
 
   function renderAdminAlbumList() {
@@ -5917,6 +6007,15 @@
     const filtered = query
       ? owned.filter((a) => normalizeAlbumSearchText(`${a.title} ${a.category} ${a.id}`).includes(query))
       : owned;
+
+    const selectedMonth = adminMonthFilterEl ? adminMonthFilterEl.value : "__ALL__";
+    if (deleteMonthAlbumsBtn) {
+      const hasMonthFilter = Boolean(selectedMonth && selectedMonth !== "__ALL__");
+      deleteMonthAlbumsBtn.hidden = !hasMonthFilter || filtered.length === 0;
+      if (hasMonthFilter) {
+        deleteMonthAlbumsBtn.textContent = `Xoá album ${formatMonthKeyLabel(selectedMonth)} (${filtered.length})`;
+      }
+    }
 
     adminAlbumCountEl.textContent = `${filtered.length} album`;
     adminAlbumListEl.innerHTML = "";
@@ -5994,6 +6093,44 @@
   }
 
   adminSearchInput.addEventListener("input", renderAdminAlbumList);
+  adminAccountFilterEl?.addEventListener("change", () => {
+    if (adminMonthFilterEl) adminMonthFilterEl.value = "__ALL__";
+    renderAdminAlbumList();
+  });
+  adminMonthFilterEl?.addEventListener("change", renderAdminAlbumList);
+
+  deleteMonthAlbumsBtn?.addEventListener("click", async () => {
+    const selectedMonth = adminMonthFilterEl ? adminMonthFilterEl.value : "__ALL__";
+    if (!selectedMonth || selectedMonth === "__ALL__") return;
+
+    const targets = getUserOwnedAlbums();
+    if (!targets.length) return;
+
+    const okBatchDel = await requestConfirmDialog({
+      title: `Xoá album ${formatMonthKeyLabel(selectedMonth)}`,
+      message: `Xác nhận xoá toàn bộ ${targets.length} album thuộc ${formatMonthKeyLabel(selectedMonth)} trong danh sách hiện tại? Thao tác này không thể hoàn tác.`,
+      confirmText: `Xoá ${targets.length} album`,
+      danger: true
+    });
+    if (!okBatchDel) return;
+
+    deleteMonthAlbumsBtn.disabled = true;
+    try {
+      for (const alb of targets) {
+        await deleteSingleAlbumFromFirebase(alb.id);
+        if (currentAlbum && currentAlbum.id === alb.id) {
+          showHomeView();
+        }
+      }
+      if (adminMonthFilterEl) adminMonthFilterEl.value = "__ALL__";
+      renderAdminAlbumList();
+      showToast(`Đã xoá toàn bộ ${targets.length} album của ${formatMonthKeyLabel(selectedMonth)}.`);
+    } catch (err) {
+      showToast(`Xoá danh sách theo tháng thất bại: ${err.message}`, true);
+    } finally {
+      deleteMonthAlbumsBtn.disabled = false;
+    }
+  });
 
   function updateCoverPreview(rawUrl) {
     const clean = (rawUrl || "").trim();
@@ -6087,20 +6224,20 @@
       editDescriptionInput.value = album.description || "";
       editCoverInput.value = album.cover || "";
       editDriveFolderInput.value = album.driveFolderUrl || "";
-      editFolderCaptionInput.checked = Boolean(album.useFolderCaption);
-      editIsPublicInput.checked = album.isPublic !== false;
+
+
       editorPhotos = (album.photos || []).map((p) => ({ url: p.url, caption: p.caption || "" }));
     } else {
       editOriginalIdInput.value = "";
       editTitleInput.value = "";
       editIdInput.value = "";
-      editCategoryInput.value = "Phóng sự cưới";
+      editCategoryInput.value = "";
       editDateInput.value = formatTodayVN();
       editDescriptionInput.value = "";
       editCoverInput.value = "";
       editDriveFolderInput.value = "";
-      editFolderCaptionInput.checked = false;
-      editIsPublicInput.checked = true;
+
+
       editorPhotos = [];
     }
 
@@ -6144,6 +6281,12 @@
     const isAdmin = currentUser.role === "admin";
     tabUsersBtn.hidden = !isAdmin;
     systemSettingsBox.hidden = !isAdmin;
+    if (adminAccountFilterEl) {
+      adminAccountFilterEl.value = "__CURRENT__";
+    }
+    if (adminMonthFilterEl) {
+      adminMonthFilterEl.value = "__ALL__";
+    }
     if (isAdmin) {
       settingBrandInput.value = rawDbData.brandName || "";
       settingFooterInput.value = rawDbData.footerText || "";
