@@ -4248,33 +4248,11 @@
         throw new Error("Tài khoản không tồn tại. Vui lòng kiểm tra lại hoặc chuyển sang tab Đăng ký.");
       }
 
-      // Kiểm tra mật khẩu theo hash hiện tại trên DB hoặc mật khẩu được nhập lần đầu khi bản ghi cũ chưa khớp hash
-      let isValid = (accData.passwordHash && accData.passwordHash === passHash) ||
-                    (accData.code && String(accData.code).trim() === password.trim());
-
-      // Nếu bản ghi LETAN100586 trên Firebase có passwordHash cũ (từ bản export) và người dùng nhập đúng mật khẩu mới mong muốn,
-      // cập nhật passwordHash mới lên Firebase để đăng nhập trực tiếp bằng LETAN100586 hoạt động ngay
-      if (!isValid && isDefaultAdminInput && password.trim().length >= 6) {
-        await syncCloudWrite(`accounts/${encodeURIComponent(DEFAULT_ADMIN_USERNAME)}`, "PATCH", {
-          username: DEFAULT_ADMIN_USERNAME,
-          displayName: accData.displayName || DEFAULT_ADMIN_DISPLAY,
-          passwordHash: passHash,
-          role: "admin",
-          status: "approved",
-          active: true,
-          updatedAt: Date.now()
-        }).catch(() => {});
-        accData = {
-          ...accData,
-          username: DEFAULT_ADMIN_USERNAME,
-          displayName: accData.displayName || DEFAULT_ADMIN_DISPLAY,
-          passwordHash: passHash,
-          role: "admin",
-          status: "approved",
-          active: true
-        };
-        isValid = true;
-      }
+      // Kiểm tra mật khẩu nghiêm ngặt bằng chuỗi băm SHA-256 trên máy chủ
+      const storedHash = String(accData.passwordHash || "").trim();
+      const storedPlainCode = String(accData.code || "").trim();
+      const isValid = (storedHash !== "" && storedHash === passHash) ||
+                    (storedPlainCode !== "" && storedPlainCode === password.trim());
 
       if (!isValid) {
         throw new Error("Mật khẩu không chính xác!");
@@ -4685,34 +4663,29 @@
     }
 
     let primaryOk = false;
-    let primaryErr = null;
+    let primaryErr = "";
     try {
       const res1 = await fetch(`${FIREBASE_DB_URL}${cleanPath}.json${authParam}`, opts);
       if (res1.ok) {
         primaryOk = true;
       } else {
-        primaryErr = `HTTP ${res1.status}`;
+        try {
+          const errBody = await res1.json();
+          primaryErr = errBody?.error || `HTTP ${res1.status}`;
+        } catch (_) {
+          primaryErr = `HTTP ${res1.status}`;
+        }
       }
     } catch (e) {
-      primaryErr = e.message;
+      primaryErr = e?.message || "Lỗi kết nối mạng";
     }
 
-    let fallbackOk = false;
-    let fallbackErr = null;
-    try {
-      const res2 = await fetch(`${FALLBACK_CLOUD_DB_URL}${cleanPath}.json`, opts);
-      if (res2.ok) {
-        fallbackOk = true;
-      } else {
-        fallbackErr = `HTTP ${res2.status}`;
-      }
-    } catch (e) {
-      fallbackErr = e.message;
+    if (!primaryOk) {
+      throw new Error(`Không thể lưu dữ liệu lên máy chủ Firebase (${primaryErr}). Vui lòng kiểm tra Database Rules hoặc kết nối mạng.`);
     }
 
-    if (!primaryOk && !fallbackOk) {
-      throw new Error(`Không thể lưu lên máy chủ (${primaryErr || fallbackErr || "Lỗi mạng"})`);
-    }
+    // Đồng bộ song song sang bản sao dự phòng (không làm lỗi nếu dự phòng có cảnh báo)
+    fetch(`${FALLBACK_CLOUD_DB_URL}${cleanPath}.json`, opts).catch(() => {});
     return true;
   }
 
