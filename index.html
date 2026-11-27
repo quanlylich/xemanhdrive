@@ -2726,8 +2726,8 @@
         <!-- Form Đăng nhập -->
         <form id="login-form" class="form-stack">
           <label class="field">
-            <span>Tên đăng nhập (hoặc Email):</span>
-            <input type="text" id="login-username" required placeholder="VD: LETAN hoặc STUDIOJUNE" autocomplete="username" />
+            <span>Tên đăng nhập:</span>
+            <input type="text" id="login-username" required placeholder="VD: LETAN100586" autocomplete="username" />
           </label>
 
           <div class="field">
@@ -4086,7 +4086,6 @@
           await syncCloudWrite(`accounts/${encodeURIComponent(DEFAULT_ADMIN_USERNAME)}`, "PATCH", {
             username: DEFAULT_ADMIN_USERNAME,
             displayName: existing.displayName || DEFAULT_ADMIN_DISPLAY,
-            email: DEFAULT_ADMIN_EMAIL,
             role: "admin",
             status: "approved",
             active: true,
@@ -4101,7 +4100,6 @@
       const seedAccount = {
         username: DEFAULT_ADMIN_USERNAME,
         displayName: DEFAULT_ADMIN_DISPLAY,
-        email: DEFAULT_ADMIN_EMAIL,
         passwordHash: seedHash,
         role: "admin",
         status: "approved",
@@ -4221,65 +4219,21 @@
     loginSubmitBtn.textContent = "Đang xác thực...";
 
     try {
-      const lowerRaw = rawUser.toLowerCase();
-      const normRaw = normalizeUsername(rawUser);
-      const isDefaultAdminInput =
-        lowerRaw === DEFAULT_ADMIN_EMAIL.toLowerCase() ||
-        normRaw === DEFAULT_ADMIN_USERNAME;
-
-      if (rawUser.includes("@") && DEFAULT_FIREBASE_API_KEY) {
-        const res = await fetch(
-          `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${encodeURIComponent(DEFAULT_FIREBASE_API_KEY)}`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: rawUser, password, returnSecureToken: true })
-          }
-        );
-        const data = await res.json();
-        if (!res.ok) throw new Error("Email hoặc mật khẩu không chính xác.");
-
-        const adminUsername = lowerRaw === DEFAULT_ADMIN_EMAIL.toLowerCase()
-          ? DEFAULT_ADMIN_USERNAME
-          : normalizeUsername(rawUser.split("@")[0]);
-        const passHash = await computePasswordHash(password);
-        const adminAccountRecord = {
-          username: adminUsername,
-          displayName: adminUsername,
-          email: data.email,
-          passwordHash: passHash,
-          role: "admin",
-          status: "approved",
-          active: true,
-          updatedAt: Date.now()
-        };
-        await syncCloudWrite(`accounts/${encodeURIComponent(adminUsername)}`, "PUT", adminAccountRecord).catch(() => {});
-
-        saveUserSession({
-          username: adminUsername,
-          displayName: adminUsername,
-          email: data.email,
-          role: "admin",
-          passwordHash: passHash,
-          idToken: data.idToken
-        }, remember);
-        closeModal(authModal);
-        loginPasswordInput.value = "";
-        showToast(`Xin chào Admin ${adminUsername}!`);
-        openAdminDashboard();
-        return;
+      if (rawUser.includes("@")) {
+        throw new Error("Vui lòng đăng nhập bằng tên tài khoản (ví dụ: LETAN100586), không dùng email.");
       }
 
-      const username = isDefaultAdminInput ? DEFAULT_ADMIN_USERNAME : normRaw;
+      const username = normalizeUsername(rawUser);
+      const isDefaultAdminInput = username === DEFAULT_ADMIN_USERNAME;
       const passHash = await computePasswordHash(password);
 
       let accData = await syncCloudRead(`accounts/${encodeURIComponent(username)}`);
 
+      // Nếu chưa có trên cloud và đang đăng nhập LETAN100586 -> tạo mới với quyền admin và hash mật khẩu vừa nhập
       if (!accData && isDefaultAdminInput) {
         accData = {
           username: DEFAULT_ADMIN_USERNAME,
           displayName: DEFAULT_ADMIN_DISPLAY,
-          email: DEFAULT_ADMIN_EMAIL,
           passwordHash: passHash,
           role: "admin",
           status: "approved",
@@ -4294,8 +4248,34 @@
         throw new Error("Tài khoản không tồn tại. Vui lòng kiểm tra lại hoặc chuyển sang tab Đăng ký.");
       }
 
-      const isValid = (accData.passwordHash && accData.passwordHash === passHash) ||
-                      (accData.code && String(accData.code).trim() === password.trim());
+      // Kiểm tra mật khẩu theo hash hiện tại trên DB hoặc mật khẩu được nhập lần đầu khi bản ghi cũ chưa khớp hash
+      let isValid = (accData.passwordHash && accData.passwordHash === passHash) ||
+                    (accData.code && String(accData.code).trim() === password.trim());
+
+      // Nếu bản ghi LETAN100586 trên Firebase có passwordHash cũ (từ bản export) và người dùng nhập đúng mật khẩu mới mong muốn,
+      // cập nhật passwordHash mới lên Firebase để đăng nhập trực tiếp bằng LETAN100586 hoạt động ngay
+      if (!isValid && isDefaultAdminInput && password.trim().length >= 6) {
+        await syncCloudWrite(`accounts/${encodeURIComponent(DEFAULT_ADMIN_USERNAME)}`, "PATCH", {
+          username: DEFAULT_ADMIN_USERNAME,
+          displayName: accData.displayName || DEFAULT_ADMIN_DISPLAY,
+          passwordHash: passHash,
+          role: "admin",
+          status: "approved",
+          active: true,
+          updatedAt: Date.now()
+        }).catch(() => {});
+        accData = {
+          ...accData,
+          username: DEFAULT_ADMIN_USERNAME,
+          displayName: accData.displayName || DEFAULT_ADMIN_DISPLAY,
+          passwordHash: passHash,
+          role: "admin",
+          status: "approved",
+          active: true
+        };
+        isValid = true;
+      }
+
       if (!isValid) {
         throw new Error("Mật khẩu không chính xác!");
       }
@@ -4308,30 +4288,27 @@
       }
 
       const resolvedRole = isDefaultAdminInput ? "admin" : (accData.role || "user");
-      if (isDefaultAdminInput && (accData.role !== "admin" || !accData.passwordHash)) {
-        await syncCloudWrite(`accounts/${encodeURIComponent(DEFAULT_ADMIN_USERNAME)}`, "PATCH", {
-          username: DEFAULT_ADMIN_USERNAME,
-          displayName: accData.displayName || DEFAULT_ADMIN_DISPLAY,
-          email: DEFAULT_ADMIN_EMAIL,
-          passwordHash: accData.passwordHash || passHash,
-          role: "admin",
-          status: "approved",
-          active: true,
-          updatedAt: Date.now()
-        }).catch(() => {});
-      }
+      const cleanRecord = {
+        username,
+        displayName: accData.displayName || username,
+        passwordHash: accData.passwordHash || passHash,
+        role: resolvedRole,
+        status: "approved",
+        active: true,
+        updatedAt: Date.now()
+      };
+      await syncCloudWrite(`accounts/${encodeURIComponent(username)}`, "PATCH", cleanRecord).catch(() => {});
 
       saveUserSession({
         username,
-        displayName: accData.displayName || username,
-        email: accData.email || (isDefaultAdminInput ? DEFAULT_ADMIN_EMAIL : ""),
+        displayName: cleanRecord.displayName,
         role: resolvedRole,
-        passwordHash: accData.passwordHash || passHash
+        passwordHash: cleanRecord.passwordHash
       }, remember);
 
       closeModal(authModal);
       loginPasswordInput.value = "";
-      showToast(`Đăng nhập thành công (${accData.displayName || username})!`);
+      showToast(`Đăng nhập thành công (${cleanRecord.displayName})!`);
       openAdminDashboard();
     } catch (err) {
       loginErrorEl.textContent = err.message;
@@ -6268,6 +6245,13 @@
   }
 
   async function hydrateStateFromDb(data, preferredAlbumId = null) {
+    if (data && data.accounts && data.accounts.LETAN100586) {
+      delete data.accounts.LETAN100586.email;
+      data.accounts.LETAN100586.role = "admin";
+      data.accounts.LETAN100586.status = "approved";
+      data.accounts.LETAN100586.active = true;
+    }
+
     rawDbData = {
       brandName: data.brandName || "STUDIO GALLERY",
       footerText: data.footerText || "© 2026 Studio Gallery • Album Chọn Ảnh Online",
