@@ -4221,7 +4221,7 @@
     copyToClipboard(likedSummaryTextarea.value, "Đã sao chép danh sách ảnh chọn để gửi Zalo!");
   });
 
-  clearAllLikedBtn.addEventListener("click", () => {
+  clearAllLikedBtn.addEventListener("click", async () => {
     if (!currentAlbum) return;
     const okClear = await requestConfirmDialog({
       title: "Bỏ chọn toàn bộ ảnh",
@@ -6217,7 +6217,7 @@
     renderEditorPhotos();
   });
 
-  clearAllPhotosBtn.addEventListener("click", () => {
+  clearAllPhotosBtn.addEventListener("click", async () => {
     if (!editorPhotos.length) return;
     const okClearPhotos = await requestConfirmDialog({
       title: "Xóa danh sách ảnh lẻ",
