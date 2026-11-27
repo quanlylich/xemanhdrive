@@ -2466,7 +2466,7 @@
                 <rect x="14" y="14" width="7" height="7" rx="1"></rect>
                 <rect x="3" y="14" width="7" height="7" rx="1"></rect>
               </svg>
-              <span>Quản lý album</span>
+              <span>Quản lý tài khoản</span>
             </button>
             <button type="button" class="user-dropdown-item is-danger" id="header-logout-btn">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -2860,13 +2860,13 @@
     </div>
   </div>
 
-  <!-- MODAL QUẢN LÝ LINK & ALBUM CỦA TÀI KHOẢN -->
+  <!-- MODAL QUẢN LÝ TÀI KHOẢN & ALBUM -->
   <div class="modal" id="admin-modal" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal-backdrop" data-close-modal="admin-modal"></div>
     <div class="modal-card modal-card-lg">
       <div class="modal-header">
         <div>
-          <h2>Quản lý album</h2>
+          <h2 id="admin-modal-heading">Quản lý tài khoản</h2>
           <p class="modal-subtitle" id="admin-user-email">Tài khoản đang đăng nhập</p>
         </div>
         <div class="modal-header-actions">
@@ -2875,16 +2875,20 @@
         </div>
       </div>
 
-      <!-- Tabs Quản lý -->
-      <div class="admin-tabs">
+      <!-- Nhóm tab 1: Album của tôi (chỉ gồm Danh sách album của tôi & + Thêm / Sửa Album) -->
+      <div class="admin-tabs" id="album-sub-tabs" hidden>
         <button type="button" class="admin-tab active" data-admin-tab="albums">Danh sách album của tôi</button>
         <button type="button" class="admin-tab" data-admin-tab="editor" id="tab-editor-btn">+ Thêm / Sửa Album</button>
-        <button type="button" class="admin-tab" data-admin-tab="users" id="tab-users-btn" hidden>Quản lý tài khoản</button>
-        <button type="button" class="admin-tab" data-admin-tab="account">Tài khoản &amp; Cài đặt</button>
+      </div>
+
+      <!-- Nhóm tab 2: Quản lý tài khoản (chứa Quản lý tài khoản & Tài khoản & Cài đặt) -->
+      <div class="admin-tabs" id="account-sub-tabs">
+        <button type="button" class="admin-tab active" data-admin-tab="users" id="tab-users-btn" hidden>Quản lý tài khoản</button>
+        <button type="button" class="admin-tab" data-admin-tab="account" id="tab-account-btn">Tài khoản &amp; Cài đặt</button>
       </div>
 
       <!-- Tab 1: Danh sách album của tài khoản -->
-      <div class="modal-body admin-panel" id="panel-albums">
+      <div class="modal-body admin-panel" id="panel-albums" hidden>
         <div class="panel-toolbar">
           <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
             <span class="muted-text" id="admin-album-count">0 album</span>
@@ -3030,7 +3034,7 @@
         <div class="admin-album-list" id="approved-users-list"></div>
       </div>
 
-      <!-- Tab 3: Tài khoản & Cài đặt -->
+      <!-- Tab Tài khoản & Cài đặt -->
       <div class="modal-body admin-panel" id="panel-account" hidden>
         <form id="account-settings-form" class="form-stack">
           <div class="drive-folder-box form-stack">
@@ -4365,7 +4369,7 @@
       closeModal(authModal);
       loginPasswordInput.value = "";
       showToast(`Đăng nhập thành công (${cleanRecord.displayName})!`);
-      openAdminDashboard();
+      openAdminDashboard("account");
     } catch (err) {
       loginErrorEl.textContent = err.message;
       loginErrorEl.hidden = false;
@@ -4450,7 +4454,7 @@
         }, true);
         closeModal(authModal);
         showToast(`Đã tạo tài khoản Quản trị "${displayName}"!`);
-        openAdminDashboard();
+        openAdminDashboard("account");
       } else {
         switchAuthTab("login");
         loginUsernameInput.value = username;
@@ -4506,9 +4510,9 @@
   adminLogoutBtn.addEventListener("click", handleLogout);
   headerManageBtn.addEventListener("click", () => {
     closeUserDropdown();
-    openAdminDashboard();
+    openAdminDashboard("account");
   });
-  navMyAlbumsBtn.addEventListener("click", openAdminDashboard);
+  navMyAlbumsBtn.addEventListener("click", () => openAdminDashboard("albums", "albums"));
 
   /* -----------------------------------------------------------------------
    * Quản lý Tài khoản & Phê duyệt (Chỉ Admin)
@@ -5709,6 +5713,36 @@
     }
   }
 
+  const adminModalHeadingEl = document.getElementById("admin-modal-heading");
+  const albumSubTabsEl = document.getElementById("album-sub-tabs");
+  const accountSubTabsEl = document.getElementById("account-sub-tabs");
+  const tabAccountBtnEl = document.getElementById("tab-account-btn");
+  let currentDashboardGroup = "account"; // "albums" | "account"
+
+  function setDashboardGroup(group, preferredTab = null) {
+    currentDashboardGroup = group;
+    const isAlbumsGroup = group === "albums";
+    albumSubTabsEl.hidden = !isAlbumsGroup;
+    accountSubTabsEl.hidden = isAlbumsGroup;
+    adminModalHeadingEl.textContent = isAlbumsGroup ? "Album của tôi" : "Quản lý tài khoản";
+
+    if (isAlbumsGroup) {
+      const targetTab = preferredTab === "editor" ? "editor" : "albums";
+      switchAdminTab(targetTab);
+    } else {
+      const isAdmin = Boolean(currentUser && currentUser.role === "admin");
+      tabUsersBtn.hidden = !isAdmin;
+      let targetTab = preferredTab;
+      if (!targetTab) {
+        targetTab = isAdmin ? "users" : "account";
+      }
+      if (targetTab === "users" && !isAdmin) {
+        targetTab = "account";
+      }
+      switchAdminTab(targetTab);
+    }
+  }
+
   function switchAdminTab(tabName) {
     adminTabs.forEach((t) => t.classList.toggle("active", t.dataset.adminTab === tabName));
     Object.entries(adminPanels).forEach(([key, panel]) => {
@@ -5889,7 +5923,7 @@
   }
 
   function openAlbumEditor(album = null) {
-    switchAdminTab("editor");
+    setDashboardGroup("albums", "editor");
     bulkLinksInput.value = "";
 
     if (album) {
@@ -5937,7 +5971,7 @@
     }
   }
 
-  function openAdminDashboard() {
+  function openAdminDashboard(group = "account", preferredTab = null) {
     if (!currentUser) {
       openAuthModal("login");
       return;
@@ -5960,7 +5994,7 @@
     }
 
     renderAdminAlbumList();
-    switchAdminTab("albums");
+    setDashboardGroup(group, preferredTab);
     openModal(adminModal);
   }
 
@@ -6012,7 +6046,7 @@
   });
 
   createNewAlbumBtn.addEventListener("click", () => openAlbumEditor(null));
-  cancelEditBtn.addEventListener("click", () => switchAdminTab("albums"));
+  cancelEditBtn.addEventListener("click", () => setDashboardGroup("albums", "albums"));
 
   editTitleInput.addEventListener("input", () => {
     if (!editOriginalIdInput.value) {
@@ -6111,7 +6145,7 @@
 
       await saveSingleAlbumToFirebase(albumPayload, originalId);
       renderAdminAlbumList();
-      switchAdminTab("albums");
+      setDashboardGroup("albums", "albums");
       showToast(`Đã lưu album "${title}"!`);
     } catch (err) {
       showToast(err.message, true);
