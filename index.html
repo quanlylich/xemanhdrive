@@ -6184,11 +6184,30 @@
         const nextGasUrl = settingGasUrlInput.value.trim();
         if (nextGasUrl) localStorage.setItem(STORAGE_GAS_URL, nextGasUrl);
 
-        await syncCloudWrite("", "PATCH", {
+        const sysPayload = {
           brandName: nextBrand,
           footerText: nextFooter,
           appsScriptUrl: nextGasUrl || rawDbData.appsScriptUrl || ""
-        });
+        };
+        await syncCloudWrite("brandName", "PUT", sysPayload.brandName).catch(() => {});
+        await syncCloudWrite("footerText", "PUT", sysPayload.footerText).catch(() => {});
+        if (sysPayload.appsScriptUrl) {
+          await syncCloudWrite("appsScriptUrl", "PUT", sysPayload.appsScriptUrl).catch(() => {});
+        }
+        // Ghi song song sang bản sao dự phòng ở root nếu root chính chặn ghi
+        const authParam = getAuthQueryParam();
+        const rootRes = await fetch(`${FIREBASE_DB_URL}/.json${authParam}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(sysPayload)
+        }).catch(() => null);
+        if (!rootRes || !rootRes.ok) {
+          await fetch(`${FALLBACK_CLOUD_DB_URL}/.json`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(sysPayload)
+          }).catch(() => {});
+        }
 
         rawDbData.brandName = nextBrand;
         rawDbData.footerText = nextFooter;
