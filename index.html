@@ -2381,7 +2381,6 @@
       </a>
 
       <nav class="header-nav" id="header-nav" aria-label="Điều hướng">
-        <a href="#publicLibrarySection" class="nav-link-btn" id="nav-library-link">Thư viện album</a>
         <button type="button" class="nav-link-btn" id="nav-my-albums-btn" hidden>Album của tôi</button>
         <button type="button" class="nav-link-btn" id="nav-guide-btn">Hướng dẫn</button>
       </nav>
@@ -2403,7 +2402,7 @@
             <rect x="14" y="14" width="7" height="7" rx="1"></rect>
             <rect x="3" y="14" width="7" height="7" rx="1"></rect>
           </svg>
-          <span>Quản lý link</span>
+          <span>Quản lý album</span>
         </button>
         <button type="button" class="btn btn-outline btn-sm" id="header-logout-btn" hidden title="Đăng xuất">Đăng xuất</button>
       </div>
@@ -2450,7 +2449,7 @@
       </form>
 
       <p class="landing-subnote" id="landing-subnote">
-        Tạo link chia sẻ miễn phí không cần đăng nhập. Đăng ký tài khoản để lưu &amp; quản lý danh sách link riêng.
+        Tạo link chia sẻ miễn phí không cần đăng nhập. Đăng ký tài khoản để lưu &amp; quản lý danh sách album riêng.
       </p>
 
       <!-- Khung mô phỏng giao diện xem album trên điện thoại (giống ảnh mẫu) -->
@@ -2552,48 +2551,11 @@
             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
             <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
           </svg>
-          <span>Link album vừa tạo trên máy này (Chưa đăng nhập)</span>
+          <span>Album vừa tạo trên máy này (Chưa đăng nhập)</span>
         </span>
         <button type="button" class="text-link-btn" id="clear-guest-recent-btn">Xóa lịch sử</button>
       </div>
       <div class="guest-recent-list" id="guest-recent-list"></div>
-    </section>
-
-    <!-- Danh sách thư viện album công khai -->
-    <section class="controls section-card" id="publicLibrarySection" aria-label="Thư viện album" style="margin-top: 20px;">
-      <div class="section-header-bar">
-        <div>
-          <h2 class="section-heading" id="library-section-title">Danh sách Album</h2>
-        </div>
-        <button type="button" class="btn btn-primary btn-sm" id="library-new-album-btn" hidden>+ Thêm album mới</button>
-      </div>
-
-      <div class="category-bar" id="category-bar" role="tablist"></div>
-
-      <div class="album-picker-toolbar" id="album-picker-toolbar" hidden>
-        <span class="gallery-toolbar-info" id="album-picker-summary">Sắp xếp theo tên album (A → Z)</span>
-        <div class="toolbar-controls-group">
-          <div class="view-size-control" role="group" aria-label="Kích thước danh sách album">
-            <span class="sort-label">Hiển thị:</span>
-            <button type="button" class="sort-btn" data-album-grid-size="small">Nhỏ</button>
-            <button type="button" class="sort-btn active" data-album-grid-size="medium">Vừa</button>
-            <button type="button" class="sort-btn" data-album-grid-size="large">To</button>
-          </div>
-          <div class="sort-control" role="group" aria-label="Sắp xếp album">
-            <span class="sort-label">Sắp xếp:</span>
-            <button type="button" class="sort-btn active" id="album-sort-name-btn">Tên album ↑</button>
-            <button type="button" class="sort-btn" id="album-sort-time-btn">Thời gian</button>
-          </div>
-          <label class="gallery-search-control">
-            <input type="search" class="gallery-search-input" id="album-search-input" placeholder="Tìm tên album..." aria-label="Tìm kiếm album theo tên" autocomplete="off" />
-          </label>
-        </div>
-      </div>
-
-      <div class="album-switcher" id="album-switcher"></div>
-      <div class="empty-state" id="library-empty-state" hidden>
-        <p id="library-empty-text">Chưa có album công khai nào. Hãy dán link Google Drive ở trên để tạo album đầu tiên!</p>
-      </div>
     </section>
 
     <!-- Lưới ảnh của album đang mở -->
@@ -2750,7 +2712,7 @@
       <div class="modal-header">
         <div>
           <h2 id="auth-modal-title">Xác Thực Tài Khoản</h2>
-          <p class="modal-subtitle" id="auth-modal-subtitle">Quản lý danh sách link album riêng của bạn</p>
+          <p class="modal-subtitle" id="auth-modal-subtitle">Quản lý danh sách album riêng của bạn</p>
         </div>
         <button type="button" class="icon-btn" data-close-modal="auth-modal" aria-label="Đóng">✕</button>
       </div>
@@ -2831,7 +2793,7 @@
     <div class="modal-card modal-card-lg">
       <div class="modal-header">
         <div>
-          <h2>Quản Lý Link Album</h2>
+          <h2>Quản lý album</h2>
           <p class="modal-subtitle" id="admin-user-email">Tài khoản đang đăng nhập</p>
         </div>
         <div class="modal-header-actions">
@@ -2842,25 +2804,25 @@
 
       <!-- Tabs Quản lý -->
       <div class="admin-tabs">
-        <button type="button" class="admin-tab active" data-admin-tab="albums">Danh sách Link của tôi</button>
+        <button type="button" class="admin-tab active" data-admin-tab="albums">Danh sách album của tôi</button>
         <button type="button" class="admin-tab" data-admin-tab="editor" id="tab-editor-btn">+ Thêm / Sửa Album</button>
         <button type="button" class="admin-tab" data-admin-tab="users" id="tab-users-btn" hidden>Quản lý tài khoản</button>
         <button type="button" class="admin-tab" data-admin-tab="account">Tài khoản &amp; Cài đặt</button>
       </div>
 
-      <!-- Tab 1: Danh sách Link Album của tài khoản -->
+      <!-- Tab 1: Danh sách album của tài khoản -->
       <div class="modal-body admin-panel" id="panel-albums">
         <div class="panel-toolbar">
           <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
             <span class="muted-text" id="admin-album-count">0 album</span>
             <input type="search" class="gallery-search-input" id="admin-search-input" placeholder="Tìm nhanh album của bạn..." style="width:210px;" />
           </div>
-          <button type="button" class="btn btn-primary btn-sm" id="create-new-album-btn">+ Thêm link album mới</button>
+          <button type="button" class="btn btn-primary btn-sm" id="create-new-album-btn">+ Thêm album mới</button>
         </div>
         <div class="admin-album-list" id="admin-album-list"></div>
       </div>
 
-      <!-- Tab 2: Thêm / Sửa Link Album -->
+      <!-- Tab 2: Thêm / Sửa Album -->
       <div class="modal-body admin-panel" id="panel-editor" hidden>
         <form id="album-editor-form" class="form-stack">
           <input type="hidden" id="edit-original-id" />
@@ -3107,7 +3069,7 @@
         </div>
         <div>
           <strong style="color:var(--ink);">3. Đăng ký tài khoản để quản lý lâu dài:</strong>
-          <p style="margin:4px 0 0;">Tạo tài khoản miễn phí để lưu danh sách các link album của riêng bạn, dễ dàng thêm ảnh mới, chỉnh sửa tiêu đề hoặc xóa link cũ bất cứ lúc nào.</p>
+          <p style="margin:4px 0 0;">Tạo tài khoản miễn phí để lưu danh sách các album của riêng bạn, dễ dàng thêm ảnh mới, chỉnh sửa tiêu đề hoặc xóa link cũ bất cứ lúc nào.</p>
         </div>
         <div class="modal-footer-actions">
           <button type="button" class="btn btn-primary btn-sm" data-close-modal="guide-modal">Đã hiểu</button>
@@ -3125,6 +3087,7 @@
   // CẤU HÌNH FIREBASE & GOOGLE APPS SCRIPT
   // =========================================================================
   const FIREBASE_DB_URL = "https://xemanhdrive-default-rtdb.asia-southeast1.firebasedatabase.app";
+  const FALLBACK_CLOUD_DB_URL = "https://lichlamviecletan-default-rtdb.asia-southeast1.firebasedatabase.app/client_gallery";
   const DEFAULT_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyRdMTY5UAG82dbtqdgyRHiLhTpf8y3_i1E-hWSSQwdl56wj1r6es4uEsAabVBsk4GVzQ/exec";
   const DEFAULT_FIREBASE_API_KEY = "AIzaSyCcd1EfyxaogDKbRrbTU1EWgQ1Fu6klQj4";
   const AUTH_HASH_PEPPER = "LETAN_SECURE_V29_#9821_SALT";
@@ -3176,19 +3139,8 @@
   const heroDot = document.getElementById("hero-dot");
   const heroCount = document.getElementById("hero-count");
 
-  // Public Library & Gallery
+  // Gallery
   const mainContentEl = document.getElementById("main-content");
-  const controlsSection = document.getElementById("controls-section");
-  const libraryNewAlbumBtn = document.getElementById("library-new-album-btn");
-  const categoryBar = document.getElementById("category-bar");
-  const albumSwitcher = document.getElementById("album-switcher");
-  const albumPickerToolbar = document.getElementById("album-picker-toolbar");
-  const albumPickerSummary = document.getElementById("album-picker-summary");
-  const albumSearchInput = document.getElementById("album-search-input");
-  const albumGridSizeBtns = document.querySelectorAll("[data-album-grid-size]");
-  const albumSortNameBtn = document.getElementById("album-sort-name-btn");
-  const albumSortTimeBtn = document.getElementById("album-sort-time-btn");
-  const libraryEmptyState = document.getElementById("library-empty-state");
 
   const gallerySectionEl = document.getElementById("gallery-section");
   const galleryToolbar = document.getElementById("gallery-toolbar");
@@ -4106,18 +4058,7 @@
         createdAt: Date.now()
       };
 
-      const res = await fetch(`${FIREBASE_DB_URL}/album_selections/${encodeURIComponent(currentAlbum.id)}/${selId}.json`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      if (!res.ok) {
-        // Dự phòng nếu Firebase chặn ghi: tự động copy danh sách vào clipboard
-        await copyToClipboard(likedSummaryTextarea.value, "Đã sao chép danh sách ảnh chọn! Hãy dán gửi cho Studio qua Zalo.");
-        closeModal(likedSelectionModal);
-        return;
-      }
+      await syncCloudWrite(`album_selections/${encodeURIComponent(currentAlbum.id)}/${selId}`, "PUT", payload);
 
       closeModal(likedSelectionModal);
       showToast(`Đã gửi danh sách ${likedList.length} ảnh chọn thành công!`);
@@ -4163,7 +4104,6 @@
       headerManageBtn.hidden = true;
       headerLogoutBtn.hidden = true;
       navMyAlbumsBtn.hidden = true;
-      libraryNewAlbumBtn.hidden = true;
       return;
     }
 
@@ -4174,7 +4114,6 @@
     headerManageBtn.hidden = !loggedIn;
     headerLogoutBtn.hidden = !loggedIn;
     navMyAlbumsBtn.hidden = !loggedIn;
-    libraryNewAlbumBtn.hidden = !loggedIn;
 
     if (loggedIn) {
       const label = currentUser.displayName || currentUser.username;
@@ -4268,9 +4207,7 @@
       const username = normalizeUsername(rawUser);
       const passHash = await computePasswordHash(password);
 
-      const accRes = await fetch(`${FIREBASE_DB_URL}/accounts/${encodeURIComponent(username)}.json`);
-      if (!accRes.ok) throw new Error("Không thể kết nối máy chủ xác thực.");
-      const accData = await accRes.json();
+      const accData = await syncCloudRead(`accounts/${encodeURIComponent(username)}`);
 
       if (!accData) {
         throw new Error("Tài khoản không tồn tại. Vui lòng kiểm tra lại hoặc chuyển sang tab Đăng ký.");
@@ -4345,20 +4282,15 @@
     registerSubmitBtn.textContent = "Đang gửi yêu cầu...";
 
     try {
-      const checkRes = await fetch(`${FIREBASE_DB_URL}/accounts/${encodeURIComponent(username)}.json`);
-      if (!checkRes.ok && checkRes.status !== 404) {
-        throw new Error(`Không thể kiểm tra tài khoản (HTTP ${checkRes.status}).`);
-      }
-      const existing = checkRes.ok ? await checkRes.json() : null;
+      const existing = await syncCloudRead(`accounts/${encodeURIComponent(username)}`);
       if (existing) {
         throw new Error("Tên đăng nhập này đã tồn tại. Vui lòng chọn tên khác!");
       }
 
       let isFirstAccount = false;
       try {
-        const allAccRes = await fetch(`${FIREBASE_DB_URL}/accounts.json?shallow=true`);
-        const allAccKeys = allAccRes.ok ? await allAccRes.json() : null;
-        if (!allAccKeys || Object.keys(allAccKeys).length === 0) {
+        const allAcc = await syncCloudRead("accounts");
+        if (!allAcc || Object.keys(allAcc).length === 0) {
           isFirstAccount = true;
         }
       } catch (_) {}
@@ -4376,14 +4308,7 @@
         updatedAt: Date.now()
       };
 
-      const putRes = await fetch(`${FIREBASE_DB_URL}/accounts/${encodeURIComponent(username)}.json`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(accountPayload)
-      });
-      if (!putRes.ok) {
-        throw new Error(`Firebase từ chối tạo tài khoản (HTTP ${putRes.status}). Hãy kiểm tra Rules cho phép ghi /accounts.`);
-      }
+      await syncCloudWrite(`accounts/${encodeURIComponent(username)}`, "PUT", accountPayload);
 
       registerForm.reset();
 
@@ -4436,10 +4361,6 @@
   adminLogoutBtn.addEventListener("click", handleLogout);
   headerManageBtn.addEventListener("click", openAdminDashboard);
   navMyAlbumsBtn.addEventListener("click", openAdminDashboard);
-  libraryNewAlbumBtn.addEventListener("click", () => {
-    openAdminDashboard();
-    openAlbumEditor(null);
-  });
 
   /* -----------------------------------------------------------------------
    * Quản lý Tài khoản & Phê duyệt (Chỉ Admin)
@@ -4447,10 +4368,8 @@
   async function loadAllAccountsForAdmin() {
     if (!currentUser || currentUser.role !== "admin") return;
     try {
-      const res = await fetch(`${FIREBASE_DB_URL}/accounts.json${getAuthQueryParam()}`);
-      if (res.ok) {
-        allAccountsMap = (await res.json()) || {};
-      }
+      const data = await syncCloudRead("accounts");
+      allAccountsMap = data && typeof data === "object" ? data : {};
     } catch (_) {}
     renderAdminUsersList();
   }
@@ -4514,14 +4433,16 @@
           <p>Tài khoản: <strong>${escapeHtml(u.username)}</strong> • ${countOwned} album</p>
         </div>
         <div class="admin-album-actions">
+          <button type="button" class="btn btn-outline btn-sm" data-edit-user="${escapeHtml(u.username)}">Sửa</button>
           ${!isSelf ? `
             <button type="button" class="btn btn-outline btn-sm" data-toggle-role="${escapeHtml(u.username)}">${isAccAdmin ? "Hạ quyền" : "Cấp Admin"}</button>
             <button type="button" class="btn btn-outline btn-sm" data-toggle-lock="${escapeHtml(u.username)}">${isActive ? "Khóa" : "Mở"}</button>
             <button type="button" class="btn btn-sm btn-danger-outline" data-delete-user="${escapeHtml(u.username)}">Xóa</button>
-          ` : `<span class="muted-text">Tài khoản hiện tại</span>`}
+          ` : `<span class="muted-text">Đang dùng</span>`}
         </div>
       `;
 
+      row.querySelector("[data-edit-user]").addEventListener("click", () => editUserAccountPrompt(u.username));
       if (!isSelf) {
         row.querySelector("[data-toggle-role]").addEventListener("click", () => toggleUserRole(u.username));
         row.querySelector("[data-toggle-lock]").addEventListener("click", () => toggleUserActive(u.username));
@@ -4531,15 +4452,50 @@
     });
   }
 
+  async function editUserAccountPrompt(username) {
+    const info = allAccountsMap[username];
+    if (!info) return;
+    const newDisplayInput = window.prompt(`Nhập tên hiển thị mới cho tài khoản "${username}":`, info.displayName || username);
+    if (newDisplayInput === null) return;
+    const newDisplay = newDisplayInput.trim() || username;
+
+    const newPassInput = window.prompt(`Nhập mật khẩu mới cho "${username}" (để trống nếu giữ nguyên mật khẩu cũ):`, "");
+    if (newPassInput === null) return;
+    const newPass = newPassInput.trim();
+    if (newPass && (newPass.length < 6 || /\s/.test(newPass))) {
+      showToast("Mật khẩu mới phải từ 6 ký tự và không chứa khoảng trắng!", true);
+      return;
+    }
+
+    try {
+      const patch = {
+        displayName: newDisplay,
+        updatedAt: Date.now()
+      };
+      if (newPass) {
+        patch.passwordHash = await computePasswordHash(newPass);
+      }
+      await syncCloudWrite(`accounts/${encodeURIComponent(username)}`, "PATCH", patch);
+      Object.assign(allAccountsMap[username], patch);
+      if (currentUser && normalizeUsername(currentUser.username) === username) {
+        saveUserSession({
+          ...currentUser,
+          displayName: newDisplay,
+          passwordHash: patch.passwordHash || currentUser.passwordHash
+        }, true);
+        adminUserEmailEl.textContent = `Tài khoản: ${newDisplay} (${username})`;
+      }
+      renderAdminUsersList();
+      showToast(`Đã cập nhật tài khoản "${username}"!`);
+    } catch (err) {
+      showToast("Lỗi cập nhật tài khoản: " + err.message, true);
+    }
+  }
+
   async function approveUserAccount(username) {
     try {
       const patch = { status: "approved", active: true, updatedAt: Date.now() };
-      const res = await fetch(`${FIREBASE_DB_URL}/accounts/${encodeURIComponent(username)}.json${getAuthQueryParam()}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(patch)
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      await syncCloudWrite(`accounts/${encodeURIComponent(username)}`, "PATCH", patch);
       if (allAccountsMap[username]) Object.assign(allAccountsMap[username], patch);
       renderAdminUsersList();
       showToast(`Đã phê duyệt tài khoản "${username}"!`);
@@ -4554,12 +4510,7 @@
     const nextActive = !(info.active !== false && info.status !== "locked");
     try {
       const patch = { active: nextActive, status: nextActive ? "approved" : "locked", updatedAt: Date.now() };
-      const res = await fetch(`${FIREBASE_DB_URL}/accounts/${encodeURIComponent(username)}.json${getAuthQueryParam()}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(patch)
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      await syncCloudWrite(`accounts/${encodeURIComponent(username)}`, "PATCH", patch);
       Object.assign(allAccountsMap[username], patch);
       renderAdminUsersList();
       showToast(nextActive ? `Đã mở khóa "${username}"` : `Đã khóa "${username}"`);
@@ -4574,12 +4525,7 @@
     const nextRole = info.role === "admin" ? "user" : "admin";
     try {
       const patch = { role: nextRole, updatedAt: Date.now() };
-      const res = await fetch(`${FIREBASE_DB_URL}/accounts/${encodeURIComponent(username)}.json${getAuthQueryParam()}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(patch)
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      await syncCloudWrite(`accounts/${encodeURIComponent(username)}`, "PATCH", patch);
       Object.assign(allAccountsMap[username], patch);
       renderAdminUsersList();
       showToast(`Đã đổi quyền "${username}" thành ${nextRole === "admin" ? "Quản trị" : "Thành viên"}`);
@@ -4594,10 +4540,7 @@
       : `Bạn có chắc muốn xóa tài khoản "${username}"?`;
     if (!window.confirm(msg)) return;
     try {
-      const res = await fetch(`${FIREBASE_DB_URL}/accounts/${encodeURIComponent(username)}.json${getAuthQueryParam()}`, {
-        method: "DELETE"
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      await syncCloudWrite(`accounts/${encodeURIComponent(username)}`, "DELETE");
       delete allAccountsMap[username];
       renderAdminUsersList();
       showToast(isReject ? `Đã từ chối "${username}"` : `Đã xóa tài khoản "${username}"`);
@@ -4638,12 +4581,7 @@
         createdAt: Date.now(),
         updatedAt: Date.now()
       };
-      const res = await fetch(`${FIREBASE_DB_URL}/accounts/${encodeURIComponent(username)}.json${getAuthQueryParam()}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      await syncCloudWrite(`accounts/${encodeURIComponent(username)}`, "PUT", payload);
       allAccountsMap[username] = payload;
       adminNewUserName.value = "";
       adminNewUserDisplay.value = "";
@@ -4664,37 +4602,81 @@
     return currentUser && currentUser.idToken ? `?auth=${encodeURIComponent(currentUser.idToken)}` : "";
   }
 
-  async function saveSingleAlbumToFirebase(albumPayload, oldIdToRemove = null) {
+  async function syncCloudWrite(path, method, payload = null) {
     const authParam = getAuthQueryParam();
+    const cleanPath = path ? `/${path.replace(/^\/+/, "")}` : "";
+    const opts = { method };
+    if (payload !== null) {
+      opts.headers = { "Content-Type": "application/json" };
+      opts.body = JSON.stringify(payload);
+    }
+
+    let primaryOk = false;
+    let primaryErr = null;
+    try {
+      const res1 = await fetch(`${FIREBASE_DB_URL}${cleanPath}.json${authParam}`, opts);
+      if (res1.ok) {
+        primaryOk = true;
+      } else {
+        primaryErr = `HTTP ${res1.status}`;
+      }
+    } catch (e) {
+      primaryErr = e.message;
+    }
+
+    let fallbackOk = false;
+    let fallbackErr = null;
+    try {
+      const res2 = await fetch(`${FALLBACK_CLOUD_DB_URL}${cleanPath}.json`, opts);
+      if (res2.ok) {
+        fallbackOk = true;
+      } else {
+        fallbackErr = `HTTP ${res2.status}`;
+      }
+    } catch (e) {
+      fallbackErr = e.message;
+    }
+
+    if (!primaryOk && !fallbackOk) {
+      throw new Error(`Không thể lưu lên máy chủ (${primaryErr || fallbackErr || "Lỗi mạng"})`);
+    }
+    return true;
+  }
+
+  async function syncCloudRead(path) {
+    const cleanPath = path ? `/${path.replace(/^\/+/, "")}` : "";
+    let data1 = null;
+    let data2 = null;
+
+    try {
+      const r1 = await fetch(`${FIREBASE_DB_URL}${cleanPath}.json`);
+      if (r1.ok) data1 = await r1.json();
+    } catch (_) {}
+
+    try {
+      const r2 = await fetch(`${FALLBACK_CLOUD_DB_URL}${cleanPath}.json`);
+      if (r2.ok) data2 = await r2.json();
+    } catch (_) {}
+
+    if (data1 && typeof data1 === "object" && data2 && typeof data2 === "object" && !Array.isArray(data1) && !Array.isArray(data2)) {
+      return { ...data1, ...data2 };
+    }
+    return data2 !== null ? data2 : data1;
+  }
+
+  async function saveSingleAlbumToFirebase(albumPayload, oldIdToRemove = null) {
     const cleanPayload = { ...albumPayload };
     delete cleanPayload._localOnly;
     delete cleanPayload._urlEncoded;
 
-    let savedToCloud = false;
-    try {
-      const putRes = await fetch(`${FIREBASE_DB_URL}/albums/${encodeURIComponent(cleanPayload.id)}.json${authParam}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(cleanPayload)
-      });
-      if (putRes.ok) {
-        savedToCloud = true;
-        if (oldIdToRemove && oldIdToRemove !== cleanPayload.id) {
-          await fetch(`${FIREBASE_DB_URL}/albums/${encodeURIComponent(oldIdToRemove)}.json${authParam}`, {
-            method: "DELETE"
-          }).catch(() => {});
-          delete rawDbData.albums[oldIdToRemove];
-        }
-      }
-    } catch (_) {}
+    await syncCloudWrite(`albums/${encodeURIComponent(cleanPayload.id)}`, "PUT", cleanPayload);
 
-    const finalAlbumObj = normalizeAlbumObject(cleanPayload, cleanPayload.id);
-    if (!savedToCloud) {
-      finalAlbumObj._localOnly = true;
-      finalAlbumObj._urlEncoded = encodeAlbumToUrlParam(finalAlbumObj);
-      saveLocalAlbumCopy(finalAlbumObj);
+    if (oldIdToRemove && oldIdToRemove !== cleanPayload.id) {
+      await syncCloudWrite(`albums/${encodeURIComponent(oldIdToRemove)}`, "DELETE").catch(() => {});
+      if (rawDbData.albums) delete rawDbData.albums[oldIdToRemove];
     }
 
+    const finalAlbumObj = normalizeAlbumObject(cleanPayload, cleanPayload.id);
     if (!rawDbData.albums || typeof rawDbData.albums !== "object") {
       rawDbData.albums = {};
     }
@@ -4711,10 +4693,7 @@
   }
 
   async function deleteSingleAlbumFromFirebase(albumId) {
-    const authParam = getAuthQueryParam();
-    await fetch(`${FIREBASE_DB_URL}/albums/${encodeURIComponent(albumId)}.json${authParam}`, {
-      method: "DELETE"
-    }).catch(() => {});
+    await syncCloudWrite(`albums/${encodeURIComponent(albumId)}`, "DELETE");
 
     try {
       const localList = loadLocalSavedAlbums().filter((a) => a.id !== albumId);
@@ -4908,8 +4887,6 @@
           createdAt: Date.now()
         });
       } else {
-        renderCategories();
-        renderAlbumSwitcher(getPublicGalleryAlbums());
       }
 
       quickCreateLinkInput.value = "";
@@ -4925,7 +4902,7 @@
   });
 
   /* -----------------------------------------------------------------------
-   * HIỂN THỊ DANH SÁCH ALBUM & CHẾ ĐỘ XEM ALBUM
+   * HIỂN THỊ TRANG CHỦ & CHẾ ĐỘ XEM ALBUM
    * --------------------------------------------------------------------- */
   function getPublicGalleryAlbums() {
     return albums.filter((a) => a.isPublic !== false);
@@ -4953,49 +4930,6 @@
     window.history.replaceState({}, "", url.toString());
   }
 
-  function renderCategories() {
-    const publicList = getPublicGalleryAlbums();
-    const categories = ["Tất cả", ...new Set(publicList.map((a) => a.category).filter(Boolean))];
-    categoryBar.innerHTML = "";
-
-    if (categories.length <= 2) {
-      categoryBar.hidden = true;
-      return;
-    }
-
-    categoryBar.hidden = false;
-    categories.forEach((cat) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = `filter-pill${cat === selectedCategory ? " active" : ""}`;
-      btn.textContent = cat;
-      btn.setAttribute("role", "tab");
-      btn.setAttribute("aria-selected", String(cat === selectedCategory));
-      btn.addEventListener("click", () => {
-        selectedCategory = cat;
-        renderCategories();
-        renderAlbumSwitcher(getFilteredAlbums());
-      });
-      categoryBar.appendChild(btn);
-    });
-  }
-
-  function getFilteredAlbums() {
-    const publicList = getPublicGalleryAlbums();
-    if (selectedCategory === "Tất cả") return publicList;
-    return publicList.filter((a) => a.category === selectedCategory);
-  }
-
-  function getAlbumUpdatedTimestamp(album) {
-    const value = String(album.updatedAt || album.createdTime || "").trim();
-    const vietnamDate = value.match(/^(\d{1,2})[./-](\d{1,2})[./-](\d{4})$/);
-    if (vietnamDate) {
-      return Date.UTC(Number(vietnamDate[3]), Number(vietnamDate[2]) - 1, Number(vietnamDate[1]));
-    }
-    const parsed = Date.parse(value);
-    return Number.isNaN(parsed) ? 0 : parsed;
-  }
-
   function normalizeAlbumSearchText(value) {
     return String(value || "")
       .normalize("NFD")
@@ -5004,136 +4938,9 @@
       .replace(/đ/g, "d");
   }
 
-  function getAlbumPickerList(list) {
-    const query = normalizeAlbumSearchText(albumSearchQuery);
-    const filtered = list.filter((album) => {
-      const searchableText = normalizeAlbumSearchText(`${album.title || ""} ${album.id || ""}`);
-      return !query || searchableText.includes(query);
-    });
-
-    return filtered.sort((a, b) => {
-      const aName = String(a.title || a.id || "");
-      const bName = String(b.title || b.id || "");
-      const nameOrder = aName.localeCompare(bName, "vi", { numeric: true, sensitivity: "base" });
-      if (currentAlbumSortMode === "time-desc") {
-        return getAlbumUpdatedTimestamp(b) - getAlbumUpdatedTimestamp(a) || nameOrder;
-      }
-      if (currentAlbumSortMode === "time-asc") {
-        return getAlbumUpdatedTimestamp(a) - getAlbumUpdatedTimestamp(b) || nameOrder;
-      }
-      return currentAlbumSortMode === "name-desc" ? -nameOrder : nameOrder;
-    });
-  }
-
-  function updateAlbumPickerToolbar(visibleCount, totalCount) {
-    albumPickerToolbar.hidden = totalCount === 0;
-    const summaries = {
-      "name-asc": "Sắp xếp theo tên album (A → Z)",
-      "name-desc": "Sắp xếp theo tên album (Z → A)",
-      "time-desc": "Sắp xếp theo thời gian (Mới nhất trước)",
-      "time-asc": "Sắp xếp theo thời gian (Cũ nhất trước)"
-    };
-    const resultLabel = albumSearchQuery
-      ? `${visibleCount}/${totalCount} album phù hợp`
-      : `${totalCount} album`;
-    albumPickerSummary.textContent = `${summaries[currentAlbumSortMode]} • ${resultLabel}`;
-
-    albumGridSizeBtns.forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.albumGridSize === currentAlbumGridSize);
-    });
-    const isNameSort = currentAlbumSortMode.startsWith("name-");
-    albumSortNameBtn.classList.toggle("active", isNameSort);
-    albumSortTimeBtn.classList.toggle("active", !isNameSort);
-    albumSortNameBtn.textContent = currentAlbumSortMode === "name-desc" ? "Tên album ↓" : "Tên album ↑";
-    albumSortTimeBtn.textContent = currentAlbumSortMode === "time-asc"
-      ? "Thời gian ↑"
-      : (currentAlbumSortMode === "time-desc" ? "Thời gian ↓" : "Thời gian");
-  }
-
-  function groupAlbumsByMonth(albumList) {
-    const groups = new Map();
-    albumList.forEach((album) => {
-      const timestamp = getAlbumUpdatedTimestamp(album);
-      if (!timestamp) {
-        if (!groups.has("undated")) {
-          groups.set("undated", { key: "undated", label: "Chưa rõ thời gian", timestamp: 0, undated: true, albums: [] });
-        }
-        groups.get("undated").albums.push(album);
-        return;
-      }
-
-      const date = new Date(timestamp);
-      const year = date.getUTCFullYear();
-      const month = date.getUTCMonth() + 1;
-      const key = `${year}-${String(month).padStart(2, "0")}`;
-      if (!groups.has(key)) {
-        groups.set(key, { key, label: `Tháng ${month} năm ${year}`, timestamp: Date.UTC(year, month - 1, 1), undated: false, albums: [] });
-      }
-      groups.get(key).albums.push(album);
-    });
-
-    const order = Array.from(groups.values());
-    const direction = currentAlbumSortMode === "time-asc" ? 1 : -1;
-    return order.sort((a, b) => {
-      if (a.undated !== b.undated) return a.undated ? 1 : -1;
-      return (a.timestamp - b.timestamp) * direction;
-    });
-  }
-
-  function renderAlbumSwitcher(list) {
-    albumSwitcher.innerHTML = "";
-    albumSwitcher.classList.remove("album-grid-small", "album-grid-medium", "album-grid-large");
-    albumSwitcher.classList.add("album-grid", `album-grid-${currentAlbumGridSize}`);
-
-    const visibleAlbums = getAlbumPickerList(list);
-    updateAlbumPickerToolbar(visibleAlbums.length, list.length);
-
-    if (!visibleAlbums.length) {
-      albumSwitcher.hidden = true;
-      libraryEmptyState.hidden = false;
-      return;
-    }
-
-    libraryEmptyState.hidden = true;
-    albumSwitcher.hidden = false;
-    const groups = groupAlbumsByMonth(visibleAlbums);
-    groups.forEach((group) => {
-      const heading = document.createElement("div");
-      heading.className = "album-month-heading";
-      heading.textContent = `${group.label} • ${group.albums.length} album`;
-      albumSwitcher.appendChild(heading);
-
-      group.albums.forEach((album) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = `album-chip${currentAlbum && currentAlbum.id === album.id ? " active" : ""}`;
-
-        const thumb = document.createElement("img");
-        thumb.className = "album-chip-thumb";
-        thumb.alt = album.title;
-        thumb.loading = "lazy";
-        const thumbSrc = album.cover || (album.photos[0] && album.photos[0].url) || "";
-        if (thumbSrc) {
-          loadImageWithFallback(thumb, thumbSrc, 240);
-        }
-
-        const subText = album.driveFolderUrl
-          ? (album.updatedAt || "Google Drive")
-          : `${album.photos.length} ảnh${album.updatedAt ? ` • ${album.updatedAt}` : ""}`;
-
-        const info = document.createElement("span");
-        info.className = "album-chip-info";
-        info.innerHTML = `
-          <span class="album-chip-title">${escapeHtml(album.title)}</span>
-          <span class="album-chip-sub">${escapeHtml(subText)}</span>
-        `;
-
-        btn.append(thumb, info);
-        btn.addEventListener("click", () => selectAlbum(album));
-        albumSwitcher.appendChild(btn);
-      });
-    });
-  }
+  function renderCategories() {}
+  function getFilteredAlbums() { return getPublicGalleryAlbums(); }
+  function renderAlbumSwitcher() {}
 
   function showHomeView() {
     currentAlbum = null;
@@ -5147,11 +4954,8 @@
     document.title = `${rawDbData.brandName || "STUDIO GALLERY"} — Album Chọn Ảnh Online`;
     landingHeroSection.hidden = isSingleLockedMode;
     albumHeroSection.hidden = true;
-    controlsSection.hidden = isSingleLockedMode;
     gallerySectionEl.hidden = true;
 
-    renderCategories();
-    renderAlbumSwitcher(getFilteredAlbums());
     renderGuestRecentBar();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -5168,7 +4972,6 @@
     document.title = `${album.title} — ${rawDbData.brandName || "Gallery"}`;
     landingHeroSection.hidden = true;
     albumHeroSection.hidden = false;
-    controlsSection.hidden = true;
     guestRecentSection.hidden = true;
     gallerySectionEl.hidden = false;
 
@@ -5424,27 +5227,7 @@
     if (currentAlbum) applySortAndRender(currentAlbum);
   });
 
-  albumSearchInput.addEventListener("input", () => {
-    albumSearchQuery = albumSearchInput.value.trim();
-    renderAlbumSwitcher(getFilteredAlbums());
-  });
 
-  albumGridSizeBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      currentAlbumGridSize = btn.dataset.albumGridSize || "medium";
-      renderAlbumSwitcher(getFilteredAlbums());
-    });
-  });
-
-  albumSortNameBtn.addEventListener("click", () => {
-    currentAlbumSortMode = currentAlbumSortMode === "name-asc" ? "name-desc" : "name-asc";
-    renderAlbumSwitcher(getFilteredAlbums());
-  });
-
-  albumSortTimeBtn.addEventListener("click", () => {
-    currentAlbumSortMode = currentAlbumSortMode === "time-desc" ? "time-asc" : "time-desc";
-    renderAlbumSwitcher(getFilteredAlbums());
-  });
 
   photoSearchInput.addEventListener("input", () => {
     photoSearchQuery = photoSearchInput.value.trim().toLocaleLowerCase("vi");
@@ -5801,7 +5584,7 @@
     adminAlbumListEl.innerHTML = "";
 
     if (!filtered.length) {
-      adminAlbumListEl.innerHTML = `<p class="muted-text" style="text-align:center; padding:24px 0;">Chưa có link album nào trong tài khoản. Nhấn <strong>"+ Thêm link album mới"</strong> để bắt đầu.</p>`;
+      adminAlbumListEl.innerHTML = `<p class="muted-text" style="text-align:center; padding:24px 0;">Chưa có album nào trong tài khoản. Nhấn <strong>"+ Thêm album mới"</strong> để bắt đầu.</p>`;
       return;
     }
 
@@ -5993,8 +5776,6 @@
     try {
       await deleteSingleAlbumFromFirebase(album.id);
       renderAdminAlbumList();
-      renderCategories();
-      renderAlbumSwitcher(getFilteredAlbums());
       if (currentAlbum && currentAlbum.id === album.id) {
         showHomeView();
       }
@@ -6178,8 +5959,6 @@
 
       await saveSingleAlbumToFirebase(albumPayload, originalId);
       renderAdminAlbumList();
-      renderCategories();
-      renderAlbumSwitcher(getFilteredAlbums());
       switchAdminTab("albums");
       showToast(`Đã lưu album "${title}"!`);
     } catch (err) {
@@ -6224,11 +6003,7 @@
         patchAccount.passwordHash = nextHash;
       }
 
-      await fetch(`${FIREBASE_DB_URL}/accounts/${encodeURIComponent(currentUser.username)}.json`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(patchAccount)
-      });
+      await syncCloudWrite(`accounts/${encodeURIComponent(currentUser.username)}`, "PATCH", patchAccount);
 
       saveUserSession({
         ...currentUser,
@@ -6242,14 +6017,10 @@
         const nextGasUrl = settingGasUrlInput.value.trim();
         if (nextGasUrl) localStorage.setItem(STORAGE_GAS_URL, nextGasUrl);
 
-        await fetch(`${FIREBASE_DB_URL}/.json${getAuthQueryParam()}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            brandName: nextBrand,
-            footerText: nextFooter,
-            appsScriptUrl: nextGasUrl || rawDbData.appsScriptUrl || ""
-          })
+        await syncCloudWrite("", "PATCH", {
+          brandName: nextBrand,
+          footerText: nextFooter,
+          appsScriptUrl: nextGasUrl || rawDbData.appsScriptUrl || ""
         });
 
         rawDbData.brandName = nextBrand;
@@ -6459,8 +6230,7 @@
 
     if (isSingleLockedMode) {
       landingHeroSection.hidden = true;
-      controlsSection.hidden = true;
-      guestRecentSection.hidden = true;
+        guestRecentSection.hidden = true;
       if (!resolvedTarget) {
         albumHeroSection.hidden = false;
         gallerySectionEl.hidden = false;
@@ -6493,9 +6263,29 @@
     updateAuthHeaderUI();
 
     try {
-      const res = await fetch(`${FIREBASE_DB_URL}/.json`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
+      let primaryData = null;
+      let secondaryData = null;
+      try {
+        const r1 = await fetch(`${FIREBASE_DB_URL}/.json`);
+        if (r1.ok) primaryData = await r1.json();
+      } catch (_) {}
+      try {
+        const r2 = await fetch(`${FALLBACK_CLOUD_DB_URL}.json`);
+        if (r2.ok) secondaryData = await r2.json();
+      } catch (_) {}
+
+      const mergedAlbums = {
+        ...(primaryData && primaryData.albums ? primaryData.albums : {}),
+        ...(secondaryData && secondaryData.albums ? secondaryData.albums : {})
+      };
+
+      const data = (primaryData || secondaryData) ? {
+        brandName: (secondaryData && secondaryData.brandName) || (primaryData && primaryData.brandName) || "STUDIO GALLERY",
+        footerText: (secondaryData && secondaryData.footerText) || (primaryData && primaryData.footerText) || "© 2026 Studio Gallery • Album Chọn Ảnh Online",
+        appsScriptUrl: (secondaryData && secondaryData.appsScriptUrl) || (primaryData && primaryData.appsScriptUrl) || "",
+        apiKey: (primaryData && primaryData.apiKey) || "",
+        albums: mergedAlbums
+      } : null;
 
       if (!data) {
         await hydrateStateFromDb({
