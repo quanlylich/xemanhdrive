@@ -2891,7 +2891,7 @@
       <!-- Nhóm tab 1: Album của tôi (chỉ gồm Danh sách album của tôi & + Thêm / Sửa Album) -->
       <div class="admin-tabs" id="album-sub-tabs" hidden>
         <button type="button" class="admin-tab active" data-admin-tab="albums">Danh sách album của tôi</button>
-        <button type="button" class="admin-tab" data-admin-tab="editor" id="tab-editor-btn">+ Thêm / Sửa Album</button>
+        <button type="button" class="admin-tab" data-admin-tab="editor" id="tab-editor-btn">+ Thêm album</button>
       </div>
 
       <!-- Nhóm tab 2: Quản lý tài khoản (chứa Quản lý tài khoản & Tài khoản & Cài đặt) -->
@@ -3096,6 +3096,71 @@
           </div>
         </form>
       </div>
+    </div>
+  </div>
+
+  <!-- POPUP SỬA THÔNG TIN ALBUM RIÊNG -->
+  <div class="modal" id="edit-album-popup-modal" role="dialog" aria-modal="true" aria-hidden="true" style="z-index: 115;">
+    <div class="modal-backdrop" data-close-modal="edit-album-popup-modal"></div>
+    <div class="modal-card modal-card-md">
+      <div class="modal-header">
+        <div>
+          <h2>Sửa thông tin album</h2>
+          <p class="modal-subtitle" id="popup-edit-album-subtitle">Cập nhật thông tin album trên Firebase</p>
+        </div>
+        <button type="button" class="icon-btn" data-close-modal="edit-album-popup-modal" aria-label="Đóng">✕</button>
+      </div>
+
+      <form id="popup-album-edit-form" class="modal-body form-stack">
+        <input type="hidden" id="popup-edit-original-id" />
+
+        <div class="form-grid-2">
+          <label class="field">
+            <span>Tên album *</span>
+            <input type="text" id="popup-edit-title" required placeholder="Tên album" />
+          </label>
+
+          <label class="field">
+            <span>Mã đường dẫn *</span>
+            <input type="text" id="popup-edit-id" required placeholder="Mã đường dẫn" />
+          </label>
+        </div>
+
+        <div class="form-grid-2">
+          <label class="field">
+            <span>Danh mục</span>
+            <input type="text" id="popup-edit-category" list="category-suggestions" placeholder="Danh mục" />
+          </label>
+
+          <label class="field">
+            <span>Ngày cập nhật</span>
+            <input type="text" id="popup-edit-date" placeholder="Ngày cập nhật" />
+          </label>
+        </div>
+
+        <label class="field">
+          <span>Mô tả</span>
+          <textarea id="popup-edit-description" rows="2" placeholder="Mô tả"></textarea>
+        </label>
+
+        <div class="field">
+          <span>Link ảnh bìa</span>
+          <div class="cover-input-row">
+            <input type="text" id="popup-edit-cover" placeholder="Link ảnh bìa" />
+            <img id="popup-edit-cover-preview" class="cover-mini-preview" alt="Xem trước bìa" hidden />
+          </div>
+        </div>
+
+        <label class="field drive-folder-box">
+          <span>Link thư mục Google Drive</span>
+          <input type="text" id="popup-edit-drive-folder" placeholder="Link thư mục Google Drive" />
+        </label>
+
+        <div class="modal-footer-actions">
+          <button type="button" class="btn btn-outline btn-sm" id="popup-cancel-edit-btn">Hủy</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="popup-save-album-btn">Lưu thay đổi</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -6076,7 +6141,7 @@
       editBtn.type = "button";
       editBtn.className = "btn btn-outline btn-sm";
       editBtn.textContent = "Sửa";
-      editBtn.addEventListener("click", () => openAlbumEditor(album));
+      editBtn.addEventListener("click", () => openEditAlbumPopup(album));
 
       const delBtn = document.createElement("button");
       delBtn.type = "button";
@@ -6209,39 +6274,144 @@
     });
   }
 
-  function openAlbumEditor(album = null) {
-    setDashboardGroup("albums", "editor");
-    bulkLinksInput.value = "";
+  const editAlbumPopupModal = document.getElementById("edit-album-popup-modal");
+  const popupEditSubtitleEl = document.getElementById("popup-edit-album-subtitle");
+  const popupAlbumEditForm = document.getElementById("popup-album-edit-form");
+  const popupEditOriginalIdInput = document.getElementById("popup-edit-original-id");
+  const popupEditTitleInput = document.getElementById("popup-edit-title");
+  const popupEditIdInput = document.getElementById("popup-edit-id");
+  const popupEditCategoryInput = document.getElementById("popup-edit-category");
+  const popupEditDateInput = document.getElementById("popup-edit-date");
+  const popupEditDescriptionInput = document.getElementById("popup-edit-description");
+  const popupEditCoverInput = document.getElementById("popup-edit-cover");
+  const popupEditCoverPreview = document.getElementById("popup-edit-cover-preview");
+  const popupEditDriveFolderInput = document.getElementById("popup-edit-drive-folder");
+  const popupCancelEditBtn = document.getElementById("popup-cancel-edit-btn");
+  const popupSaveAlbumBtn = document.getElementById("popup-save-album-btn");
 
-    if (album) {
-      editOriginalIdInput.value = album.id;
-      editTitleInput.value = album.title || "";
-      editIdInput.value = album.id || "";
-      editCategoryInput.value = album.category || "";
-      editDateInput.value = album.updatedAt || formatTodayVN();
-      editDescriptionInput.value = album.description || "";
-      editCoverInput.value = album.cover || "";
-      editDriveFolderInput.value = album.driveFolderUrl || "";
-
-
-      editorPhotos = (album.photos || []).map((p) => ({ url: p.url, caption: p.caption || "" }));
-    } else {
-      editOriginalIdInput.value = "";
-      editTitleInput.value = "";
-      editIdInput.value = "";
-      editCategoryInput.value = "";
-      editDateInput.value = formatTodayVN();
-      editDescriptionInput.value = "";
-      editCoverInput.value = "";
-      editDriveFolderInput.value = "";
-
-
-      editorPhotos = [];
+  function updatePopupCoverPreview(rawUrl) {
+    const clean = (rawUrl || "").trim();
+    if (!clean) {
+      popupEditCoverPreview.hidden = true;
+      return;
     }
+    popupEditCoverPreview.hidden = false;
+    loadImageWithFallback(popupEditCoverPreview, clean, 200, {
+      onError: () => { popupEditCoverPreview.hidden = true; }
+    });
+  }
 
-    updateCoverPreview(editCoverInput.value);
+  popupEditCoverInput?.addEventListener("input", () => {
+    updatePopupCoverPreview(popupEditCoverInput.value);
+  });
+
+  popupCancelEditBtn?.addEventListener("click", () => {
+    closeModal(editAlbumPopupModal);
+  });
+
+  function resetAddAlbumForm() {
+    bulkLinksInput.value = "";
+    editOriginalIdInput.value = "";
+    editTitleInput.value = "";
+    editIdInput.value = "";
+    editCategoryInput.value = "";
+    editDateInput.value = formatTodayVN();
+    editDescriptionInput.value = "";
+    editCoverInput.value = "";
+    editDriveFolderInput.value = "";
+    editorPhotos = [];
+    updateCoverPreview("");
     renderEditorPhotos();
   }
+
+  function openAlbumEditor() {
+    resetAddAlbumForm();
+    setDashboardGroup("albums", "editor");
+  }
+
+  function openEditAlbumPopup(album) {
+    if (!album || !editAlbumPopupModal) return;
+    popupEditSubtitleEl.textContent = `Album: ${album.title}`;
+    popupEditOriginalIdInput.value = album.id;
+    popupEditTitleInput.value = album.title || "";
+    popupEditIdInput.value = album.id || "";
+    popupEditCategoryInput.value = album.category || "";
+    popupEditDateInput.value = album.updatedAt || formatTodayVN();
+    popupEditDescriptionInput.value = album.description || "";
+    popupEditCoverInput.value = album.cover || "";
+    popupEditDriveFolderInput.value = album.driveFolderUrl || "";
+    updatePopupCoverPreview(popupEditCoverInput.value);
+    openModal(editAlbumPopupModal);
+    setTimeout(() => popupEditTitleInput?.focus(), 80);
+  }
+
+  popupAlbumEditForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!currentUser) {
+      openAuthModal("login");
+      return;
+    }
+
+    const originalId = popupEditOriginalIdInput.value.trim();
+    const existingAlbum = originalId ? albums.find((a) => a.id === originalId) : null;
+    if (!existingAlbum) {
+      showToast("Không tìm thấy album cần sửa.", true);
+      return;
+    }
+
+    const title = popupEditTitleInput.value.trim();
+    const id = slugify(popupEditIdInput.value || title);
+    const driveFolderUrl = popupEditDriveFolderInput.value.trim();
+    const existingPhotos = Array.isArray(existingAlbum.photos) ? existingAlbum.photos : [];
+
+    if (!title || !id) {
+      showToast("Vui lòng nhập tên album trước khi lưu.", true);
+      return;
+    }
+
+    if (!driveFolderUrl && !existingPhotos.length) {
+      showToast("Vui lòng cung cấp liên kết thư mục Google Drive hoặc ảnh cho album.", true);
+      return;
+    }
+
+    const cover = popupEditCoverInput.value.trim() || (existingPhotos[0] ? existingPhotos[0].url : "");
+    const updatedPayload = {
+      ...existingAlbum,
+      id,
+      title,
+      category: popupEditCategoryInput.value.trim() || "Album",
+      description: popupEditDescriptionInput.value.trim(),
+      updatedAt: popupEditDateInput.value.trim() || formatTodayVN(),
+      cover,
+      driveFolderUrl,
+      photos: existingPhotos
+    };
+    delete updatedPayload.firebaseKey;
+
+    popupSaveAlbumBtn.disabled = true;
+    popupSaveAlbumBtn.textContent = "Đang lưu...";
+
+    try {
+      const oldFolderId = extractDriveFolderId(existingAlbum.driveFolderUrl || "");
+      const newFolderId = extractDriveFolderId(driveFolderUrl);
+      if (oldFolderId) driveFolderCache.delete(oldFolderId);
+      if (newFolderId) driveFolderCache.delete(newFolderId);
+
+      const saved = await saveSingleAlbumToFirebase(updatedPayload, originalId);
+      if (currentAlbum && (currentAlbum.id === originalId || currentAlbum.id === saved.id)) {
+        currentAlbum = saved;
+        renderAlbumHero(saved, unsortedAlbumPhotos, false);
+      }
+      closeModal(editAlbumPopupModal);
+      renderAdminAlbumList();
+      showToast(`Đã cập nhật thông tin album "${title}".`);
+    } catch (err) {
+      showToast(err.message || "Không thể cập nhật album lúc này.", true);
+    } finally {
+      popupSaveAlbumBtn.disabled = false;
+      popupSaveAlbumBtn.textContent = "Lưu thay đổi";
+    }
+  });
 
   async function handleDeleteAlbum(album) {
     const okDelAlbum = await requestConfirmDialog({
@@ -6336,8 +6506,9 @@
   adminTabs.forEach((tab) => {
     tab.addEventListener("click", () => {
       const target = tab.dataset.adminTab;
-      if (target === "editor" && !editOriginalIdInput.value && !editTitleInput.value) {
-        openAlbumEditor(null);
+      if (target === "editor") {
+        resetAddAlbumForm();
+        switchAdminTab("editor");
       } else {
         switchAdminTab(target);
       }
@@ -6585,7 +6756,7 @@
       return;
     }
     if (e.key === "Escape") {
-      [confirmModalEl, editUserModalEl, likedSelectionModal, shareReadyModal, adminModal, authModal, guideModal].forEach((m) => {
+      [confirmModalEl, editUserModalEl, editAlbumPopupModal, likedSelectionModal, shareReadyModal, adminModal, authModal, guideModal].forEach((m) => {
         if (m && m.classList.contains("open")) closeModal(m);
       });
     }
