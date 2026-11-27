@@ -2915,7 +2915,6 @@
             </select>
             <button type="button" class="btn btn-sm btn-danger-outline" id="delete-month-albums-btn" hidden>Xoá danh sách tháng này</button>
           </div>
-          <button type="button" class="btn btn-primary btn-sm" id="create-new-album-btn">+ Thêm album mới</button>
         </div>
         <div class="admin-album-list" id="admin-album-list"></div>
       </div>
@@ -3381,7 +3380,6 @@
   const adminMonthFilterEl = document.getElementById("admin-month-filter");
   const deleteMonthAlbumsBtn = document.getElementById("delete-month-albums-btn");
   const adminAlbumListEl = document.getElementById("admin-album-list");
-  const createNewAlbumBtn = document.getElementById("create-new-album-btn");
 
   // Admin Users Management Elements
   const adminNewUserName = document.getElementById("admin-new-user-name");
@@ -6021,7 +6019,7 @@
     adminAlbumListEl.innerHTML = "";
 
     if (!filtered.length) {
-      adminAlbumListEl.innerHTML = `<p class="muted-text" style="text-align:center; padding:24px 0;">Chưa có album nào trong tài khoản. Nhấn <strong>"+ Thêm album mới"</strong> để bắt đầu.</p>`;
+      adminAlbumListEl.innerHTML = `<p class="muted-text" style="text-align:center; padding:24px 0;">Chưa có album nào trong tài khoản. Chuyển sang tab <strong>"+ Thêm / Sửa Album"</strong> để tạo album.</p>`;
       return;
     }
 
@@ -6346,7 +6344,6 @@
     });
   });
 
-  createNewAlbumBtn.addEventListener("click", () => openAlbumEditor(null));
   cancelEditBtn.addEventListener("click", () => setDashboardGroup("albums", "albums"));
 
   editTitleInput.addEventListener("input", () => {
