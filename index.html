@@ -261,6 +261,12 @@
       border-color: #fca5a5;
     }
 
+    .user-menu-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
     .user-chip {
       display: inline-flex;
       align-items: center;
@@ -272,6 +278,58 @@
       color: var(--primary-dark);
       font-size: 0.81rem;
       font-weight: 700;
+      transition: all var(--transition);
+    }
+
+    .user-chip:hover {
+      background: #ffe4e6;
+      border-color: #fda4af;
+    }
+
+    .user-dropdown-menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      width: 220px;
+      padding: 6px;
+      border-radius: 14px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow-modal);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 60;
+    }
+
+    .user-dropdown-menu[hidden] {
+      display: none;
+    }
+
+    .user-dropdown-item {
+      width: 100%;
+      border: none;
+      background: transparent;
+      text-align: left;
+      padding: 9px 12px;
+      border-radius: 10px;
+      color: var(--ink);
+      font-size: 0.84rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .user-dropdown-item:hover {
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+    }
+
+    .user-dropdown-item.is-danger:hover {
+      background: #fef2f2;
+      color: var(--danger);
     }
 
     .user-chip-avatar {
@@ -2391,20 +2449,35 @@
         <button type="button" class="btn btn-primary" id="header-register-btn">Đăng ký</button>
 
         <!-- Khi đã đăng nhập -->
-        <span class="user-chip" id="header-user-chip" hidden>
-          <span class="user-chip-avatar" id="header-user-avatar">U</span>
-          <span id="header-user-name">User</span>
-        </span>
-        <button type="button" class="btn btn-primary btn-sm" id="header-manage-btn" hidden>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="7" height="7" rx="1"></rect>
-            <rect x="14" y="3" width="7" height="7" rx="1"></rect>
-            <rect x="14" y="14" width="7" height="7" rx="1"></rect>
-            <rect x="3" y="14" width="7" height="7" rx="1"></rect>
-          </svg>
-          <span>Quản lý album</span>
-        </button>
-        <button type="button" class="btn btn-outline btn-sm" id="header-logout-btn" hidden title="Đăng xuất">Đăng xuất</button>
+        <div class="user-menu-wrap" id="header-user-menu-wrap" hidden>
+          <button type="button" class="user-chip" id="header-user-chip" aria-expanded="false" aria-haspopup="true">
+            <span class="user-chip-avatar" id="header-user-avatar">U</span>
+            <span id="header-user-name">User</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          <div class="user-dropdown-menu" id="header-user-dropdown" hidden>
+            <button type="button" class="user-dropdown-item" id="header-manage-btn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+              </svg>
+              <span>Quản lý album</span>
+            </button>
+            <button type="button" class="user-dropdown-item is-danger" id="header-logout-btn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              <span>Đăng xuất</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </header>
@@ -3107,7 +3180,9 @@
 
   const headerLoginBtn = document.getElementById("header-login-btn");
   const headerRegisterBtn = document.getElementById("header-register-btn");
+  const headerUserMenuWrap = document.getElementById("header-user-menu-wrap");
   const headerUserChip = document.getElementById("header-user-chip");
+  const headerUserDropdown = document.getElementById("header-user-dropdown");
   const headerUserAvatar = document.getElementById("header-user-avatar");
   const headerUserName = document.getElementById("header-user-name");
   const headerManageBtn = document.getElementById("header-manage-btn");
@@ -4136,13 +4211,18 @@
     updateAuthHeaderUI();
   }
 
+  function closeUserDropdown() {
+    if (!headerUserDropdown) return;
+    headerUserDropdown.hidden = true;
+    headerUserChip?.setAttribute("aria-expanded", "false");
+  }
+
   function updateAuthHeaderUI() {
+    closeUserDropdown();
     if (isSingleLockedMode) {
       headerLoginBtn.hidden = true;
       headerRegisterBtn.hidden = true;
-      headerUserChip.hidden = true;
-      headerManageBtn.hidden = true;
-      headerLogoutBtn.hidden = true;
+      headerUserMenuWrap.hidden = true;
       navMyAlbumsBtn.hidden = true;
       return;
     }
@@ -4150,9 +4230,7 @@
     const loggedIn = Boolean(currentUser && currentUser.username);
     headerLoginBtn.hidden = loggedIn;
     headerRegisterBtn.hidden = loggedIn;
-    headerUserChip.hidden = !loggedIn;
-    headerManageBtn.hidden = !loggedIn;
-    headerLogoutBtn.hidden = !loggedIn;
+    headerUserMenuWrap.hidden = !loggedIn;
     navMyAlbumsBtn.hidden = !loggedIn;
 
     if (loggedIn) {
@@ -4408,9 +4486,28 @@
     showToast("Đã đăng xuất tài khoản.");
   }
 
-  headerLogoutBtn.addEventListener("click", handleLogout);
+  headerUserChip.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const isHidden = headerUserDropdown.hidden;
+    headerUserDropdown.hidden = !isHidden;
+    headerUserChip.setAttribute("aria-expanded", String(isHidden));
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!headerUserDropdown.hidden && !e.target.closest("#header-user-menu-wrap")) {
+      closeUserDropdown();
+    }
+  });
+
+  headerLogoutBtn.addEventListener("click", () => {
+    closeUserDropdown();
+    handleLogout();
+  });
   adminLogoutBtn.addEventListener("click", handleLogout);
-  headerManageBtn.addEventListener("click", openAdminDashboard);
+  headerManageBtn.addEventListener("click", () => {
+    closeUserDropdown();
+    openAdminDashboard();
+  });
   navMyAlbumsBtn.addEventListener("click", openAdminDashboard);
 
   /* -----------------------------------------------------------------------
@@ -4519,15 +4616,24 @@
     }
 
     try {
-      const patch = {
+      const normU = normalizeUsername(username);
+      const latestAcc = await syncCloudRead(`accounts/${encodeURIComponent(normU)}`) || info || {};
+      const nextHash = newPass ? await computePasswordHash(newPass) : (latestAcc.passwordHash || info.passwordHash || "");
+      const updatedRecord = {
+        ...latestAcc,
+        username: normU,
         displayName: newDisplay,
+        passwordHash: nextHash,
+        role: normU === DEFAULT_ADMIN_USERNAME ? "admin" : (latestAcc.role || info.role || "user"),
+        status: latestAcc.status === "pending" ? "approved" : (latestAcc.status || "approved"),
+        active: latestAcc.active !== false,
         updatedAt: Date.now()
       };
-      if (newPass) {
-        patch.passwordHash = await computePasswordHash(newPass);
-      }
-      await syncCloudWrite(`accounts/${encodeURIComponent(username)}`, "PATCH", patch);
-      Object.assign(allAccountsMap[username], patch);
+      delete updatedRecord.code;
+      delete updatedRecord.email;
+
+      await syncCloudWrite(`accounts/${encodeURIComponent(normU)}`, "PUT", updatedRecord);
+      allAccountsMap[normU] = updatedRecord;
       if (currentUser && normalizeUsername(currentUser.username) === username) {
         saveUserSession({
           ...currentUser,
@@ -6020,12 +6126,13 @@
     e.preventDefault();
     if (!currentUser) return;
 
-    const newDisplay = accountDisplayNameInput.value.trim() || currentUser.username;
-    const newPass = accountNewPasswordInput.value;
-    const confirmPass = accountConfirmPasswordInput.value;
+    const targetUsername = normalizeUsername(currentUser.username);
+    const newDisplay = accountDisplayNameInput.value.trim() || targetUsername;
+    const newPass = accountNewPasswordInput.value.trim();
+    const confirmPass = accountConfirmPasswordInput.value.trim();
 
-    if (newPass) {
-      if (newPass.length < 6 || /\s/.test(newPass)) {
+    if (newPass || confirmPass) {
+      if (!newPass || newPass.length < 6 || /\s/.test(newPass)) {
         showToast("Mật khẩu mới phải từ 6 ký tự và không có khoảng trắng.", true);
         return;
       }
@@ -6039,21 +6146,35 @@
     saveSettingsBtn.textContent = "Đang lưu...";
 
     try {
-      const patchAccount = {
-        displayName: newDisplay,
-        updatedAt: Date.now()
-      };
-      let nextHash = currentUser.passwordHash;
+      const existingAcc = await syncCloudRead(`accounts/${encodeURIComponent(targetUsername)}`) || {};
+      let nextHash = existingAcc.passwordHash || currentUser.passwordHash || "";
       if (newPass) {
         nextHash = await computePasswordHash(newPass);
-        patchAccount.passwordHash = nextHash;
       }
 
-      await syncCloudWrite(`accounts/${encodeURIComponent(currentUser.username)}`, "PATCH", patchAccount);
+      const fullAccountPayload = {
+        ...existingAcc,
+        username: targetUsername,
+        displayName: newDisplay,
+        passwordHash: nextHash,
+        role: targetUsername === DEFAULT_ADMIN_USERNAME ? "admin" : (existingAcc.role || currentUser.role || "user"),
+        status: "approved",
+        active: true,
+        updatedAt: Date.now()
+      };
+      delete fullAccountPayload.code;
+      delete fullAccountPayload.email;
+
+      await syncCloudWrite(`accounts/${encodeURIComponent(targetUsername)}`, "PUT", fullAccountPayload);
+      if (allAccountsMap && typeof allAccountsMap === "object") {
+        allAccountsMap[targetUsername] = fullAccountPayload;
+      }
 
       saveUserSession({
         ...currentUser,
+        username: targetUsername,
         displayName: newDisplay,
+        role: fullAccountPayload.role,
         passwordHash: nextHash
       }, true);
 
