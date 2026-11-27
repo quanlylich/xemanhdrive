@@ -2388,30 +2388,30 @@
       background: #15803d;
     }
 
-    /* Toast (Đồng bộ Index-v43 floating dark pill) */
+    /* Toast thông báo chuyên nghiệp */
     .toast {
       position: fixed;
       top: 18px;
       left: 50%;
-      transform: translateX(-50%) translateY(-80px) scale(0.92);
-      z-index: 150;
-      padding: 9px 18px;
-      border-radius: 9999px;
-      background: rgba(24, 24, 27, 0.92);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      transform: translateX(-50%) translateY(-80px) scale(0.94);
+      z-index: 160;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 18px;
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.95);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       color: #ffffff;
-      font-size: 0.82rem;
+      font-size: 0.83rem;
       font-weight: 600;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.24), 0 2px 6px rgba(15, 23, 42, 0.12);
       border: 1px solid rgba(255, 255, 255, 0.14);
       opacity: 0;
       pointer-events: none;
       transition: all 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
-      white-space: nowrap;
-      max-width: 92vw;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      max-width: min(92vw, 520px);
     }
 
     .toast.show {
@@ -2419,8 +2419,21 @@
       opacity: 1;
     }
 
+    .toast-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 9999px;
+      background: #4ade80;
+      flex-shrink: 0;
+    }
+
     .toast.toast-warning {
-      background: rgba(153, 27, 27, 0.95);
+      background: rgba(127, 17, 19, 0.96);
+      border-color: rgba(254, 205, 211, 0.28);
+    }
+
+    .toast.toast-warning .toast-dot {
+      background: #fda4af;
     }
   </style>
 </head>
@@ -3155,8 +3168,62 @@
     </div>
   </div>
 
+  <!-- MODAL XÁC NHẬN THAO TÁC CHUYÊN NGHIỆP -->
+  <div class="modal" id="confirm-dialog-modal" role="dialog" aria-modal="true" aria-hidden="true" style="z-index: 120;">
+    <div class="modal-backdrop" id="confirm-dialog-backdrop"></div>
+    <div class="modal-card modal-card-sm">
+      <div class="modal-header">
+        <div>
+          <h2 id="confirm-dialog-title">Xác nhận thao tác</h2>
+          <p class="modal-subtitle" id="confirm-dialog-subtitle">Vui lòng xác nhận trước khi thực hiện</p>
+        </div>
+        <button type="button" class="icon-btn" id="confirm-dialog-close" aria-label="Đóng">✕</button>
+      </div>
+      <div class="modal-body form-stack">
+        <p class="form-hint" id="confirm-dialog-message" style="color: var(--ink-secondary); line-height: 1.55;"></p>
+        <div class="modal-footer-actions">
+          <button type="button" class="btn btn-outline btn-sm" id="confirm-dialog-cancel">Hủy</button>
+          <button type="button" class="btn btn-primary btn-sm" id="confirm-dialog-ok">Xác nhận</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL CHỈNH SỬA TÀI KHOẢN (DÀNH CHO QUẢN TRỊ VIÊN) -->
+  <div class="modal" id="edit-user-modal" role="dialog" aria-modal="true" aria-hidden="true" style="z-index: 120;">
+    <div class="modal-backdrop" data-close-modal="edit-user-modal"></div>
+    <div class="modal-card modal-card-sm">
+      <div class="modal-header">
+        <div>
+          <h2>Chỉnh sửa tài khoản</h2>
+          <p class="modal-subtitle" id="edit-user-subtitle">Cập nhật thông tin hiển thị và mật khẩu</p>
+        </div>
+        <button type="button" class="icon-btn" data-close-modal="edit-user-modal" aria-label="Đóng">✕</button>
+      </div>
+      <form id="edit-user-form" class="modal-body form-stack">
+        <input type="hidden" id="edit-user-username" />
+        <label class="field">
+          <span>Tên hiển thị</span>
+          <input type="text" id="edit-user-display" required placeholder="Nhập tên hiển thị..." />
+        </label>
+        <label class="field">
+          <span>Mật khẩu mới (để trống nếu giữ nguyên)</span>
+          <input type="password" id="edit-user-password" placeholder="Tối thiểu 6 ký tự, không dấu cách..." autocomplete="new-password" />
+        </label>
+        <p class="form-error" id="edit-user-error" hidden></p>
+        <div class="modal-footer-actions">
+          <button type="button" class="btn btn-outline btn-sm" data-close-modal="edit-user-modal">Hủy</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="edit-user-submit">Lưu thay đổi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Thông báo Toast -->
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span class="toast-dot" aria-hidden="true"></span>
+    <span id="toast-message"></span>
+  </div>
 
   <script>
 (() => {
@@ -3360,6 +3427,7 @@
 
   const guideModal = document.getElementById("guide-modal");
   const toastEl = document.getElementById("toast");
+  const toastMsgEl = document.getElementById("toast-message");
 
   // App State
   const urlParams = new URLSearchParams(window.location.search);
@@ -3413,12 +3481,64 @@
    * Tiện ích chung, Bảo mật SHA-256 & Xử lý link Google Drive
    * --------------------------------------------------------------------- */
   function showToast(message, isWarning = false) {
-    toastEl.textContent = message;
-    toastEl.classList.toggle("toast-warning", isWarning);
+    if (toastMsgEl) {
+      toastMsgEl.textContent = message;
+    } else {
+      toastEl.textContent = message;
+    }
+    toastEl.classList.toggle("toast-warning", Boolean(isWarning));
     toastEl.classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2800);
+    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 3000);
   }
+
+  // Hộp thoại xác nhận chuyên nghiệp thay thế window.confirm
+  const confirmModalEl = document.getElementById("confirm-dialog-modal");
+  const confirmTitleEl = document.getElementById("confirm-dialog-title");
+  const confirmMessageEl = document.getElementById("confirm-dialog-message");
+  const confirmOkBtn = document.getElementById("confirm-dialog-ok");
+  const confirmCancelBtn = document.getElementById("confirm-dialog-cancel");
+  const confirmCloseBtn = document.getElementById("confirm-dialog-close");
+  const confirmBackdropEl = document.getElementById("confirm-dialog-backdrop");
+  let pendingConfirmResolve = null;
+
+  function resolveConfirmModal(result) {
+    if (confirmModalEl) closeModal(confirmModalEl);
+    if (pendingConfirmResolve) {
+      const fn = pendingConfirmResolve;
+      pendingConfirmResolve = null;
+      fn(result);
+    }
+  }
+
+  function requestConfirmDialog({ title = "Xác nhận thao tác", message = "", confirmText = "Xác nhận", danger = false }) {
+    if (!confirmModalEl || !confirmMessageEl) {
+      return Promise.resolve(window.confirm(message));
+    }
+    confirmTitleEl.textContent = title;
+    confirmMessageEl.textContent = message;
+    confirmOkBtn.textContent = confirmText;
+    confirmOkBtn.className = danger ? "btn btn-sm btn-danger-outline" : "btn btn-primary btn-sm";
+    openModal(confirmModalEl);
+    return new Promise((resolve) => {
+      pendingConfirmResolve = resolve;
+    });
+  }
+
+  confirmOkBtn?.addEventListener("click", () => resolveConfirmModal(true));
+  confirmCancelBtn?.addEventListener("click", () => resolveConfirmModal(false));
+  confirmCloseBtn?.addEventListener("click", () => resolveConfirmModal(false));
+  confirmBackdropEl?.addEventListener("click", () => resolveConfirmModal(false));
+
+  // Modal chỉnh sửa tài khoản chuyên nghiệp thay thế window.prompt
+  const editUserModalEl = document.getElementById("edit-user-modal");
+  const editUserSubtitleEl = document.getElementById("edit-user-subtitle");
+  const editUserFormEl = document.getElementById("edit-user-form");
+  const editUserUsernameInput = document.getElementById("edit-user-username");
+  const editUserDisplayInput = document.getElementById("edit-user-display");
+  const editUserPasswordInput = document.getElementById("edit-user-password");
+  const editUserErrorEl = document.getElementById("edit-user-error");
+  const editUserSubmitBtn = document.getElementById("edit-user-submit");
 
   function normalizeUsername(name) {
     return String(name || "")
@@ -3900,7 +4020,7 @@
       document.body.appendChild(a);
       a.click();
       a.remove();
-      showToast("Đang tải tệp gốc từ Google Drive...");
+      showToast("Đang khởi tạo tải tệp gốc từ Google Drive.");
       return;
     }
 
@@ -4049,7 +4169,7 @@
       const hBtn = targetCard.querySelector(".card-heart-btn");
       if (hBtn) hBtn.classList.toggle("is-liked", liked);
     }
-    showToast(liked ? "♥ Đã thêm vào danh sách ảnh chọn" : "Đã bỏ chọn ảnh");
+    showToast(liked ? "Đã thêm ảnh vào danh sách chọn." : "Đã bỏ ảnh khỏi danh sách chọn.");
   });
 
   function buildLikedSummaryText() {
@@ -4080,7 +4200,7 @@
     if (!currentAlbum) return;
     const likedList = getLikedPhotosObjects();
     if (!likedList.length) {
-      showToast("Bạn chưa thả tim chọn ảnh nào!", true);
+      showToast("Vui lòng thả tim chọn ít nhất một ảnh trước khi gửi danh sách.", true);
       return;
     }
     likedModalCount.textContent = String(likedList.length);
@@ -4103,14 +4223,20 @@
 
   clearAllLikedBtn.addEventListener("click", () => {
     if (!currentAlbum) return;
-    if (!window.confirm("Bỏ chọn toàn bộ các ảnh đã thả tim trong album này?")) return;
+    const okClear = await requestConfirmDialog({
+      title: "Bỏ chọn toàn bộ ảnh",
+      message: "Bạn có chắc muốn bỏ chọn toàn bộ các ảnh đã thả tim trong album này?",
+      confirmText: "Bỏ chọn tất cả",
+      danger: true
+    });
+    if (!okClear) return;
     const map = loadLikedStorage();
     delete map[currentAlbum.id];
     saveLikedStorage(map);
     filterLikedOnly = false;
     closeModal(likedSelectionModal);
     applySortAndRender(currentAlbum);
-    showToast("Đã xóa toàn bộ lựa chọn tim.");
+    showToast("Đã bỏ chọn toàn bộ ảnh yêu thích trong album.");
   });
 
   submitLikedFirebaseBtn.addEventListener("click", async () => {
@@ -4140,7 +4266,7 @@
       await syncCloudWrite(`album_selections/${encodeURIComponent(currentAlbum.id)}/${selId}`, "PUT", payload);
 
       closeModal(likedSelectionModal);
-      showToast(`Đã gửi danh sách ${likedList.length} ảnh chọn thành công!`);
+      showToast(`Đã gửi danh sách ${likedList.length} ảnh đã chọn thành công.`);
     } catch {
       await copyToClipboard(likedSummaryTextarea.value, "Đã sao chép danh sách ảnh chọn để gửi Zalo!");
       closeModal(likedSelectionModal);
@@ -4368,7 +4494,7 @@
 
       closeModal(authModal);
       loginPasswordInput.value = "";
-      showToast(`Đăng nhập thành công (${cleanRecord.displayName})!`);
+      showToast(`Đăng nhập thành công — ${cleanRecord.displayName}.`);
       openAdminDashboard("account");
     } catch (err) {
       loginErrorEl.textContent = err.message;
@@ -4453,7 +4579,7 @@
           passwordHash: passHash
         }, true);
         closeModal(authModal);
-        showToast(`Đã tạo tài khoản Quản trị "${displayName}"!`);
+        showToast(`Đã khởi tạo tài khoản Quản trị "${displayName}".`);
         openAdminDashboard("account");
       } else {
         switchAuthTab("login");
@@ -4463,7 +4589,7 @@
         loginErrorEl.style.color = "#166534";
         loginErrorEl.textContent = `Đã gửi yêu cầu đăng ký tài khoản "${displayName}". Vui lòng chờ Quản trị viên phê duyệt!`;
         loginErrorEl.hidden = false;
-        showToast("Đã gửi yêu cầu tạo tài khoản chờ Admin duyệt!");
+        showToast("Yêu cầu đăng ký đã được gửi và đang chờ Quản trị viên phê duyệt.");
       }
     } catch (err) {
       registerErrorEl.textContent = err.message;
@@ -4487,7 +4613,7 @@
   function handleLogout() {
     saveUserSession(null);
     closeModal(adminModal);
-    showToast("Đã đăng xuất tài khoản.");
+    showToast("Bạn đã đăng xuất khỏi hệ thống.");
   }
 
   headerUserChip.addEventListener("click", (e) => {
@@ -4604,23 +4730,39 @@
     });
   }
 
-  async function editUserAccountPrompt(username) {
+  function editUserAccountPrompt(username) {
     const info = allAccountsMap[username];
-    if (!info) return;
-    const newDisplayInput = window.prompt(`Nhập tên hiển thị mới cho tài khoản "${username}":`, info.displayName || username);
-    if (newDisplayInput === null) return;
-    const newDisplay = newDisplayInput.trim() || username;
+    if (!info || !editUserModalEl) return;
+    editUserUsernameInput.value = username;
+    editUserSubtitleEl.textContent = `Tài khoản: ${username}`;
+    editUserDisplayInput.value = info.displayName || username;
+    editUserPasswordInput.value = "";
+    editUserErrorEl.hidden = true;
+    openModal(editUserModalEl);
+    setTimeout(() => editUserDisplayInput.focus(), 80);
+  }
 
-    const newPassInput = window.prompt(`Nhập mật khẩu mới cho "${username}" (để trống nếu giữ nguyên mật khẩu cũ):`, "");
-    if (newPassInput === null) return;
-    const newPass = newPassInput.trim();
+  editUserFormEl?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    editUserErrorEl.hidden = true;
+    const rawUsername = editUserUsernameInput.value;
+    const normU = normalizeUsername(rawUsername);
+    const info = allAccountsMap[normU] || allAccountsMap[rawUsername];
+    if (!info) return;
+
+    const newDisplay = editUserDisplayInput.value.trim() || normU;
+    const newPass = editUserPasswordInput.value.trim();
+
     if (newPass && (newPass.length < 6 || /\s/.test(newPass))) {
-      showToast("Mật khẩu mới phải từ 6 ký tự và không chứa khoảng trắng!", true);
+      editUserErrorEl.textContent = "Mật khẩu mới phải từ 6 ký tự và không chứa khoảng trắng.";
+      editUserErrorEl.hidden = false;
       return;
     }
 
+    editUserSubmitBtn.disabled = true;
+    editUserSubmitBtn.textContent = "Đang lưu...";
+
     try {
-      const normU = normalizeUsername(username);
       const latestAcc = await syncCloudRead(`accounts/${encodeURIComponent(normU)}`) || info || {};
       const nextHash = newPass ? await computePasswordHash(newPass) : (latestAcc.passwordHash || info.passwordHash || "");
       const updatedRecord = {
@@ -4638,20 +4780,25 @@
 
       await syncCloudWrite(`accounts/${encodeURIComponent(normU)}`, "PUT", updatedRecord);
       allAccountsMap[normU] = updatedRecord;
-      if (currentUser && normalizeUsername(currentUser.username) === username) {
+      if (currentUser && normalizeUsername(currentUser.username) === normU) {
         saveUserSession({
           ...currentUser,
           displayName: newDisplay,
-          passwordHash: patch.passwordHash || currentUser.passwordHash
+          passwordHash: nextHash
         }, true);
-        adminUserEmailEl.textContent = `Tài khoản: ${newDisplay} (${username})`;
+        adminUserEmailEl.textContent = `Tài khoản: ${newDisplay} (${normU})`;
       }
+      closeModal(editUserModalEl);
       renderAdminUsersList();
-      showToast(`Đã cập nhật tài khoản "${username}"!`);
+      showToast(`Đã cập nhật thông tin tài khoản "${normU}".`);
     } catch (err) {
-      showToast("Lỗi cập nhật tài khoản: " + err.message, true);
+      editUserErrorEl.textContent = `Không thể cập nhật tài khoản: ${err.message}`;
+      editUserErrorEl.hidden = false;
+    } finally {
+      editUserSubmitBtn.disabled = false;
+      editUserSubmitBtn.textContent = "Lưu thay đổi";
     }
-  }
+  });
 
   async function approveUserAccount(username) {
     try {
@@ -4659,9 +4806,9 @@
       await syncCloudWrite(`accounts/${encodeURIComponent(username)}`, "PATCH", patch);
       if (allAccountsMap[username]) Object.assign(allAccountsMap[username], patch);
       renderAdminUsersList();
-      showToast(`Đã phê duyệt tài khoản "${username}"!`);
+      showToast(`Đã phê duyệt tài khoản "${username}".`);
     } catch (err) {
-      showToast("Lỗi duyệt tài khoản: " + err.message, true);
+      showToast(`Phê duyệt tài khoản thất bại: ${err.message}`, true);
     }
   }
 
@@ -4674,9 +4821,9 @@
       await syncCloudWrite(`accounts/${encodeURIComponent(username)}`, "PATCH", patch);
       Object.assign(allAccountsMap[username], patch);
       renderAdminUsersList();
-      showToast(nextActive ? `Đã mở khóa "${username}"` : `Đã khóa "${username}"`);
+      showToast(nextActive ? `Đã mở khóa tài khoản "${username}".` : `Đã tạm khóa tài khoản "${username}".`);
     } catch (err) {
-      showToast("Lỗi cập nhật: " + err.message, true);
+      showToast(`Cập nhật trạng thái thất bại: ${err.message}`, true);
     }
   }
 
@@ -4689,24 +4836,29 @@
       await syncCloudWrite(`accounts/${encodeURIComponent(username)}`, "PATCH", patch);
       Object.assign(allAccountsMap[username], patch);
       renderAdminUsersList();
-      showToast(`Đã đổi quyền "${username}" thành ${nextRole === "admin" ? "Quản trị" : "Thành viên"}`);
+      showToast(`Đã cập nhật quyền của "${username}" thành ${nextRole === "admin" ? "Quản trị viên" : "Thành viên"}.`);
     } catch (err) {
-      showToast("Lỗi đổi quyền: " + err.message, true);
+      showToast(`Cập nhật quyền tài khoản thất bại: ${err.message}`, true);
     }
   }
 
   async function deleteUserAccount(username, isReject = false) {
-    const msg = isReject
-      ? `Từ chối và xóa yêu cầu đăng ký của "${username}"?`
-      : `Bạn có chắc muốn xóa tài khoản "${username}"?`;
-    if (!window.confirm(msg)) return;
+    const okDel = await requestConfirmDialog({
+      title: isReject ? "Từ chối yêu cầu đăng ký" : "Xóa tài khoản",
+      message: isReject
+        ? `Xác nhận từ chối và xóa yêu cầu đăng ký của tài khoản "${username}"?`
+        : `Xác nhận xóa vĩnh viễn tài khoản "${username}" khỏi hệ thống?`,
+      confirmText: isReject ? "Từ chối" : "Xóa tài khoản",
+      danger: true
+    });
+    if (!okDel) return;
     try {
       await syncCloudWrite(`accounts/${encodeURIComponent(username)}`, "DELETE");
       delete allAccountsMap[username];
       renderAdminUsersList();
-      showToast(isReject ? `Đã từ chối "${username}"` : `Đã xóa tài khoản "${username}"`);
+      showToast(isReject ? `Đã từ chối yêu cầu của "${username}".` : `Đã xóa tài khoản "${username}".`);
     } catch (err) {
-      showToast("Lỗi xóa tài khoản: " + err.message, true);
+      showToast(`Xóa tài khoản thất bại: ${err.message}`, true);
     }
   }
 
@@ -4717,15 +4869,15 @@
     const pass = adminNewUserPass.value.trim();
 
     if (!username || username.length < 2) {
-      showToast("Vui lòng nhập tên đăng nhập hợp lệ.", true);
+      showToast("Tên đăng nhập chưa hợp lệ. Vui lòng nhập tối thiểu 2 ký tự.", true);
       return;
     }
     if (!pass || pass.length < 6) {
-      showToast("Mật khẩu phải từ 6 ký tự trở lên.", true);
+      showToast("Mật khẩu cần tối thiểu 6 ký tự.", true);
       return;
     }
     if (allAccountsMap[username]) {
-      showToast("Tên đăng nhập này đã tồn tại!", true);
+      showToast("Tên đăng nhập đã được sử dụng. Vui lòng chọn tên khác.", true);
       return;
     }
 
@@ -4748,9 +4900,9 @@
       adminNewUserDisplay.value = "";
       adminNewUserPass.value = "";
       renderAdminUsersList();
-      showToast(`Đã tạo và duyệt tài khoản "${display}"!`);
+      showToast(`Đã tạo và kích hoạt tài khoản "${display}".`);
     } catch (err) {
-      showToast("Lỗi tạo tài khoản: " + err.message, true);
+      showToast(`Tạo tài khoản thất bại: ${err.message}`, true);
     } finally {
       adminCreateUserBtn.disabled = false;
     }
@@ -4906,7 +5058,7 @@
       titleEl.addEventListener("click", () => {
         const found = albums.find((a) => a.id === item.id) || (item.encoded ? decodeAlbumFromUrlParam(item.encoded) : null);
         if (found) selectAlbum(found);
-        else showToast("Không tìm thấy dữ liệu album này.", true);
+        else showToast("Không tìm thấy dữ liệu cho album được chọn.", true);
       });
 
       const copyBtn = document.createElement("button");
@@ -4927,7 +5079,7 @@
   clearGuestRecentBtn.addEventListener("click", () => {
     localStorage.removeItem(STORAGE_GUEST_ALBUMS);
     renderGuestRecentBar();
-    showToast("Đã xóa lịch sử link tạm trên trình duyệt.");
+    showToast("Đã xóa lịch sử liên kết tạm trên trình duyệt.");
   });
 
   function openShareReadyModal(album) {
@@ -4954,7 +5106,7 @@
     const customTitle = quickCreateTitleInput.value.trim();
 
     if (!rawInput) {
-      showToast("Vui lòng dán link thư mục hoặc link ảnh Google Drive!", true);
+      showToast("Vui lòng dán liên kết thư mục hoặc ảnh Google Drive để tạo album.", true);
       quickCreateLinkInput.focus();
       return;
     }
@@ -4965,7 +5117,7 @@
       .filter((s) => s.length >= 10);
 
     if (!tokens.length) {
-      showToast("Liên kết không hợp lệ. Hãy kiểm tra lại link Google Drive!", true);
+      showToast("Liên kết chưa hợp lệ. Vui lòng kiểm tra lại đường dẫn Google Drive.", true);
       return;
     }
 
@@ -5048,9 +5200,9 @@
       quickCreateLinkInput.value = "";
       quickCreateTitleInput.value = "";
       openShareReadyModal(savedAlbum);
-      showToast("Đã tạo link xem album thành công!");
+      showToast("Đã tạo liên kết xem album thành công.");
     } catch (err) {
-      showToast(err.message || "Lỗi khi tạo album", true);
+      showToast(err.message || "Không thể tạo album lúc này.", true);
     } finally {
       quickCreateSubmitBtn.disabled = false;
       quickCreateSubmitBtn.innerHTML = oldBtnHtml;
@@ -5544,7 +5696,7 @@
         await document.exitFullscreen();
       }
     } catch {
-      showToast("Trình duyệt không hỗ trợ chế độ toàn màn hình.", true);
+      showToast("Thiết bị hoặc trình duyệt hiện tại không hỗ trợ chế độ toàn màn hình.", true);
     }
   }
 
@@ -5957,7 +6109,13 @@
   }
 
   async function handleDeleteAlbum(album) {
-    if (!window.confirm(`Bạn có chắc muốn xóa album "${album.title}" không?`)) return;
+    const okDelAlbum = await requestConfirmDialog({
+      title: "Xóa album",
+      message: `Xác nhận xóa album "${album.title}" khỏi hệ thống?`,
+      confirmText: "Xóa album",
+      danger: true
+    });
+    if (!okDelAlbum) return;
 
     try {
       await deleteSingleAlbumFromFirebase(album.id);
@@ -6061,7 +6219,13 @@
 
   clearAllPhotosBtn.addEventListener("click", () => {
     if (!editorPhotos.length) return;
-    if (window.confirm("Xóa toàn bộ danh sách ảnh lẻ?")) {
+    const okClearPhotos = await requestConfirmDialog({
+      title: "Xóa danh sách ảnh lẻ",
+      message: "Xác nhận xóa toàn bộ danh sách ảnh lẻ đã thêm?",
+      confirmText: "Xóa danh sách",
+      danger: true
+    });
+    if (okClearPhotos) {
       editorPhotos = [];
       renderEditorPhotos();
     }
@@ -6070,7 +6234,7 @@
   addBulkLinksBtn.addEventListener("click", () => {
     const raw = bulkLinksInput.value.trim();
     if (!raw) {
-      showToast("Vui lòng dán ít nhất 1 liên kết ảnh.", true);
+      showToast("Vui lòng dán ít nhất một liên kết ảnh hợp lệ.", true);
       return;
     }
     const lines = raw
@@ -6089,7 +6253,7 @@
 
     bulkLinksInput.value = "";
     renderEditorPhotos();
-    showToast(`Đã thêm ${lines.length} ảnh lẻ!`);
+    showToast(`Đã thêm ${lines.length} ảnh vào danh sách.`);
   });
 
   // Lưu Album từ Editor của Tài khoản
@@ -6106,7 +6270,7 @@
     const driveFolderUrl = editDriveFolderInput.value.trim();
 
     if (!title || !id) {
-      showToast("Vui lòng nhập tên album.", true);
+      showToast("Vui lòng nhập tên album trước khi lưu.", true);
       return;
     }
 
@@ -6115,7 +6279,7 @@
       .filter((p) => p.url);
 
     if (!driveFolderUrl && !cleanPhotos.length) {
-      showToast("Vui lòng dán Link Thư mục Google Drive hoặc ít nhất 1 ảnh.", true);
+      showToast("Vui lòng cung cấp liên kết thư mục Google Drive hoặc ít nhất một ảnh.", true);
       return;
     }
 
@@ -6146,7 +6310,7 @@
       await saveSingleAlbumToFirebase(albumPayload, originalId);
       renderAdminAlbumList();
       setDashboardGroup("albums", "albums");
-      showToast(`Đã lưu album "${title}"!`);
+      showToast(`Đã lưu album "${title}" thành công.`);
     } catch (err) {
       showToast(err.message, true);
     } finally {
@@ -6167,11 +6331,11 @@
 
     if (newPass || confirmPass) {
       if (!newPass || newPass.length < 6 || /\s/.test(newPass)) {
-        showToast("Mật khẩu mới phải từ 6 ký tự và không có khoảng trắng.", true);
+        showToast("Mật khẩu mới cần tối thiểu 6 ký tự và không chứa khoảng trắng.", true);
         return;
       }
       if (newPass !== confirmPass) {
-        showToast("Mật khẩu nhập lại không khớp!", true);
+        showToast("Mật khẩu xác nhận không khớp với mật khẩu mới.", true);
         return;
       }
     }
@@ -6253,9 +6417,9 @@
       adminUserEmailEl.textContent = `Tài khoản: ${newDisplay} (${currentUser.username})`;
       accountNewPasswordInput.value = "";
       accountConfirmPasswordInput.value = "";
-      showToast("Đã lưu thông tin tài khoản!");
+      showToast("Đã lưu cập nhật thông tin tài khoản.");
     } catch (err) {
-      showToast(err.message || "Lỗi cập nhật cài đặt", true);
+      showToast(err.message || "Không thể lưu cài đặt hệ thống.", true);
     } finally {
       saveSettingsBtn.disabled = false;
       saveSettingsBtn.textContent = "Lưu thay đổi";
@@ -6281,7 +6445,7 @@
       return;
     }
     if (e.key === "Escape") {
-      [likedSelectionModal, shareReadyModal, adminModal, authModal, guideModal].forEach((m) => {
+      [confirmModalEl, editUserModalEl, likedSelectionModal, shareReadyModal, adminModal, authModal, guideModal].forEach((m) => {
         if (m && m.classList.contains("open")) closeModal(m);
       });
     }
