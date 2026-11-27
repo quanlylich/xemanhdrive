@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Client Gallery — Album Chọn Ảnh Online</title>
+  <title>Album Chọn Ảnh Online</title>
   <meta name="description" content="Album chọn ảnh online tối giản, hiện đại. Dán link Google Drive và chia sẻ ngay." />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%237b1113'/%3E%3Crect x='14' y='20' width='36' height='28' rx='5' fill='none' stroke='%23ffffff' stroke-width='3.2'/%3E%3Cpath d='M22 20l3-5h14l3 5' fill='none' stroke='%23ffffff' stroke-width='3.2' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='34' r='8' fill='none' stroke='%23ffffff' stroke-width='3.2'/%3E%3C/svg%3E" />
 
@@ -45,6 +45,10 @@
     *::before,
     *::after {
       box-sizing: border-box;
+    }
+
+    [hidden] {
+      display: none !important;
     }
 
     html {
@@ -2188,6 +2192,144 @@
       outline: none;
     }
 
+/* Nút thả tim / chọn ảnh trên Card & Lightbox */
+    .card-heart-btn {
+      position: absolute;
+      top: 9px;
+      left: 9px;
+      z-index: 3;
+      width: 34px;
+      height: 34px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      background: rgba(15, 23, 42, 0.56);
+      backdrop-filter: blur(6px);
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      line-height: 1;
+      transition: all var(--transition);
+    }
+
+    .card-heart-btn:hover {
+      background: rgba(123, 17, 19, 0.88);
+      transform: scale(1.08);
+    }
+
+    .card-heart-btn.is-liked {
+      background: var(--primary-dark);
+      border-color: #ffffff;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(123, 17, 19, 0.45);
+    }
+
+    .photo-card.is-liked {
+      box-shadow: 0 0 0 2.5px var(--primary-dark);
+    }
+
+    .masonry-grid.grid-small .card-heart-btn {
+      width: 26px;
+      height: 26px;
+      top: 5px;
+      left: 5px;
+      font-size: 12px;
+    }
+
+    .liked-toolbar-pill {
+      padding: 5px 12px;
+      border-radius: 9999px;
+      border: 1px solid var(--primary-border);
+      background: var(--primary-soft);
+      color: var(--primary-dark);
+      font-size: 0.79rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all var(--transition);
+    }
+
+    .liked-toolbar-pill:hover {
+      background: #ffe4e6;
+    }
+
+    .liked-toolbar-pill.active {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+      color: #ffffff;
+    }
+
+    .lightbox-heart-btn {
+      height: 38px;
+      padding: 0 13px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--transition);
+    }
+
+    .lightbox-heart-btn:hover {
+      background: rgba(255, 255, 255, 0.24);
+    }
+
+    .lightbox-heart-btn.is-liked {
+      background: var(--primary-dark);
+      border-color: #fecdd3;
+      color: #ffffff;
+    }
+
+    @media (max-width: 560px) {
+      .lightbox-heart-btn span {
+        display: none;
+      }
+      .lightbox-heart-btn {
+        width: 38px;
+        padding: 0;
+        justify-content: center;
+      }
+    }
+
+    /* Admin Pending Users Box (Đồng bộ Index-v43) */
+    .pending-users-box {
+      padding: 12px;
+      border-radius: 14px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .status-pill-inline.is-pending {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #fde68a;
+    }
+
+    .status-pill-inline.is-locked {
+      background: #f1f5f9;
+      color: #475569;
+      border-color: #cbd5e1;
+    }
+
+    .btn-success-sm {
+      background: #16a34a;
+      border-color: #16a34a;
+      color: #ffffff;
+    }
+
+    .btn-success-sm:hover {
+      background: #15803d;
+    }
+
     /* Toast (Đồng bộ Index-v43 floating dark pill) */
     .toast {
       position: fixed;
@@ -2236,7 +2378,6 @@
           </svg>
         </span>
         <span class="brand-text" id="brand-name">STUDIO GALLERY</span>
-        <span class="brand-pill">Client Gallery</span>
       </a>
 
       <nav class="header-nav" id="header-nav" aria-label="Điều hướng">
@@ -2272,18 +2413,8 @@
   <!-- TRANG CHỦ HERO (Bố cục giống ảnh mẫu + màu sắc Index-v43) -->
   <section class="landing-hero" id="landing-hero-section">
     <div class="container landing-hero-inner">
-      <div class="hero-pill-badge">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="3"></rect>
-          <circle cx="8.5" cy="8.5" r="1.5"></circle>
-          <polyline points="21 15 16 10 5 21"></polyline>
-        </svg>
-        <span>Client Gallery</span>
-      </div>
-
       <h1 class="landing-title">
-        Album chọn ảnh online.<br />
-        Khách chốt ảnh <span class="accent-word">nhanh.</span>
+        Album chọn ảnh <span class="accent-word">online.</span>
       </h1>
 
       <!-- Ô dán link tạo album ngay không cần đăng nhập -->
@@ -2432,7 +2563,6 @@
     <section class="controls section-card" id="publicLibrarySection" aria-label="Thư viện album" style="margin-top: 20px;">
       <div class="section-header-bar">
         <div>
-          <div class="section-eyebrow">THƯ VIỆN TRỰC TUYẾN</div>
           <h2 class="section-heading" id="library-section-title">Danh sách Album</h2>
         </div>
         <button type="button" class="btn btn-primary btn-sm" id="library-new-album-btn" hidden>+ Thêm album mới</button>
@@ -2469,7 +2599,15 @@
     <!-- Lưới ảnh của album đang mở -->
     <section class="gallery-section" id="gallery-section" aria-label="Danh sách ảnh" hidden>
       <div class="gallery-toolbar" id="gallery-toolbar" hidden>
-        <span class="gallery-toolbar-info" id="gallery-sort-summary">Hiển thị theo thứ tự tên file</span>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span class="gallery-toolbar-info" id="gallery-sort-summary">Hiển thị theo thứ tự tên file</span>
+          <button type="button" class="liked-toolbar-pill" id="toggle-liked-only-btn" title="Lọc xem các ảnh đã thả tim">
+            <span>♥ Đã chọn: <strong id="liked-count-badge">0</strong></span>
+          </button>
+          <button type="button" class="btn btn-primary btn-sm" id="open-liked-modal-btn" hidden>
+            <span>Gửi danh sách chọn</span>
+          </button>
+        </div>
         <div class="toolbar-controls-group">
           <label class="gallery-search-control">
             <input type="search" class="gallery-search-input" id="photo-search-input" placeholder="Tìm tên file, chú thích..." aria-label="Tìm kiếm ảnh trong album" autocomplete="off" />
@@ -2509,6 +2647,10 @@
     <div class="lightbox-topbar">
       <span class="lightbox-counter" id="lightbox-counter">1 / 1</span>
       <div class="lightbox-actions-group">
+        <button type="button" class="lightbox-heart-btn" id="lightbox-heart-btn" title="Thả tim chọn ảnh này (L)">
+          <span aria-hidden="true">♥</span>
+          <span id="lightbox-heart-label">Chọn ảnh</span>
+        </button>
         <button type="button" class="lightbox-btn" id="lightbox-zoom-btn" title="Phóng to / Thu nhỏ ảnh">
           <svg id="icon-zoom-in" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
@@ -2702,6 +2844,7 @@
       <div class="admin-tabs">
         <button type="button" class="admin-tab active" data-admin-tab="albums">Danh sách Link của tôi</button>
         <button type="button" class="admin-tab" data-admin-tab="editor" id="tab-editor-btn">+ Thêm / Sửa Album</button>
+        <button type="button" class="admin-tab" data-admin-tab="users" id="tab-users-btn" hidden>Quản lý tài khoản</button>
         <button type="button" class="admin-tab" data-admin-tab="account">Tài khoản &amp; Cài đặt</button>
       </div>
 
@@ -2814,6 +2957,44 @@
         </form>
       </div>
 
+      <!-- Tab Duyệt & Quản lý tài khoản (Chỉ Admin) -->
+      <div class="modal-body admin-panel" id="panel-users" hidden>
+        <div class="drive-folder-box form-stack" style="margin-bottom:14px;">
+          <div class="section-eyebrow">CẤP NHANH TÀI KHOẢN MỚI</div>
+          <div class="form-grid-2">
+            <label class="field">
+              <span>Tên đăng nhập *</span>
+              <input type="text" id="admin-new-user-name" placeholder="VD: STUDIOJUNE" autocomplete="off" />
+            </label>
+            <label class="field">
+              <span>Tên hiển thị</span>
+              <input type="text" id="admin-new-user-display" placeholder="VD: Studio June" autocomplete="off" />
+            </label>
+          </div>
+          <div class="form-grid-2" style="align-items:end;">
+            <label class="field">
+              <span>Mật khẩu *</span>
+              <input type="text" id="admin-new-user-pass" placeholder="Tối thiểu 6 ký tự..." autocomplete="off" />
+            </label>
+            <div>
+              <button type="button" class="btn btn-primary btn-sm" id="admin-create-user-btn" style="width:100%; height:38px;">+ Tạo &amp; Duyệt ngay</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="pending-users-section" class="pending-users-box" style="margin-bottom:14px;" hidden>
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <strong style="font-size:0.83rem; color:#92400e;">⏳ Tài khoản đang chờ duyệt (<span id="pending-users-count">0</span>)</strong>
+          </div>
+          <div class="admin-album-list" id="pending-users-list"></div>
+        </div>
+
+        <div class="panel-toolbar">
+          <span class="muted-text" id="approved-users-count">0 tài khoản đã duyệt</span>
+        </div>
+        <div class="admin-album-list" id="approved-users-list"></div>
+      </div>
+
       <!-- Tab 3: Tài khoản & Cài đặt -->
       <div class="modal-body admin-panel" id="panel-account" hidden>
         <form id="account-settings-form" class="form-stack">
@@ -2868,6 +3049,45 @@
     </div>
   </div>
 
+  <!-- MODAL DANH SÁCH ẢNH KHÁCH ĐÃ CHỌN (TIM / YÊU THÍCH) -->
+  <div class="modal" id="liked-selection-modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal="liked-selection-modal"></div>
+    <div class="modal-card modal-card-md">
+      <div class="modal-header">
+        <div>
+          <h2>Danh Sách Ảnh Đã Chọn (<span id="liked-modal-count">0</span>)</h2>
+          <p class="modal-subtitle" id="liked-modal-album-title">Gửi danh sách mã ảnh đã chọn cho Studio</p>
+        </div>
+        <button type="button" class="icon-btn" data-close-modal="liked-selection-modal" aria-label="Đóng">✕</button>
+      </div>
+      <div class="modal-body form-stack">
+        <div class="form-grid-2">
+          <label class="field">
+            <span>Tên của bạn (Dâu rể / Khách hàng)</span>
+            <input type="text" id="liked-client-name" placeholder="VD: Minh Anh" />
+          </label>
+          <label class="field">
+            <span>Ghi chú chỉnh sửa (nếu có)</span>
+            <input type="text" id="liked-client-note" placeholder="VD: Làm mịn da nhẹ, in phóng..." />
+          </label>
+        </div>
+
+        <label class="field">
+          <span>Nội dung danh sách ảnh đã chọn:</span>
+          <textarea id="liked-summary-textarea" rows="8" style="font-family:monospace; font-size:0.8rem;" readonly></textarea>
+        </label>
+
+        <div class="modal-footer-actions" style="justify-content:space-between; flex-wrap:wrap;">
+          <button type="button" class="btn btn-sm btn-danger-outline" id="clear-all-liked-btn">Bỏ chọn tất cả</button>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-outline btn-sm" id="copy-liked-list-btn">Copy gửi Zalo</button>
+            <button type="button" class="btn btn-primary btn-sm" id="submit-liked-firebase-btn">Gửi chốt ảnh</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL HƯỚNG DẪN NHANH -->
   <div class="modal" id="guide-modal" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal-backdrop" data-close-modal="guide-modal"></div>
@@ -2911,6 +3131,8 @@
 
   const STORAGE_USER_SESSION = "gallery_user_account_v2";
   const STORAGE_GUEST_ALBUMS = "gallery_guest_recent_albums_v1";
+  const STORAGE_LOCAL_ALBUMS = "gallery_local_albums_v1";
+  const STORAGE_LIKED_PHOTOS = "gallery_liked_photos_v1";
   const STORAGE_GAS_URL = "gallery_apps_script_url_v1";
 
   // DOM Elements
@@ -2957,7 +3179,6 @@
   // Public Library & Gallery
   const mainContentEl = document.getElementById("main-content");
   const controlsSection = document.getElementById("controls-section");
-  const librarySectionTitle = document.getElementById("library-section-title");
   const libraryNewAlbumBtn = document.getElementById("library-new-album-btn");
   const categoryBar = document.getElementById("category-bar");
   const albumSwitcher = document.getElementById("album-switcher");
@@ -2972,6 +3193,9 @@
   const gallerySectionEl = document.getElementById("gallery-section");
   const galleryToolbar = document.getElementById("gallery-toolbar");
   const gallerySortSummary = document.getElementById("gallery-sort-summary");
+  const toggleLikedOnlyBtn = document.getElementById("toggle-liked-only-btn");
+  const likedCountBadge = document.getElementById("liked-count-badge");
+  const openLikedModalBtn = document.getElementById("open-liked-modal-btn");
   const photoSearchInput = document.getElementById("photo-search-input");
   const sortNameBtn = document.getElementById("sort-name-btn");
   const sortTimeBtn = document.getElementById("sort-time-btn");
@@ -2988,6 +3212,8 @@
   const lightboxCaption = document.getElementById("lightbox-caption");
   const lightboxCounter = document.getElementById("lightbox-counter");
   const lightboxSpinner = document.getElementById("lightbox-spinner");
+  const lightboxHeartBtn = document.getElementById("lightbox-heart-btn");
+  const lightboxHeartLabel = document.getElementById("lightbox-heart-label");
   const lightboxZoomBtn = document.getElementById("lightbox-zoom-btn");
   const iconZoomIn = document.getElementById("icon-zoom-in");
   const iconZoomOut = document.getElementById("icon-zoom-out");
@@ -2999,6 +3225,17 @@
   const lightboxNext = document.getElementById("lightbox-next");
   const lightboxThumbs = document.getElementById("lightbox-thumbs");
   const lightboxDownloadOrigBtn = document.getElementById("lightbox-download-orig");
+
+  // Liked Selection Modal
+  const likedSelectionModal = document.getElementById("liked-selection-modal");
+  const likedModalCount = document.getElementById("liked-modal-count");
+  const likedModalAlbumTitle = document.getElementById("liked-modal-album-title");
+  const likedClientNameInput = document.getElementById("liked-client-name");
+  const likedClientNoteInput = document.getElementById("liked-client-note");
+  const likedSummaryTextarea = document.getElementById("liked-summary-textarea");
+  const clearAllLikedBtn = document.getElementById("clear-all-liked-btn");
+  const copyLikedListBtn = document.getElementById("copy-liked-list-btn");
+  const submitLikedFirebaseBtn = document.getElementById("submit-liked-firebase-btn");
 
   // Share Ready Modal
   const shareReadyModal = document.getElementById("share-ready-modal");
@@ -3034,15 +3271,28 @@
   const adminUserEmailEl = document.getElementById("admin-user-email");
   const adminLogoutBtn = document.getElementById("admin-logout-btn");
   const adminTabs = document.querySelectorAll(".admin-tab");
+  const tabUsersBtn = document.getElementById("tab-users-btn");
   const adminPanels = {
     albums: document.getElementById("panel-albums"),
     editor: document.getElementById("panel-editor"),
+    users: document.getElementById("panel-users"),
     account: document.getElementById("panel-account")
   };
   const adminAlbumCountEl = document.getElementById("admin-album-count");
   const adminSearchInput = document.getElementById("admin-search-input");
   const adminAlbumListEl = document.getElementById("admin-album-list");
   const createNewAlbumBtn = document.getElementById("create-new-album-btn");
+
+  // Admin Users Management Elements
+  const adminNewUserName = document.getElementById("admin-new-user-name");
+  const adminNewUserDisplay = document.getElementById("admin-new-user-display");
+  const adminNewUserPass = document.getElementById("admin-new-user-pass");
+  const adminCreateUserBtn = document.getElementById("admin-create-user-btn");
+  const pendingUsersSection = document.getElementById("pending-users-section");
+  const pendingUsersCount = document.getElementById("pending-users-count");
+  const pendingUsersList = document.getElementById("pending-users-list");
+  const approvedUsersCount = document.getElementById("approved-users-count");
+  const approvedUsersList = document.getElementById("approved-users-list");
 
   // Editor Form
   const albumEditorForm = document.getElementById("album-editor-form");
@@ -3082,8 +3332,9 @@
 
   // App State
   const urlParams = new URLSearchParams(window.location.search);
-  const lockedAlbumId = urlParams.get("view") || (urlParams.get("lock") === "1" ? urlParams.get("album") : null);
-  const isSingleLockedMode = Boolean(lockedAlbumId);
+  const hashAlbumId = (window.location.hash || "").replace(/^#/, "").trim();
+  const requestedAlbumParam = urlParams.get("album") || urlParams.get("view") || urlParams.get("id") || (hashAlbumId && hashAlbumId !== "publicLibrarySection" ? hashAlbumId : null);
+  const isSingleLockedMode = Boolean(urlParams.get("view") || urlParams.get("lock") === "1");
 
   let rawDbData = {
     brandName: "STUDIO GALLERY",
@@ -3093,6 +3344,7 @@
     albums: {}
   };
   let albums = [];
+  let allAccountsMap = {};
   let selectedCategory = "Tất cả";
   let albumSearchQuery = "";
   let currentAlbumSortMode = "name-asc";
@@ -3101,12 +3353,13 @@
   let unsortedAlbumPhotos = [];
   let activeDisplayPhotos = [];
   let photoSearchQuery = "";
+  let filterLikedOnly = false;
   let currentSortMode = "name-asc";
   let currentGridSize = "medium";
   let currentPhotoIndex = 0;
   let editorPhotos = [];
-  let currentUser = null; // { username, displayName, role, passwordHash, idToken? }
-  let pendingShareAlbumId = null;
+  let currentUser = null;
+  let pendingShareAlbumObj = null;
   let toastTimer = null;
 
   // Lightbox Zoom & Pan State
@@ -3242,10 +3495,85 @@
   function toArray(data) {
     if (!data) return [];
     if (Array.isArray(data)) return data.filter(Boolean);
-    return Object.entries(data).map(([key, val]) => ({
-      id: val.id || key,
-      ...val
-    }));
+    if (typeof data !== "object") return [];
+    return Object.entries(data).map(([key, val]) => {
+      if (typeof val === "string") return val;
+      if (!val || typeof val !== "object") return null;
+      return {
+        firebaseKey: key,
+        id: val.id || key,
+        ...val
+      };
+    }).filter(Boolean);
+  }
+
+  /**
+   * Chuẩn hóa mọi định dạng ảnh cũ/mới (string URL, string ID, object {url/src/link/fileId/id})
+   */
+  function normalizePhotoItem(item, idx = 0) {
+    if (!item) return null;
+    if (typeof item === "string") {
+      const trimmed = item.trim();
+      if (!trimmed) return null;
+      const isIdOnly = /^[a-zA-Z0-9_-]{25,}$/.test(trimmed);
+      return {
+        url: isIdOnly ? `https://drive.google.com/file/d/${trimmed}/view` : trimmed,
+        caption: "",
+        fileName: ""
+      };
+    }
+    if (typeof item === "object") {
+      let rawUrl = String(item.url || item.src || item.link || item.image || item.href || "").trim();
+      if (!rawUrl) {
+        const candidateId = String(item.fileId || item.driveId || item.id || "").trim();
+        if (/^[a-zA-Z0-9_-]{20,}$/.test(candidateId)) {
+          rawUrl = `https://drive.google.com/file/d/${candidateId}/view`;
+        }
+      }
+      if (!rawUrl) return null;
+      return {
+        ...item,
+        url: rawUrl,
+        caption: String(item.caption || item.title || item.description || "").trim(),
+        fileName: String(item.fileName || item.name || "").trim()
+      };
+    }
+    return null;
+  }
+
+  function normalizeAlbumObject(rawAlbum, fallbackKey = "") {
+    if (!rawAlbum || typeof rawAlbum !== "object") return null;
+    const rawPhotos = toArray(rawAlbum.photos || rawAlbum.images || rawAlbum.items);
+    const normalizedPhotos = rawPhotos
+      .map((p, i) => normalizePhotoItem(p, i))
+      .filter(Boolean);
+
+    const driveFolderUrl = String(
+      rawAlbum.driveFolderUrl || rawAlbum.folderUrl || rawAlbum.driveLink || rawAlbum.folderLink || ""
+    ).trim();
+
+    let cover = String(rawAlbum.cover || rawAlbum.coverUrl || rawAlbum.thumbnail || "").trim();
+    if (cover && /^[a-zA-Z0-9_-]{25,}$/.test(cover)) {
+      cover = `https://drive.google.com/file/d/${cover}/view`;
+    }
+    if (!cover && normalizedPhotos.length > 0) {
+      cover = normalizedPhotos[0].url;
+    }
+
+    return {
+      ...rawAlbum,
+      firebaseKey: rawAlbum.firebaseKey || fallbackKey || rawAlbum.id || "",
+      id: String(rawAlbum.id || fallbackKey || slugify(rawAlbum.title || "album")).trim(),
+      title: String(rawAlbum.title || rawAlbum.name || "Album ảnh").trim(),
+      category: String(rawAlbum.category || "Album").trim(),
+      description: String(rawAlbum.description || "").trim(),
+      updatedAt: String(rawAlbum.updatedAt || rawAlbum.date || "").trim(),
+      cover,
+      driveFolderUrl,
+      useFolderCaption: Boolean(rawAlbum.useFolderCaption),
+      isPublic: rawAlbum.isPublic !== false,
+      photos: normalizedPhotos
+    };
   }
 
   function parseDriveLink(input) {
@@ -3296,12 +3624,14 @@
     if (size === "orig" || size === 0) {
       return [
         `https://lh3.googleusercontent.com/d/${fileId}=s0`,
-        `https://drive.google.com/thumbnail?id=${fileId}&sz=w4000`
+        `https://drive.google.com/thumbnail?id=${fileId}&sz=w4000`,
+        `https://lh3.googleusercontent.com/u/0/d/${fileId}=s0`
       ];
     }
     return [
+      `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`,
       `https://lh3.googleusercontent.com/d/${fileId}=w${size}`,
-      `https://drive.google.com/thumbnail?id=${fileId}&sz=w${size}`
+      `https://lh3.googleusercontent.com/u/0/d/${fileId}=w${size}`
     ];
   }
 
@@ -3336,11 +3666,78 @@
       .trim() || "photo";
   }
 
+  /* -----------------------------------------------------------------------
+   * Mã hóa / Giải mã Album trên URL (Đảm bảo tạo link không cần đăng nhập luôn chạy)
+   * --------------------------------------------------------------------- */
+  function encodeAlbumToUrlParam(album) {
+    try {
+      const compact = {
+        i: album.id,
+        t: album.title,
+        c: album.category || "Album",
+        u: album.updatedAt || formatTodayVN(),
+        f: album.driveFolderUrl || "",
+        v: album.cover || "",
+        p: (album.photos || []).slice(0, 40).map((x) => x.url)
+      };
+      const jsonStr = JSON.stringify(compact);
+      const b64 = btoa(unescape(encodeURIComponent(jsonStr)))
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_")
+        .replace(/=+$/, "");
+      return b64;
+    } catch {
+      return "";
+    }
+  }
+
+  function decodeAlbumFromUrlParam(encoded) {
+    if (!encoded) return null;
+    try {
+      let b64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
+      while (b64.length % 4) b64 += "=";
+      const jsonStr = decodeURIComponent(escape(atob(b64)));
+      const data = JSON.parse(jsonStr);
+      if (!data || typeof data !== "object") return null;
+      return normalizeAlbumObject({
+        id: data.i || "shared-album",
+        title: data.t || "Album chia sẻ",
+        category: data.c || "Album",
+        updatedAt: data.u || "",
+        driveFolderUrl: data.f || "",
+        cover: data.v || "",
+        photos: Array.isArray(data.p) ? data.p : [],
+        isPublic: false
+      });
+    } catch {
+      return null;
+    }
+  }
+
+  function loadLocalSavedAlbums() {
+    try {
+      const raw = localStorage.getItem(STORAGE_LOCAL_ALBUMS);
+      const arr = raw ? JSON.parse(raw) : [];
+      return Array.isArray(arr) ? arr.map((a) => normalizeAlbumObject(a)).filter(Boolean) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveLocalAlbumCopy(album) {
+    try {
+      const list = loadLocalSavedAlbums().filter((a) => a.id !== album.id);
+      list.unshift(album);
+      localStorage.setItem(STORAGE_LOCAL_ALBUMS, JSON.stringify(list.slice(0, 30)));
+    } catch (_) {}
+  }
+
   async function fetchFolderViaPublicEmbedFallback(folderId) {
     const targetUrl = `https://drive.google.com/embeddedfolderview?id=${encodeURIComponent(folderId)}#list`;
     const proxies = [
       `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-      `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`
+      `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+      `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`
     ];
 
     let html = "";
@@ -3420,17 +3817,31 @@
         const res = await fetch(endpoint.toString(), { redirect: "follow" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        if (!data || data.ok === false) {
-          throw new Error(data?.error || "Apps Script trả về dữ liệu không hợp lệ.");
+        if (data && data.ok === false) {
+          throw new Error(data.error || "Apps Script trả về lỗi.");
         }
 
-        const files = Array.isArray(data.files) ? data.files : [];
-        const result = {
-          folderName: data.folderName || "",
-          files
-        };
-        driveFolderCache.set(folderId, result);
-        return result;
+        const rawFiles = Array.isArray(data)
+          ? data
+          : (Array.isArray(data?.files) ? data.files : (Array.isArray(data?.data) ? data.data : []));
+
+        const files = rawFiles.map((f) => {
+          if (typeof f === "string") return { id: f, name: f };
+          return {
+            id: f.id || f.fileId || "",
+            name: f.name || f.title || f.id || "",
+            createdTime: f.createdTime || f.modifiedTime || f.lastUpdated || 0
+          };
+        }).filter((f) => f.id);
+
+        if (files.length > 0) {
+          const result = {
+            folderName: (data && data.folderName) || "",
+            files
+          };
+          driveFolderCache.set(folderId, result);
+          return result;
+        }
       } catch (err) {
         scriptError = err;
       }
@@ -3444,7 +3855,7 @@
       return fallbackResult;
     }
 
-    throw scriptError;
+    throw scriptError || new Error("Thư mục trống hoặc chưa bật quyền chia sẻ công khai.");
   }
 
   function downloadOriginalDriveFile(photo, index = 0) {
@@ -3473,12 +3884,17 @@
     a.remove();
   }
 
-  function buildShareUrl(albumId, locked = false) {
+  function buildShareUrl(albumId, locked = false, albumObj = null) {
     const url = new URL(window.location.origin + window.location.pathname);
     if (albumId) {
       url.searchParams.set("album", albumId);
       if (locked) {
         url.searchParams.set("lock", "1");
+      }
+      const target = albumObj || albums.find((a) => a.id === albumId);
+      if (target && target._localOnly) {
+        const encoded = target._urlEncoded || encodeAlbumToUrlParam(target);
+        if (encoded) url.searchParams.set("d", encoded);
       }
     }
     return url.toString();
@@ -3502,7 +3918,220 @@
   }
 
   /* -----------------------------------------------------------------------
-   * Quản lý phiên Đăng nhập / Đăng ký Tài khoản (Kiến trúc Index-v43)
+   * TÍNH NĂNG KHÁCH CHỌN ẢNH (TIM / YÊU THÍCH)
+   * --------------------------------------------------------------------- */
+  function loadLikedStorage() {
+    try {
+      const raw = localStorage.getItem(STORAGE_LIKED_PHOTOS);
+      return raw ? JSON.parse(raw) : {};
+    } catch {
+      return {};
+    }
+  }
+
+  function saveLikedStorage(mapObj) {
+    try {
+      localStorage.setItem(STORAGE_LIKED_PHOTOS, JSON.stringify(mapObj));
+    } catch (_) {}
+  }
+
+  function getPhotoUniqueKey(photo, fallbackIdx = 0) {
+    const fid = extractDriveFileId(photo.url);
+    if (fid) return fid;
+    return photo.url || `photo-${fallbackIdx}`;
+  }
+
+  function getLikedSetForCurrentAlbum() {
+    if (!currentAlbum) return new Set();
+    const map = loadLikedStorage();
+    const arr = Array.isArray(map[currentAlbum.id]) ? map[currentAlbum.id] : [];
+    return new Set(arr);
+  }
+
+  function isPhotoLiked(photo, fallbackIdx = 0) {
+    if (!currentAlbum) return false;
+    const set = getLikedSetForCurrentAlbum();
+    return set.has(getPhotoUniqueKey(photo, fallbackIdx));
+  }
+
+  function togglePhotoLike(photo, fallbackIdx = 0) {
+    if (!currentAlbum) return false;
+    const map = loadLikedStorage();
+    const arr = Array.isArray(map[currentAlbum.id]) ? map[currentAlbum.id] : [];
+    const set = new Set(arr);
+    const key = getPhotoUniqueKey(photo, fallbackIdx);
+
+    let likedNow = false;
+    if (set.has(key)) {
+      set.delete(key);
+      likedNow = false;
+    } else {
+      set.add(key);
+      likedNow = true;
+    }
+
+    map[currentAlbum.id] = Array.from(set);
+    saveLikedStorage(map);
+    updateLikedToolbarUI();
+    updateLightboxHeartUI();
+    return likedNow;
+  }
+
+  function getLikedPhotosObjects() {
+    if (!currentAlbum) return [];
+    const set = getLikedSetForCurrentAlbum();
+    const allSorted = sortPhotosList(unsortedAlbumPhotos, currentSortMode);
+    return allSorted.filter((p, idx) => set.has(getPhotoUniqueKey(p, idx)));
+  }
+
+  function updateLikedToolbarUI() {
+    if (!currentAlbum) return;
+    const count = getLikedSetForCurrentAlbum().size;
+    likedCountBadge.textContent = String(count);
+    toggleLikedOnlyBtn.classList.toggle("active", filterLikedOnly);
+    openLikedModalBtn.hidden = count === 0;
+  }
+
+  function updateLightboxHeartUI() {
+    if (!lightbox.classList.contains("open") || !activeDisplayPhotos.length) return;
+    const photo = activeDisplayPhotos[currentPhotoIndex];
+    if (!photo) return;
+    const liked = isPhotoLiked(photo, currentPhotoIndex);
+    lightboxHeartBtn.classList.toggle("is-liked", liked);
+    lightboxHeartLabel.textContent = liked ? "Đã chọn" : "Chọn ảnh";
+  }
+
+  toggleLikedOnlyBtn.addEventListener("click", () => {
+    filterLikedOnly = !filterLikedOnly;
+    if (currentAlbum) applySortAndRender(currentAlbum);
+  });
+
+  lightboxHeartBtn.addEventListener("click", () => {
+    const photo = activeDisplayPhotos[currentPhotoIndex];
+    if (!photo) return;
+    const liked = togglePhotoLike(photo, currentPhotoIndex);
+    // Cập nhật card tương ứng ngoài lưới nếu đang hiển thị
+    const cards = galleryGrid.querySelectorAll(".photo-card");
+    const targetCard = cards[currentPhotoIndex];
+    if (targetCard) {
+      targetCard.classList.toggle("is-liked", liked);
+      const hBtn = targetCard.querySelector(".card-heart-btn");
+      if (hBtn) hBtn.classList.toggle("is-liked", liked);
+    }
+    showToast(liked ? "♥ Đã thêm vào danh sách ảnh chọn" : "Đã bỏ chọn ảnh");
+  });
+
+  function buildLikedSummaryText() {
+    if (!currentAlbum) return "";
+    const likedList = getLikedPhotosObjects();
+    const clientName = likedClientNameInput.value.trim();
+    const clientNote = likedClientNoteInput.value.trim();
+
+    const lines = [
+      `DANH SÁCH ẢNH ĐÃ CHỌN — ${currentAlbum.title.toUpperCase()}`,
+      `Tổng số lượng: ${likedList.length} ảnh`
+    ];
+    if (clientName) lines.push(`Khách hàng: ${clientName}`);
+    if (clientNote) lines.push(`Ghi chú: ${clientNote}`);
+    lines.push(`----------------------------`);
+
+    likedList.forEach((p, idx) => {
+      const label = p.fileName || p.caption || extractDriveFileId(p.url) || `Ảnh ${idx + 1}`;
+      lines.push(`${idx + 1}. ${label}`);
+    });
+
+    lines.push(`----------------------------`);
+    lines.push(`Link album: ${buildShareUrl(currentAlbum.id, true, currentAlbum)}`);
+    return lines.join("\n");
+  }
+
+  function openLikedSelectionModal() {
+    if (!currentAlbum) return;
+    const likedList = getLikedPhotosObjects();
+    if (!likedList.length) {
+      showToast("Bạn chưa thả tim chọn ảnh nào!", true);
+      return;
+    }
+    likedModalCount.textContent = String(likedList.length);
+    likedModalAlbumTitle.textContent = `Album: ${currentAlbum.title}`;
+    likedSummaryTextarea.value = buildLikedSummaryText();
+    openModal(likedSelectionModal);
+  }
+
+  openLikedModalBtn.addEventListener("click", openLikedSelectionModal);
+  likedClientNameInput.addEventListener("input", () => {
+    likedSummaryTextarea.value = buildLikedSummaryText();
+  });
+  likedClientNoteInput.addEventListener("input", () => {
+    likedSummaryTextarea.value = buildLikedSummaryText();
+  });
+
+  copyLikedListBtn.addEventListener("click", () => {
+    copyToClipboard(likedSummaryTextarea.value, "Đã sao chép danh sách ảnh chọn để gửi Zalo!");
+  });
+
+  clearAllLikedBtn.addEventListener("click", () => {
+    if (!currentAlbum) return;
+    if (!window.confirm("Bỏ chọn toàn bộ các ảnh đã thả tim trong album này?")) return;
+    const map = loadLikedStorage();
+    delete map[currentAlbum.id];
+    saveLikedStorage(map);
+    filterLikedOnly = false;
+    closeModal(likedSelectionModal);
+    applySortAndRender(currentAlbum);
+    showToast("Đã xóa toàn bộ lựa chọn tim.");
+  });
+
+  submitLikedFirebaseBtn.addEventListener("click", async () => {
+    if (!currentAlbum) return;
+    const likedList = getLikedPhotosObjects();
+    if (!likedList.length) return;
+
+    const clientName = likedClientNameInput.value.trim() || "Khách hàng";
+    const clientNote = likedClientNoteInput.value.trim();
+    const selId = "sel_" + Date.now();
+
+    submitLikedFirebaseBtn.disabled = true;
+    submitLikedFirebaseBtn.textContent = "Đang gửi...";
+
+    try {
+      const payload = {
+        id: selId,
+        albumId: currentAlbum.id,
+        albumTitle: currentAlbum.title,
+        clientName,
+        note: clientNote,
+        count: likedList.length,
+        files: likedList.map((p, i) => p.fileName || p.caption || extractDriveFileId(p.url) || `Ảnh ${i + 1}`),
+        createdAt: Date.now()
+      };
+
+      const res = await fetch(`${FIREBASE_DB_URL}/album_selections/${encodeURIComponent(currentAlbum.id)}/${selId}.json`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        // Dự phòng nếu Firebase chặn ghi: tự động copy danh sách vào clipboard
+        await copyToClipboard(likedSummaryTextarea.value, "Đã sao chép danh sách ảnh chọn! Hãy dán gửi cho Studio qua Zalo.");
+        closeModal(likedSelectionModal);
+        return;
+      }
+
+      closeModal(likedSelectionModal);
+      showToast(`Đã gửi danh sách ${likedList.length} ảnh chọn thành công!`);
+    } catch {
+      await copyToClipboard(likedSummaryTextarea.value, "Đã sao chép danh sách ảnh chọn để gửi Zalo!");
+      closeModal(likedSelectionModal);
+    } finally {
+      submitLikedFirebaseBtn.disabled = false;
+      submitLikedFirebaseBtn.textContent = "Gửi chốt ảnh";
+    }
+  });
+
+  /* -----------------------------------------------------------------------
+   * Quản lý phiên Đăng nhập / Đăng ký & Phân quyền Admin duyệt tài khoản
    * --------------------------------------------------------------------- */
   function loadStoredUser() {
     try {
@@ -3593,7 +4222,7 @@
     toggleRegPassBtn.textContent = show ? "🙈 Ẩn mật khẩu" : "👁️ Hiện mật khẩu";
   });
 
-  // Đăng nhập bằng tài khoản Firebase RTDB (/accounts/{USERNAME}) hoặc Email Firebase Auth
+  // Đăng nhập tài khoản
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     loginErrorEl.hidden = true;
@@ -3611,7 +4240,6 @@
     loginSubmitBtn.textContent = "Đang xác thực...";
 
     try {
-      // Hỗ trợ đăng nhập nếu người dùng nhập Email Firebase Auth
       if (rawUser.includes("@") && DEFAULT_FIREBASE_API_KEY) {
         const res = await fetch(
           `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${encodeURIComponent(DEFAULT_FIREBASE_API_KEY)}`,
@@ -3633,6 +4261,7 @@
         closeModal(authModal);
         loginPasswordInput.value = "";
         showToast(`Xin chào ${data.email}!`);
+        openAdminDashboard();
         return;
       }
 
@@ -3646,13 +4275,18 @@
       if (!accData) {
         throw new Error("Tài khoản không tồn tại. Vui lòng kiểm tra lại hoặc chuyển sang tab Đăng ký.");
       }
-      if (accData.active === false || accData.status === "locked") {
-        throw new Error("Tài khoản này đang tạm khóa.");
-      }
+
       const isValid = (accData.passwordHash && accData.passwordHash === passHash) ||
                       (accData.code && String(accData.code).trim() === password.trim());
       if (!isValid) {
         throw new Error("Mật khẩu không chính xác!");
+      }
+
+      if (accData.status === "pending") {
+        throw new Error("Tài khoản của bạn đang chờ Quản trị viên phê duyệt!");
+      }
+      if (accData.active === false || accData.status === "locked") {
+        throw new Error("Tài khoản này đang bị tạm khóa!");
       }
 
       saveUserSession({
@@ -3675,7 +4309,7 @@
     }
   });
 
-  // Đăng ký tài khoản mới trực tiếp trên Firebase (/accounts/{USERNAME})
+  // Đăng ký tài khoản mới (Tài khoản đầu tiên làm Admin, các tài khoản sau chờ Admin duyệt)
   registerForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     registerErrorEl.hidden = true;
@@ -3708,21 +4342,25 @@
     }
 
     registerSubmitBtn.disabled = true;
-    registerSubmitBtn.textContent = "Đang tạo tài khoản...";
+    registerSubmitBtn.textContent = "Đang gửi yêu cầu...";
 
     try {
       const checkRes = await fetch(`${FIREBASE_DB_URL}/accounts/${encodeURIComponent(username)}.json`);
+      if (!checkRes.ok && checkRes.status !== 404) {
+        throw new Error(`Không thể kiểm tra tài khoản (HTTP ${checkRes.status}).`);
+      }
       const existing = checkRes.ok ? await checkRes.json() : null;
       if (existing) {
-        throw new Error("Tên đăng nhập này đã có người sử dụng. Vui lòng chọn tên khác!");
+        throw new Error("Tên đăng nhập này đã tồn tại. Vui lòng chọn tên khác!");
       }
 
-      // Kiểm tra xem hệ thống đã có tài khoản nào chưa (tài khoản đầu tiên tự động có quyền admin)
-      let role = "user";
+      let isFirstAccount = false;
       try {
         const allAccRes = await fetch(`${FIREBASE_DB_URL}/accounts.json?shallow=true`);
         const allAccKeys = allAccRes.ok ? await allAccRes.json() : null;
-        if (!allAccKeys) role = "admin";
+        if (!allAccKeys || Object.keys(allAccKeys).length === 0) {
+          isFirstAccount = true;
+        }
       } catch (_) {}
 
       const passHash = await computePasswordHash(password);
@@ -3731,8 +4369,9 @@
         username,
         displayName,
         passwordHash: passHash,
-        role,
-        active: true,
+        role: isFirstAccount ? "admin" : "user",
+        status: isFirstAccount ? "approved" : "pending",
+        active: isFirstAccount ? true : false,
         createdAt: Date.now(),
         updatedAt: Date.now()
       };
@@ -3742,19 +4381,32 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(accountPayload)
       });
-      if (!putRes.ok) throw new Error(`Không thể tạo tài khoản (HTTP ${putRes.status}).`);
+      if (!putRes.ok) {
+        throw new Error(`Firebase từ chối tạo tài khoản (HTTP ${putRes.status}). Hãy kiểm tra Rules cho phép ghi /accounts.`);
+      }
 
-      saveUserSession({
-        username,
-        displayName,
-        role,
-        passwordHash: passHash
-      }, true);
-
-      closeModal(authModal);
       registerForm.reset();
-      showToast(`Tạo tài khoản "${displayName}" thành công!`);
-      openAdminDashboard();
+
+      if (isFirstAccount) {
+        saveUserSession({
+          username,
+          displayName,
+          role: "admin",
+          passwordHash: passHash
+        }, true);
+        closeModal(authModal);
+        showToast(`Đã tạo tài khoản Quản trị "${displayName}"!`);
+        openAdminDashboard();
+      } else {
+        switchAuthTab("login");
+        loginUsernameInput.value = username;
+        loginErrorEl.style.background = "#f0fdf4";
+        loginErrorEl.style.borderColor = "#bbf7d0";
+        loginErrorEl.style.color = "#166534";
+        loginErrorEl.textContent = `Đã gửi yêu cầu đăng ký tài khoản "${displayName}". Vui lòng chờ Quản trị viên phê duyệt!`;
+        loginErrorEl.hidden = false;
+        showToast("Đã gửi yêu cầu tạo tài khoản chờ Admin duyệt!");
+      }
     } catch (err) {
       registerErrorEl.textContent = err.message;
       registerErrorEl.hidden = false;
@@ -3762,6 +4414,16 @@
       registerSubmitBtn.disabled = false;
       registerSubmitBtn.textContent = "Tạo tài khoản ngay";
     }
+  });
+
+  // Reset style của loginErrorEl khi gõ lại
+  loginUsernameInput.addEventListener("input", () => {
+    loginErrorEl.hidden = true;
+    loginErrorEl.removeAttribute("style");
+  });
+  loginPasswordInput.addEventListener("input", () => {
+    loginErrorEl.hidden = true;
+    loginErrorEl.removeAttribute("style");
   });
 
   function handleLogout() {
@@ -3780,7 +4442,223 @@
   });
 
   /* -----------------------------------------------------------------------
-   * Lưu / Xóa từng Album độc lập trên Firebase
+   * Quản lý Tài khoản & Phê duyệt (Chỉ Admin)
+   * --------------------------------------------------------------------- */
+  async function loadAllAccountsForAdmin() {
+    if (!currentUser || currentUser.role !== "admin") return;
+    try {
+      const res = await fetch(`${FIREBASE_DB_URL}/accounts.json${getAuthQueryParam()}`);
+      if (res.ok) {
+        allAccountsMap = (await res.json()) || {};
+      }
+    } catch (_) {}
+    renderAdminUsersList();
+  }
+
+  function renderAdminUsersList() {
+    if (!currentUser || currentUser.role !== "admin") return;
+    const entries = Object.entries(allAccountsMap || {})
+      .map(([k, v]) => (v && typeof v === "object" ? { username: normalizeUsername(v.username || k), ...v } : null))
+      .filter(Boolean);
+
+    const pendingUsers = entries.filter((u) => u.status === "pending");
+    const approvedUsers = entries.filter((u) => u.status !== "pending");
+
+    if (pendingUsers.length > 0) {
+      pendingUsersSection.hidden = false;
+      pendingUsersCount.textContent = String(pendingUsers.length);
+      pendingUsersList.innerHTML = "";
+      pendingUsers.forEach((u) => {
+        const row = document.createElement("div");
+        row.className = "admin-album-item";
+        row.style.background = "#ffffff";
+        row.style.borderLeftColor = "#d97706";
+
+        const dateStr = u.createdAt ? new Date(u.createdAt).toLocaleDateString("vi-VN") : "";
+        row.innerHTML = `
+          <div class="admin-album-text">
+            <h3>${escapeHtml(u.displayName || u.username)} <span class="status-pill-inline is-pending">Chờ duyệt</span></h3>
+            <p>Mã đăng nhập: <strong>${escapeHtml(u.username)}</strong> ${dateStr ? `• Ngày tạo: ${dateStr}` : ""}</p>
+          </div>
+          <div class="admin-album-actions">
+            <button type="button" class="btn btn-sm btn-success-sm" data-approve-user="${escapeHtml(u.username)}">✓ Duyệt</button>
+            <button type="button" class="btn btn-sm btn-danger-outline" data-delete-user="${escapeHtml(u.username)}">Từ chối</button>
+          </div>
+        `;
+        row.querySelector("[data-approve-user]").addEventListener("click", () => approveUserAccount(u.username));
+        row.querySelector("[data-delete-user]").addEventListener("click", () => deleteUserAccount(u.username, true));
+        pendingUsersList.appendChild(row);
+      });
+    } else {
+      pendingUsersSection.hidden = true;
+    }
+
+    approvedUsersCount.textContent = `${approvedUsers.length} tài khoản đã duyệt`;
+    approvedUsersList.innerHTML = "";
+
+    approvedUsers.sort((a, b) => (a.role === "admin" ? -1 : 1)).forEach((u) => {
+      const isSelf = normalizeUsername(u.username) === normalizeUsername(currentUser.username);
+      const isAccAdmin = u.role === "admin";
+      const isActive = u.active !== false && u.status !== "locked";
+      const countOwned = albums.filter((a) => normalizeUsername(a.owner || "") === u.username).length;
+
+      const row = document.createElement("div");
+      row.className = "admin-album-item";
+      row.innerHTML = `
+        <div class="admin-album-text">
+          <h3>
+            ${escapeHtml(u.displayName || u.username)}
+            <span class="status-pill-inline ${isAccAdmin ? "is-private" : ""}">${isAccAdmin ? "Quản trị" : "Thành viên"}</span>
+            <span class="status-pill-inline ${isActive ? "" : "is-locked"}">${isActive ? "Đang mở" : "Đã khóa"}</span>
+          </h3>
+          <p>Tài khoản: <strong>${escapeHtml(u.username)}</strong> • ${countOwned} album</p>
+        </div>
+        <div class="admin-album-actions">
+          ${!isSelf ? `
+            <button type="button" class="btn btn-outline btn-sm" data-toggle-role="${escapeHtml(u.username)}">${isAccAdmin ? "Hạ quyền" : "Cấp Admin"}</button>
+            <button type="button" class="btn btn-outline btn-sm" data-toggle-lock="${escapeHtml(u.username)}">${isActive ? "Khóa" : "Mở"}</button>
+            <button type="button" class="btn btn-sm btn-danger-outline" data-delete-user="${escapeHtml(u.username)}">Xóa</button>
+          ` : `<span class="muted-text">Tài khoản hiện tại</span>`}
+        </div>
+      `;
+
+      if (!isSelf) {
+        row.querySelector("[data-toggle-role]").addEventListener("click", () => toggleUserRole(u.username));
+        row.querySelector("[data-toggle-lock]").addEventListener("click", () => toggleUserActive(u.username));
+        row.querySelector("[data-delete-user]").addEventListener("click", () => deleteUserAccount(u.username, false));
+      }
+      approvedUsersList.appendChild(row);
+    });
+  }
+
+  async function approveUserAccount(username) {
+    try {
+      const patch = { status: "approved", active: true, updatedAt: Date.now() };
+      const res = await fetch(`${FIREBASE_DB_URL}/accounts/${encodeURIComponent(username)}.json${getAuthQueryParam()}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(patch)
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (allAccountsMap[username]) Object.assign(allAccountsMap[username], patch);
+      renderAdminUsersList();
+      showToast(`Đã phê duyệt tài khoản "${username}"!`);
+    } catch (err) {
+      showToast("Lỗi duyệt tài khoản: " + err.message, true);
+    }
+  }
+
+  async function toggleUserActive(username) {
+    const info = allAccountsMap[username];
+    if (!info) return;
+    const nextActive = !(info.active !== false && info.status !== "locked");
+    try {
+      const patch = { active: nextActive, status: nextActive ? "approved" : "locked", updatedAt: Date.now() };
+      const res = await fetch(`${FIREBASE_DB_URL}/accounts/${encodeURIComponent(username)}.json${getAuthQueryParam()}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(patch)
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      Object.assign(allAccountsMap[username], patch);
+      renderAdminUsersList();
+      showToast(nextActive ? `Đã mở khóa "${username}"` : `Đã khóa "${username}"`);
+    } catch (err) {
+      showToast("Lỗi cập nhật: " + err.message, true);
+    }
+  }
+
+  async function toggleUserRole(username) {
+    const info = allAccountsMap[username];
+    if (!info) return;
+    const nextRole = info.role === "admin" ? "user" : "admin";
+    try {
+      const patch = { role: nextRole, updatedAt: Date.now() };
+      const res = await fetch(`${FIREBASE_DB_URL}/accounts/${encodeURIComponent(username)}.json${getAuthQueryParam()}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(patch)
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      Object.assign(allAccountsMap[username], patch);
+      renderAdminUsersList();
+      showToast(`Đã đổi quyền "${username}" thành ${nextRole === "admin" ? "Quản trị" : "Thành viên"}`);
+    } catch (err) {
+      showToast("Lỗi đổi quyền: " + err.message, true);
+    }
+  }
+
+  async function deleteUserAccount(username, isReject = false) {
+    const msg = isReject
+      ? `Từ chối và xóa yêu cầu đăng ký của "${username}"?`
+      : `Bạn có chắc muốn xóa tài khoản "${username}"?`;
+    if (!window.confirm(msg)) return;
+    try {
+      const res = await fetch(`${FIREBASE_DB_URL}/accounts/${encodeURIComponent(username)}.json${getAuthQueryParam()}`, {
+        method: "DELETE"
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      delete allAccountsMap[username];
+      renderAdminUsersList();
+      showToast(isReject ? `Đã từ chối "${username}"` : `Đã xóa tài khoản "${username}"`);
+    } catch (err) {
+      showToast("Lỗi xóa tài khoản: " + err.message, true);
+    }
+  }
+
+  adminCreateUserBtn.addEventListener("click", async () => {
+    if (!currentUser || currentUser.role !== "admin") return;
+    const username = normalizeUsername(adminNewUserName.value);
+    const display = adminNewUserDisplay.value.trim() || username;
+    const pass = adminNewUserPass.value.trim();
+
+    if (!username || username.length < 2) {
+      showToast("Vui lòng nhập tên đăng nhập hợp lệ.", true);
+      return;
+    }
+    if (!pass || pass.length < 6) {
+      showToast("Mật khẩu phải từ 6 ký tự trở lên.", true);
+      return;
+    }
+    if (allAccountsMap[username]) {
+      showToast("Tên đăng nhập này đã tồn tại!", true);
+      return;
+    }
+
+    adminCreateUserBtn.disabled = true;
+    try {
+      const passHash = await computePasswordHash(pass);
+      const payload = {
+        username,
+        displayName: display,
+        passwordHash: passHash,
+        role: "user",
+        status: "approved",
+        active: true,
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      };
+      const res = await fetch(`${FIREBASE_DB_URL}/accounts/${encodeURIComponent(username)}.json${getAuthQueryParam()}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      allAccountsMap[username] = payload;
+      adminNewUserName.value = "";
+      adminNewUserDisplay.value = "";
+      adminNewUserPass.value = "";
+      renderAdminUsersList();
+      showToast(`Đã tạo và duyệt tài khoản "${display}"!`);
+    } catch (err) {
+      showToast("Lỗi tạo tài khoản: " + err.message, true);
+    } finally {
+      adminCreateUserBtn.disabled = false;
+    }
+  });
+
+  /* -----------------------------------------------------------------------
+   * Lưu / Xóa từng Album độc lập trên Firebase (Có fallback URL nếu chưa đăng nhập)
    * --------------------------------------------------------------------- */
   function getAuthQueryParam() {
     return currentUser && currentUser.idToken ? `?auth=${encodeURIComponent(currentUser.idToken)}` : "";
@@ -3788,47 +4666,65 @@
 
   async function saveSingleAlbumToFirebase(albumPayload, oldIdToRemove = null) {
     const authParam = getAuthQueryParam();
-    const putRes = await fetch(`${FIREBASE_DB_URL}/albums/${encodeURIComponent(albumPayload.id)}.json${authParam}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(albumPayload)
-    });
-    if (!putRes.ok) {
-      throw new Error(`Không thể lưu album lên Firebase (HTTP ${putRes.status}).`);
-    }
+    const cleanPayload = { ...albumPayload };
+    delete cleanPayload._localOnly;
+    delete cleanPayload._urlEncoded;
 
-    if (oldIdToRemove && oldIdToRemove !== albumPayload.id) {
-      await fetch(`${FIREBASE_DB_URL}/albums/${encodeURIComponent(oldIdToRemove)}.json${authParam}`, {
-        method: "DELETE"
-      }).catch(() => {});
-      delete rawDbData.albums[oldIdToRemove];
+    let savedToCloud = false;
+    try {
+      const putRes = await fetch(`${FIREBASE_DB_URL}/albums/${encodeURIComponent(cleanPayload.id)}.json${authParam}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cleanPayload)
+      });
+      if (putRes.ok) {
+        savedToCloud = true;
+        if (oldIdToRemove && oldIdToRemove !== cleanPayload.id) {
+          await fetch(`${FIREBASE_DB_URL}/albums/${encodeURIComponent(oldIdToRemove)}.json${authParam}`, {
+            method: "DELETE"
+          }).catch(() => {});
+          delete rawDbData.albums[oldIdToRemove];
+        }
+      }
+    } catch (_) {}
+
+    const finalAlbumObj = normalizeAlbumObject(cleanPayload, cleanPayload.id);
+    if (!savedToCloud) {
+      finalAlbumObj._localOnly = true;
+      finalAlbumObj._urlEncoded = encodeAlbumToUrlParam(finalAlbumObj);
+      saveLocalAlbumCopy(finalAlbumObj);
     }
 
     if (!rawDbData.albums || typeof rawDbData.albums !== "object") {
       rawDbData.albums = {};
     }
-    rawDbData.albums[albumPayload.id] = albumPayload;
-    albums = toArray(rawDbData.albums).map((a) => ({
-      ...a,
-      photos: toArray(a.photos)
-    }));
+    rawDbData.albums[finalAlbumObj.id] = finalAlbumObj;
+
+    const existingIdx = albums.findIndex((a) => a.id === finalAlbumObj.id || (oldIdToRemove && a.id === oldIdToRemove));
+    if (existingIdx !== -1) {
+      albums[existingIdx] = finalAlbumObj;
+    } else {
+      albums.unshift(finalAlbumObj);
+    }
+
+    return finalAlbumObj;
   }
 
   async function deleteSingleAlbumFromFirebase(albumId) {
     const authParam = getAuthQueryParam();
-    const delRes = await fetch(`${FIREBASE_DB_URL}/albums/${encodeURIComponent(albumId)}.json${authParam}`, {
+    await fetch(`${FIREBASE_DB_URL}/albums/${encodeURIComponent(albumId)}.json${authParam}`, {
       method: "DELETE"
-    });
-    if (!delRes.ok) {
-      throw new Error(`Không thể xóa album (HTTP ${delRes.status}).`);
-    }
+    }).catch(() => {});
+
+    try {
+      const localList = loadLocalSavedAlbums().filter((a) => a.id !== albumId);
+      localStorage.setItem(STORAGE_LOCAL_ALBUMS, JSON.stringify(localList));
+    } catch (_) {}
+
     if (rawDbData.albums) {
       delete rawDbData.albums[albumId];
     }
-    albums = toArray(rawDbData.albums).map((a) => ({
-      ...a,
-      photos: toArray(a.photos)
-    }));
+    albums = albums.filter((a) => a.id !== albumId);
   }
 
   /* -----------------------------------------------------------------------
@@ -3873,9 +4769,9 @@
       const titleEl = document.createElement("strong");
       titleEl.textContent = item.title || item.id;
       titleEl.addEventListener("click", () => {
-        const found = albums.find((a) => a.id === item.id);
+        const found = albums.find((a) => a.id === item.id) || (item.encoded ? decodeAlbumFromUrlParam(item.encoded) : null);
         if (found) selectAlbum(found);
-        else showToast("Album này không còn tồn tại.", true);
+        else showToast("Không tìm thấy dữ liệu album này.", true);
       });
 
       const copyBtn = document.createElement("button");
@@ -3883,7 +4779,9 @@
       copyBtn.className = "chip-mini-btn";
       copyBtn.textContent = "Copy link";
       copyBtn.addEventListener("click", () => {
-        copyToClipboard(buildShareUrl(item.id, true), `Đã sao chép link "${item.title}"!`);
+        const found = albums.find((a) => a.id === item.id) || (item.encoded ? decodeAlbumFromUrlParam(item.encoded) : null);
+        const link = item.shareUrl || buildShareUrl(item.id, true, found);
+        copyToClipboard(link, `Đã sao chép link "${item.title}"!`);
       });
 
       chip.append(titleEl, copyBtn);
@@ -3898,8 +4796,8 @@
   });
 
   function openShareReadyModal(album) {
-    pendingShareAlbumId = album.id;
-    const shareUrl = buildShareUrl(album.id, true);
+    pendingShareAlbumObj = album;
+    const shareUrl = buildShareUrl(album.id, true, album);
     shareReadySubtitle.textContent = `Album: ${album.title}`;
     shareReadyUrlInput.value = shareUrl;
     openModal(shareReadyModal);
@@ -3911,7 +4809,7 @@
 
   shareReadyOpenBtn.addEventListener("click", () => {
     closeModal(shareReadyModal);
-    const target = albums.find((a) => a.id === pendingShareAlbumId);
+    const target = pendingShareAlbumObj || albums.find((a) => a.id === pendingShareAlbumObj?.id);
     if (target) selectAlbum(target);
   });
 
@@ -3946,7 +4844,6 @@
       let coverUrl = "";
       const photoItems = [];
 
-      // Kiểm tra xem có phải link thư mục Google Drive không
       const firstParsed = parseDriveLink(tokens[0]);
       if (tokens.length === 1 && (firstParsed.type === "folder" || firstParsed.type === "ambiguous")) {
         const folderId = firstParsed.id;
@@ -3959,9 +4856,7 @@
           if (folderInfo && Array.isArray(folderInfo.files) && folderInfo.files.length > 0) {
             coverUrl = `https://drive.google.com/file/d/${folderInfo.files[0].id}/view`;
           }
-        } catch (_) {
-          // Vẫn tạo album bình thường ngay cả khi Apps Script chưa phản hồi
-        }
+        } catch (_) {}
       } else {
         tokens.forEach((t) => {
           const p = parseDriveLink(t);
@@ -3987,7 +4882,7 @@
       const albumId = `${slugify(finalTitle)}-${uniqueSuffix}`;
 
       const isLogged = Boolean(currentUser && currentUser.username);
-      const albumPayload = {
+      const rawAlbum = {
         id: albumId,
         title: finalTitle,
         category: isLogged ? "Phóng sự cưới" : "Chia sẻ nhanh",
@@ -4001,10 +4896,17 @@
         isPublic: isLogged ? true : false
       };
 
-      await saveSingleAlbumToFirebase(albumPayload);
+      const savedAlbum = await saveSingleAlbumToFirebase(rawAlbum);
+      const generatedUrl = buildShareUrl(savedAlbum.id, true, savedAlbum);
 
       if (!isLogged) {
-        saveGuestRecentAlbum({ id: albumId, title: finalTitle, createdAt: Date.now() });
+        saveGuestRecentAlbum({
+          id: savedAlbum.id,
+          title: finalTitle,
+          shareUrl: generatedUrl,
+          encoded: savedAlbum._urlEncoded || "",
+          createdAt: Date.now()
+        });
       } else {
         renderCategories();
         renderAlbumSwitcher(getPublicGalleryAlbums());
@@ -4012,7 +4914,7 @@
 
       quickCreateLinkInput.value = "";
       quickCreateTitleInput.value = "";
-      openShareReadyModal(albumPayload);
+      openShareReadyModal(savedAlbum);
       showToast("Đã tạo link xem album thành công!");
     } catch (err) {
       showToast(err.message || "Lỗi khi tạo album", true);
@@ -4023,20 +4925,30 @@
   });
 
   /* -----------------------------------------------------------------------
-   * HIỂN THỊ THƯ VIỆN CÔNG KHAI & CHẾ ĐỘ XEM ALBUM
+   * HIỂN THỊ DANH SÁCH ALBUM & CHẾ ĐỘ XEM ALBUM
    * --------------------------------------------------------------------- */
   function getPublicGalleryAlbums() {
     return albums.filter((a) => a.isPublic !== false);
   }
 
-  function updateUrlParam(albumId) {
+  function updateUrlParam(albumId, albumObj = null) {
     const url = new URL(window.location.href);
     if (albumId) {
       url.searchParams.set("album", albumId);
       if (isSingleLockedMode) url.searchParams.set("lock", "1");
+      if (albumObj && albumObj._localOnly) {
+        const enc = albumObj._urlEncoded || encodeAlbumToUrlParam(albumObj);
+        if (enc) url.searchParams.set("d", enc);
+      } else {
+        url.searchParams.delete("d");
+      }
     } else {
       url.searchParams.delete("album");
+      url.searchParams.delete("view");
+      url.searchParams.delete("id");
       url.searchParams.delete("lock");
+      url.searchParams.delete("d");
+      url.searchParams.delete("drive");
     }
     window.history.replaceState({}, "", url.toString());
   }
@@ -4228,10 +5140,11 @@
     unsortedAlbumPhotos = [];
     activeDisplayPhotos = [];
     photoSearchQuery = "";
+    filterLikedOnly = false;
     photoSearchInput.value = "";
     updateUrlParam(null);
 
-    document.title = `${rawDbData.brandName || "Client Gallery"} — Album Chọn Ảnh Online`;
+    document.title = `${rawDbData.brandName || "STUDIO GALLERY"} — Album Chọn Ảnh Online`;
     landingHeroSection.hidden = isSingleLockedMode;
     albumHeroSection.hidden = true;
     controlsSection.hidden = isSingleLockedMode;
@@ -4312,7 +5225,9 @@
 
     if (!photos.length) {
       emptyState.hidden = false;
-      emptyStateText.textContent = photoSearchQuery ? "Không tìm thấy ảnh phù hợp." : "Chưa có ảnh nào trong album này.";
+      emptyStateText.textContent = filterLikedOnly
+        ? "Chưa có ảnh nào được thả tim trong album này."
+        : (photoSearchQuery ? "Không tìm thấy ảnh phù hợp." : "Chưa có ảnh nào trong album này.");
       return;
     }
     emptyState.hidden = true;
@@ -4320,8 +5235,9 @@
     const thumbWidth = getGridThumbWidth();
 
     photos.forEach((photo, index) => {
+      const liked = isPhotoLiked(photo, index);
       const card = document.createElement("article");
-      card.className = "photo-card is-loading";
+      card.className = `photo-card is-loading${liked ? " is-liked" : ""}`;
       card.tabIndex = 0;
       card.setAttribute("role", "button");
       card.setAttribute("aria-label", photo.caption || `Xem ảnh ${index + 1}`);
@@ -4357,6 +5273,23 @@
         }
       });
 
+      // Nút thả tim chọn ảnh
+      const heartBtn = document.createElement("button");
+      heartBtn.type = "button";
+      heartBtn.className = `card-heart-btn${liked ? " is-liked" : ""}`;
+      heartBtn.title = liked ? "Bỏ chọn ảnh" : "Thả tim chọn ảnh";
+      heartBtn.setAttribute("aria-label", liked ? "Bỏ chọn ảnh" : "Thả tim chọn ảnh");
+      heartBtn.innerHTML = "♥";
+      heartBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const nowLiked = togglePhotoLike(photo, index);
+        card.classList.toggle("is-liked", nowLiked);
+        heartBtn.classList.toggle("is-liked", nowLiked);
+        if (filterLikedOnly && !nowLiked) {
+          applySortAndRender(album);
+        }
+      });
+
       const dlBtn = document.createElement("button");
       dlBtn.type = "button";
       dlBtn.className = "card-download-btn";
@@ -4374,7 +5307,7 @@
         downloadOriginalDriveFile(photo, index);
       });
 
-      card.append(img, dlBtn);
+      card.append(img, heartBtn, dlBtn);
 
       if (photo.caption) {
         const badge = document.createElement("div");
@@ -4457,22 +5390,27 @@
     sortTimeBtn.textContent = currentSortMode === "time-asc" ? "Thời gian ↑" : (currentSortMode === "time-desc" ? "Thời gian ↓" : "Thời gian");
 
     const labelMap = {
-      "name-asc": "Sắp xếp theo tên file (A → Z)",
-      "name-desc": "Sắp xếp theo tên file (Z → A)",
-      "time-desc": "Sắp xếp theo thời gian (Mới nhất trước)",
-      "time-asc": "Sắp xếp theo thời gian (Cũ nhất trước)"
+      "name-asc": "Tên file (A → Z)",
+      "name-desc": "Tên file (Z → A)",
+      "time-desc": "Thời gian (Mới nhất)",
+      "time-asc": "Thời gian (Cũ nhất)"
     };
     gallerySortSummary.textContent = labelMap[currentSortMode] || "";
+    updateLikedToolbarUI();
   }
 
   function applySortAndRender(album) {
-    const sortedAll = sortPhotosList(unsortedAlbumPhotos, currentSortMode);
+    let sorted = sortPhotosList(unsortedAlbumPhotos, currentSortMode);
+    if (filterLikedOnly) {
+      const likedSet = getLikedSetForCurrentAlbum();
+      sorted = sorted.filter((p, idx) => likedSet.has(getPhotoUniqueKey(p, idx)));
+    }
     const query = photoSearchQuery.trim().toLocaleLowerCase("vi");
-    const sorted = query
-      ? sortedAll.filter((photo) => `${photo.fileName || ""} ${photo.caption || ""}`.toLocaleLowerCase("vi").includes(query))
-      : sortedAll;
+    if (query) {
+      sorted = sorted.filter((photo) => `${photo.fileName || ""} ${photo.caption || ""}`.toLocaleLowerCase("vi").includes(query));
+    }
     updateSortToolbarUI();
-    renderAlbumHero(album, sorted, false);
+    renderAlbumHero(album, unsortedAlbumPhotos, false);
     renderGalleryPhotos(album, sorted);
   }
 
@@ -4516,13 +5454,14 @@
   async function selectAlbum(album) {
     currentAlbum = album;
     photoSearchQuery = "";
+    filterLikedOnly = false;
     photoSearchInput.value = "";
     currentSortMode = "name-asc";
-    updateUrlParam(album.id);
+    updateUrlParam(album.id, album);
     window.scrollTo({ top: 0, behavior: "smooth" });
 
     const staticPhotos = Array.isArray(album.photos)
-      ? album.photos.map((p, i) => ({ ...p, timestamp: p.timestamp || (i + 1) }))
+      ? album.photos.map((p, i) => normalizePhotoItem(p, i)).filter(Boolean).map((p, i) => ({ ...p, timestamp: p.timestamp || (i + 1) }))
       : [];
     const folderId = extractDriveFolderId(album.driveFolderUrl || "");
 
@@ -4772,6 +5711,7 @@
     lightboxImg.style.opacity = "0";
     lightboxImg.dataset.loadedOrig = "";
     lightboxSpinner.hidden = false;
+    updateLightboxHeartUI();
 
     const thumbButtons = lightboxThumbs.querySelectorAll(".lightbox-thumb-btn");
     thumbButtons.forEach((btn, idx) => {
@@ -4845,7 +5785,6 @@
     if (!currentUser) return [];
     const uname = normalizeUsername(currentUser.username);
     if (currentUser.role === "admin") {
-      // Admin xem được toàn bộ album
       return albums;
     }
     return albums.filter((a) => normalizeUsername(a.owner || "") === uname);
@@ -4912,7 +5851,7 @@
       copyBtn.className = "btn btn-outline btn-sm";
       copyBtn.textContent = "Copy link";
       copyBtn.addEventListener("click", () => {
-        copyToClipboard(buildShareUrl(album.id, true), `Đã sao chép link album "${album.title}"!`);
+        copyToClipboard(buildShareUrl(album.id, true, album), `Đã sao chép link album "${album.title}"!`);
       });
 
       const editBtn = document.createElement("button");
@@ -5078,11 +6017,13 @@
     accountConfirmPasswordInput.value = "";
 
     const isAdmin = currentUser.role === "admin";
+    tabUsersBtn.hidden = !isAdmin;
     systemSettingsBox.hidden = !isAdmin;
     if (isAdmin) {
       settingBrandInput.value = rawDbData.brandName || "";
       settingFooterInput.value = rawDbData.footerText || "";
       settingGasUrlInput.value = getAppsScriptUrl();
+      loadAllAccountsForAdmin();
     }
 
     renderAdminAlbumList();
@@ -5108,13 +6049,13 @@
   copyLockedLinkBtn.addEventListener("click", () => {
     shareMenu.hidden = true;
     const id = currentAlbum ? currentAlbum.id : "";
-    copyToClipboard(buildShareUrl(id, true), "Đã sao chép link chỉ xem album này!");
+    copyToClipboard(buildShareUrl(id, true, currentAlbum), "Đã sao chép link chỉ xem album này!");
   });
 
   copyPublicLinkBtn.addEventListener("click", () => {
     shareMenu.hidden = true;
     const id = currentAlbum ? currentAlbum.id : "";
-    copyToClipboard(buildShareUrl(id, false), "Đã sao chép link mở kèm thư viện!");
+    copyToClipboard(buildShareUrl(id, false, currentAlbum), "Đã sao chép link mở kèm thư viện!");
   });
 
   // Modal close buttons
@@ -5295,7 +6236,6 @@
         passwordHash: nextHash
       }, true);
 
-      // Nếu là Admin, lưu thêm cài đặt chung hệ thống
       if (currentUser.role === "admin") {
         const nextBrand = settingBrandInput.value.trim() || "STUDIO GALLERY";
         const nextFooter = settingFooterInput.value.trim() || "© 2026 Studio Gallery";
@@ -5342,6 +6282,7 @@
       if (e.key === "Escape") closeLightbox();
       if (e.key === "ArrowLeft") stepLightbox(-1);
       if (e.key === "ArrowRight") stepLightbox(1);
+      if (e.key === "l" || e.key === "L") lightboxHeartBtn.click();
       if (e.key === "f" || e.key === "F") toggleFullscreen();
       if (e.key === "+" || e.key === "=") setZoom(zoomScale + 0.5);
       if (e.key === "-" || e.key === "_") setZoom(zoomScale - 0.5);
@@ -5349,7 +6290,7 @@
       return;
     }
     if (e.key === "Escape") {
-      [shareReadyModal, adminModal, authModal, guideModal].forEach((m) => {
+      [likedSelectionModal, shareReadyModal, adminModal, authModal, guideModal].forEach((m) => {
         if (m && m.classList.contains("open")) closeModal(m);
       });
     }
@@ -5447,8 +6388,18 @@
   }, { passive: false });
 
   /* -----------------------------------------------------------------------
-   * Bootstrap App
+   * Bootstrap App & Khôi phục mọi link cũ
    * --------------------------------------------------------------------- */
+  function findAlbumByAnyIdentifier(identifier) {
+    if (!identifier) return null;
+    const clean = String(identifier).trim().toLowerCase();
+    return albums.find((a) =>
+      String(a.id || "").trim().toLowerCase() === clean ||
+      String(a.firebaseKey || "").trim().toLowerCase() === clean ||
+      slugify(a.title) === clean
+    ) || null;
+  }
+
   async function hydrateStateFromDb(data, preferredAlbumId = null) {
     rawDbData = {
       brandName: data.brandName || "STUDIO GALLERY",
@@ -5462,20 +6413,55 @@
       localStorage.setItem(STORAGE_GAS_URL, rawDbData.appsScriptUrl);
     }
 
-    albums = toArray(rawDbData.albums).map((album) => ({
-      ...album,
-      photos: toArray(album.photos)
-    }));
+    const cloudAlbums = toArray(rawDbData.albums)
+      .map((a) => normalizeAlbumObject(a, a.firebaseKey || a.id))
+      .filter(Boolean);
+
+    // Gộp thêm các album lưu cục bộ (khi tạo không cần đăng nhập) nếu chưa có trên cloud
+    const localAlbums = loadLocalSavedAlbums();
+    const seenIds = new Set(cloudAlbums.map((a) => a.id));
+    albums = [...cloudAlbums];
+    localAlbums.forEach((la) => {
+      if (!seenIds.has(la.id)) {
+        seenIds.add(la.id);
+        albums.push(la);
+      }
+    });
 
     brandEl.textContent = rawDbData.brandName;
     footerEl.textContent = rawDbData.footerText;
+
+    // Kiểm tra tham số dữ liệu đóng gói trên URL (?d=... hoặc ?drive=...)
+    const encodedParam = urlParams.get("d");
+    const directDriveParam = urlParams.get("drive");
+    const targetId = preferredAlbumId || requestedAlbumParam;
+
+    let resolvedTarget = findAlbumByAnyIdentifier(targetId);
+
+    if (!resolvedTarget && encodedParam) {
+      resolvedTarget = decodeAlbumFromUrlParam(encodedParam);
+      if (resolvedTarget && !albums.some((a) => a.id === resolvedTarget.id)) {
+        albums.unshift(resolvedTarget);
+      }
+    }
+
+    if (!resolvedTarget && directDriveParam) {
+      const fId = extractDriveFolderId(directDriveParam);
+      if (fId) {
+        resolvedTarget = normalizeAlbumObject({
+          id: targetId || `drive-${fId.slice(0, 8)}`,
+          title: urlParams.get("title") || "Album ảnh",
+          driveFolderUrl: `https://drive.google.com/drive/folders/${fId}`,
+          isPublic: false
+        });
+      }
+    }
 
     if (isSingleLockedMode) {
       landingHeroSection.hidden = true;
       controlsSection.hidden = true;
       guestRecentSection.hidden = true;
-      const target = albums.find((a) => a.id === lockedAlbumId);
-      if (!target) {
+      if (!resolvedTarget) {
         albumHeroSection.hidden = false;
         gallerySectionEl.hidden = false;
         backToHomeBtn.hidden = true;
@@ -5490,14 +6476,12 @@
         emptyStateText.textContent = "Vui lòng liên hệ người gửi để nhận liên kết chính xác.";
         return;
       }
-      await selectAlbum(target);
+      await selectAlbum(resolvedTarget);
       return;
     }
 
-    const targetId = preferredAlbumId || urlParams.get("album");
-    const initialAlbum = targetId ? albums.find((a) => a.id === targetId) : null;
-    if (initialAlbum) {
-      await selectAlbum(initialAlbum);
+    if (resolvedTarget) {
+      await selectAlbum(resolvedTarget);
       return;
     }
 
@@ -5525,8 +6509,11 @@
       await hydrateStateFromDb(data);
     } catch (err) {
       console.error("Firebase load error:", err);
-      showHomeView();
-      showToast("Không thể kết nối dữ liệu Firebase. Vui lòng kiểm tra mạng.", true);
+      await hydrateStateFromDb({
+        brandName: "STUDIO GALLERY",
+        footerText: "© 2026 Studio Gallery • Album Chọn Ảnh Online",
+        albums: {}
+      });
     }
   }
 
